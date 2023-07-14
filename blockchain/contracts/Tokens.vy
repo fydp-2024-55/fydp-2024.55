@@ -94,6 +94,7 @@ def _producerOf(_tokenId: uint256) -> address:
          Throws if `_tokenId` is invalid.
          Throws if the the token has no associated producer.
     @param _tokenId The identifier for a token.
+    @return The address of the token producer.
     """
     assert _tokenId > 0
     producer: address = self.idToProducer[_tokenId]
@@ -108,6 +109,7 @@ def _isProducerOf(_tokenId: uint256, _producer: address) -> bool:
          Throws if `_tokenId` is invalid or `_producer` is the zero address.
     @param _tokenId The identifier for a token.
     @param _producer The address of the producer.
+    @return A boolean representing whether the producer is the token owner.
     """
     assert _tokenId > 0 and _producer != empty(address)
 
@@ -150,6 +152,7 @@ def _hasConsumerAccessRights(_tokenId: uint256, _consumer: address) -> bool:
          Throws if `_consumer` is not subscribed to `_tokenId`.
     @param _tokenId The identifier for a token.
     @param _consumer The address of the consumer.
+    @return A boolean representing whether the consumer has access rights to the token.
     """
     assert _tokenId > 0 and _consumer != empty(address)
     subscriptionEnd: uint256 = (self.consumerToSubscriptionTerms[_consumer])[_tokenId]
@@ -242,6 +245,7 @@ def consumerTokens(_consumer: address) -> DynArray[uint256, MAX_TOKENS_PER_CONSU
     @dev Returns the token IDs purchased by a consumer.
          Throws if `_consumer` is the zero address.
     @param _consumer The address of the consumer.
+    @return An array of all the tokens the consumer has purchased access rights to.
     """
     assert _consumer != empty(address)
 
@@ -256,6 +260,7 @@ def tokenConsumers(_tokenId: uint256) -> DynArray[address, MAX_CONSUMERS_PER_TOK
     @dev Returns the consumers who have purchased access rights to a token.
          Throws if `_tokenId` is invalid.
     @param _tokenId The identifier for a token.
+    @return An array of all the consumers that have purchased access rights to the token.
     """
     assert _tokenId > 0
 
