@@ -2,7 +2,7 @@
 # @author William Park
 # Based on https://github.com/vyperlang/vyper/blob/master/examples/tokens/ERC721.vy
 
-# @version ^0.3.7
+# @version ^0.3.1
 
 ### EVENTS ###
 
@@ -66,14 +66,6 @@ tokenIdToConsumers: HashMap[uint256, DynArray[address, MAX_CONSUMERS_PER_TOKEN]]
 
 # @dev Mapping from consumer address to the tokens they have purchased as well as the subscription end date.
 consumerToSubscriptionTerms: HashMap[address, HashMap[uint256, uint256]]
-
-# @dev Static list of supported ERC165 interface IDs
-SUPPORTED_INTERFACES: constant(bytes4[2]) = [
-    # ERC165 interface ID of ERC165
-    0x01ffc9a7,
-    # ERC165 interface ID of ERC721
-    0x80ac58cd,
-]
 
 ### FUNCTIONS ###
 
