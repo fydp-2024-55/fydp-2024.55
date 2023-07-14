@@ -9,7 +9,8 @@
 ## Environment Setup
 
 1. Create a new Python virtual environment: `python -m venv venv`
-2. Install the required libraries: `pip install -r requirements.txt`
+2. Activate the Python virtual environment: `source venv/bin/activate`
+3. Install the required libraries: `pip install -r requirements.txt`
 
 ## Compile the Contract
 
