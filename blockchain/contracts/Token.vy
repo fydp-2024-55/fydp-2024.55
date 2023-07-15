@@ -10,35 +10,35 @@
 # @param tokenId The identifier for the new token.
 # @param producer The address of producer the data token is associated with.
 event Mint:
-    tokenId: indexed(uint256)
+    tokenId: uint256
     producer: indexed(address)
 
 # @dev Emits when a token is burned.
 # @param tokenId The identifier for the burned token.
 # @param producer The address of producer the data token is associated with.
 event Burn:
-    tokenId: indexed(uint256)
+    tokenId: uint256
     producer: indexed(address)
 
 # @dev Emits when a token is purchased by a consumer.
 # @param tokenId The identifier for the token.
 # @param consumer The address of consumer who purchased the token.
 event Purchase:
-    tokenId: indexed(uint256)
+    tokenId: uint256
     consumer: indexed(address)
 
 # @dev Emits when a token subscription is cancelled by a consumer.
 # @param tokenId The identifier for the token.
 # @param consumer The address of consumer who cancelled their subcription.
 event Cancel:
-    tokenId: indexed(uint256)
+    tokenId: uint256
     consumer: indexed(address)
 
 # @dev Emits when a token subscription is revoked for a consumer.
 # @param tokenId The identifier for the token.
 # @param consumer The address of consumer whose subscription was revoked.
 event Revoke:
-    tokenId: indexed(uint256)
+    tokenId: uint256
     consumer: indexed(address)
 
 ### CONSTANTS AND STORAGE VARIABLES ###
@@ -249,13 +249,9 @@ def producerOf(_tokenId: uint256) -> address:
 def consumerTokens(_consumer: address) -> DynArray[uint256, MAX_TOKENS_PER_CONSUMER]:
     """
     @dev Returns the token IDs purchased by a consumer.
-         Throws if `_consumer` is the zero address.
     @param _consumer The address of the consumer.
     @return An array of all the tokens the consumer has purchased access rights to.
     """
-    assert _consumer != empty(address)
-
-    # Remove any expired subscriptions
     self._removeConsumerExpiredSubscriptions(_consumer)
 
     return self.consumerToTokenIds[_consumer]
@@ -268,9 +264,6 @@ def tokenConsumers(_tokenId: uint256) -> DynArray[address, MAX_CONSUMERS_PER_TOK
     @param _tokenId The identifier for a token.
     @return An array of all the consumers that have purchased access rights to the token.
     """
-    assert _tokenId > 0
-
-    # Remove any expired subscriptions
     self._removeTokenExpiredSubscriptions(_tokenId)
 
     return self.tokenIdToConsumers[_tokenId]
