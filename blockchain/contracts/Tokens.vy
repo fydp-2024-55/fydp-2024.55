@@ -2,7 +2,7 @@
 # @author William Park
 # Based on https://github.com/vyperlang/vyper/blob/master/examples/tokens/ERC721.vy
 
-# @version ^0.3.1
+# @version ^0.3.7
 
 ### EVENTS ###
 
@@ -50,10 +50,10 @@ MAX_TOKENS_PER_CONSUMER: constant(uint256) = 1024
 MAX_CONSUMERS_PER_TOKEN: constant(uint256) = 1024
 
 # @dev Address of minter, who can mint a token.
-minter: address
+minter: public(address)
 
 # @dev The number of total tokens that have been created.
-tokenCount: uint256
+tokenCount: public(uint256)
 
 # @dev Mapping from token ID to the producer address whose data it is associated with.
 idToProducer: HashMap[uint256, address]
@@ -75,7 +75,7 @@ def __init__():
     @dev Contract constructor.
     """
     self.minter = msg.sender
-    self.tokenCount = 1
+    self.tokenCount = 0
 
 ### PRODUCER PERMISSION HELPERS ###
 
@@ -228,6 +228,20 @@ def _removeTokenExpiredSubscriptions(_tokenId: uint256):
     for consumer in consumers:
         if not self._hasConsumerAccessRights(_tokenId, consumer):
             self._removeConsumerAccess(_tokenId, consumer)
+
+### PRODUCER TOKENS ###
+
+@external
+def producerOf(_tokenId: uint256) -> address:
+    """
+    @dev Returns the producer of the token associated with `_tokenId`.
+         Throws if `_tokenId` is invalid.
+         Throws if the the token has no associated producer.
+    @param _tokenId The identifier for a token.
+    @return The address of the token producer.
+    """
+
+    return self._producerOf(_tokenId)
 
 ### CONSUMER TOKEN SUBSCRIPTIONS ###
 
