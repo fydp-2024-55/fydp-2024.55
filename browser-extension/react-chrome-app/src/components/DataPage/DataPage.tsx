@@ -3,13 +3,16 @@ import "./DataPage.css"
 
 interface ButtonProps {
   label: string;
+  value: boolean;
+  updateValue: (option: string) => void;
 }
 
-const ToggleButton: React.FC<ButtonProps> = ({ label }) => {
-  const [isOn, setIsOn] = useState(false);
+const ToggleButton: React.FC<ButtonProps> = ({ label, value, updateValue }) => {
+  const [isOn, setIsOn] = useState(value);
 
   const toggleButton = () => {
     setIsOn(!isOn);
+    updateValue(label)
   };
 
   return (
@@ -22,13 +25,18 @@ const ToggleButton: React.FC<ButtonProps> = ({ label }) => {
   );
 };
 
-const DataPage: React.FC = () => {
+
+interface DataPageProps {
+  updateValue: (option: string) => void;
+  options: Record<string, boolean>
+}
+
+const DataPage: React.FC<DataPageProps> = ({ options, updateValue }) => {
   return (
     <div>
-      <ToggleButton label="Button 1" />
-      <ToggleButton label="Button 2" />
-      <ToggleButton label="Button 3" />
-      <ToggleButton label="Button 4" />
+      {Object.entries(options).map(([key, value]) => (
+        <ToggleButton label={key} key={key} value={value} updateValue={updateValue}/>
+      ))}
     </div>
   );
 };

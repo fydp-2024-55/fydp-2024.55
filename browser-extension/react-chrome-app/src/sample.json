@@ -1,0 +1,14 @@
+{
+  "username": "bluebest",
+  "first_name": "blue",
+  "last_name": "beast",
+  "phone": 1234567890,
+  "email": "bluebest@blue.com",
+  "data_options": {
+    "type_a": true,
+    "type_b": true,
+    "type_c": false,
+    "type_d": false
+  },
+  "wallet": 100
+}
