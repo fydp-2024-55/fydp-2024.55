@@ -16,6 +16,6 @@ def consumer_purchase_token(token_contract):
     tx = token_contract.mint(test_producer, {'from': minter})
     token_id = tx.return_value
     
-    # Conasumer purchase of the token
+    # Consumer purchase of the token
     token_contract.consumerPurchaseToken(token_id, test_consumer, 100)
     

@@ -38,8 +38,5 @@ networks:
     update_interval: 60
     verify: false
     vrf_coordinator: "0x8103B0A8A00be2DDC778e6e7eaa21791Cd364625"
-reports:
-  exclude_contracts:
-    - SafeMath
 wallets:
   from_key: ${PRIVATE_KEY}
