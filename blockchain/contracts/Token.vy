@@ -147,9 +147,8 @@ def _hasConsumerAccessRights(_tokenId: uint256, _consumer: address) -> bool:
     """
     assert _tokenId > 0 and _consumer != empty(address)
     subscriptionEnd: uint256 = (self.consumerToSubscriptionTerms[_consumer])[_tokenId]
-    assert subscriptionEnd != 0
 
-    return subscriptionEnd <= block.timestamp
+    return subscriptionEnd >= block.timestamp
 
 @internal
 def _addConsumerAccess(_tokenId: uint256, _consumer: address, _subscriptionLength: uint256):
@@ -157,12 +156,14 @@ def _addConsumerAccess(_tokenId: uint256, _consumer: address, _subscriptionLengt
     @dev Add a consumer to the list of those who purchased access rights for a token, along with the subscription length.
          Throws if `_tokenId` is invalid, `_consumer` is the zero address, or `_subscriptionLength` is invalid.
          Throws if `_tokenId` has no producer.
+         Throws if a subsciption record already exists.
     @param _tokenId The identifier for a token.
     @param _consumer The address of the consumer.
     @param _subscriptionLength The length of the purchased subscription.
     """
     assert _tokenId > 0 and _consumer != empty(address) and _subscriptionLength > 0
     assert self.idToProducer[_tokenId] != empty(address)
+    assert self.consumerToSubscriptionTerms[_consumer][_tokenId] == 0
 
     # Consumer-token relationship
     self.consumerToTokenIds[_consumer].append(_tokenId)
@@ -277,13 +278,11 @@ def consumerPurchaseToken(_tokenId: uint256, _consumer: address, _subscriptionLe
          Throws if `_tokenId` is invalid, `_consumer` is the zero address, or `_subscriptionLength` is invalid.
          Throws if `_tokenId` has no producer.
          Throws if the address interacting with the contract is not `_consumer`.
-         Throws if `_consumer` already has access rights to the token.
     @param _tokenId The identifier for a token.
     """
     assert _tokenId > 0 and _consumer != empty(address) and _subscriptionLength > 0
     assert self.idToProducer[_tokenId] != empty(address)
     assert msg.sender == _consumer
-    assert not self._hasConsumerAccessRights(_tokenId, _consumer)
     
     self._addConsumerAccess(_tokenId, _consumer, _subscriptionLength)
 
