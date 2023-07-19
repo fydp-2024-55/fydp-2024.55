@@ -1,0 +1,5 @@
+fastapi[all]
+black
+fastapi-users[sqlalchemy]
+aiosqlite
+alembic
