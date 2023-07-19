@@ -3,4 +3,4 @@
 from brownie import Token, accounts
 
 def main():
-    return Token.deploy({'from': accounts[0]})
+    return accounts[0].deploy(Token)

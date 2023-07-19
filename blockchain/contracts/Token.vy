@@ -90,7 +90,6 @@ def _producerOf(_tokenId: uint256) -> address:
     """
     assert _tokenId > 0
     producer: address = self.idToProducer[_tokenId]
-    assert producer != empty(address)
 
     return producer
 
@@ -337,7 +336,7 @@ def burn(_tokenId: uint256):
          Throws if `_tokenId` is invalid.
          Throws if `_tokenId` has no producer.
          Throws if the address interacting with the contract is not the producer of the token.
-    @param _tokenId uint256 id of the ERC721 token to be burned.
+    @param _tokenId The identifier for a token to be burned.
     """
     assert _tokenId > 0
     producer: address = self.idToProducer[_tokenId]
@@ -350,4 +349,6 @@ def burn(_tokenId: uint256):
         log Revoke(_tokenId, consumer)
 
     self._removeProducerToken(_tokenId)
+
+    self.tokenCount -= 1
     log Burn(_tokenId, producer)

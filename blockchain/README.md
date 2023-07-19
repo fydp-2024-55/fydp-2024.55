@@ -23,3 +23,8 @@
 2. Select the `Sepolia Testnet` network
 3. Paste the smart contract `Bytecode` and `ABI` that were generated when compiling the contracts into the appropriate fields, and provide a `Contract name`
 4. `Sign transaction`
+
+## Automated Tests
+
+1. Install Ganache globally: `npm install -g ganache`
+2. Run `brownie test`
