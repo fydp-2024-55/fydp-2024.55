@@ -108,7 +108,6 @@ def _producerTokenId(_producer: address) -> uint256:
 
     return tokenId
 
-
 @internal
 def _createProducerToken(_producer: address, _tokenId: uint256):
     """
