@@ -23,9 +23,9 @@ def test_mint_burn(token_contract):
     tx = token_contract.mint(test_producer, {'from': minter})
     token_id = tx.return_value
     assert token_contract.tokenCount() == token_count + 1
-    assert token_contract.producerOf.call(token_id, {'from': minter}) == test_producer.address
+    assert token_contract.producerTokenId.call(test_producer, {'from': minter}) == token_count + 1
     
     # Burn a token and check that it is no longer associated with a producer
-    token_contract.burn(token_id, {'from': test_producer})
+    token_contract.burn(test_producer, {'from': test_producer})
     assert token_contract.tokenCount() == token_count
-    assert token_contract.producerOf.call(token_id, {'from': minter}) == EMPTY_ADDRESS
+    assert token_contract.producerTokenId.call(test_producer, {'from': minter}) == 0

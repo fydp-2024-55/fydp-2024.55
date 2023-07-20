@@ -14,19 +14,18 @@ def test_token_purchase(token_contract):
     test_consumer = accounts[2]
     
     # Mint a new token
-    tx = token_contract.mint(test_producer, {'from': minter})
-    token_id = tx.return_value
+    token_contract.mint(test_producer, {'from': minter})
     
     # Consumer purchase of the token with a subscription length of 5 seconds
-    token_contract.consumerPurchaseToken(token_id, test_consumer, 5, {'from': test_consumer})
+    token_contract.consumerPurchaseToken(test_consumer, test_producer, 5, {'from': test_consumer})
     
     # Check that the token was added to the list of tokens for `test_consumer`
-    tokens_tx = token_contract.consumerTokens(test_consumer)
-    tokens = tokens_tx.return_value
-    assert len(tokens) == 1 and tokens[0] == token_id
+    producers_tx = token_contract.consumerProducers(test_consumer)
+    producers = producers_tx.return_value
+    assert len(producers) == 1 and producers[0] == test_producer
     
     # Check that the consumer was added to the list of consumers for `token_id`
-    consumers_tx = token_contract.tokenConsumers(token_id)
+    consumers_tx = token_contract.producerConsumers(test_producer)
     consumers = consumers_tx.return_value
     assert len(consumers) == 1 and consumers[0] == test_consumer
     
@@ -35,11 +34,11 @@ def test_token_purchase(token_contract):
     
     # Check that the token expired
     
-    tokens_tx = token_contract.consumerTokens(test_consumer)
-    tokens = tokens_tx.return_value
-    assert len(tokens) == 0
+    producers_tx = token_contract.consumerProducers(test_consumer)
+    producers = producers_tx.return_value
+    assert len(producers) == 0
     
-    consumers_tx = token_contract.tokenConsumers(token_id)
+    consumers_tx = token_contract.producerConsumers(test_producer)
     consumers = consumers_tx.return_value
     assert len(consumers) == 0
 
@@ -49,16 +48,16 @@ def test_token_cancel(token_contract):
     test_consumer = accounts[2]
     
     # Mint a new token
-    tx = token_contract.mint(test_producer, {'from': minter})
-    token_id = tx.return_value
+    token_contract.mint(test_producer, {'from': minter})
     
     # Consumer purchase of the token
-    token_contract.consumerPurchaseToken(token_id, test_consumer, 20, {'from': test_consumer})
+    token_contract.consumerPurchaseToken(test_consumer, test_producer, 20, {'from': test_consumer})
     
     # Cancel the token subscription
-    token_contract.consumerCancelToken(token_id, test_consumer, {'from': test_consumer})
-    consumers_tx = token_contract.tokenConsumers(token_id)
+    token_contract.consumerCancelToken(test_consumer, test_producer, {'from': test_consumer})
+    # Check that all associations have been removed
+    consumers_tx = token_contract.producerConsumers(test_producer)
     consumers = consumers_tx.return_value
-    tokens_tx = token_contract.consumerTokens(test_consumer)
-    tokens = tokens_tx.return_value
-    assert len(consumers) == 0 and len(tokens) == 0
+    producers_tx = token_contract.consumerProducers(test_consumer)
+    producers = producers_tx.return_value
+    assert len(consumers) == 0 and len(producers) == 0

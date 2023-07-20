@@ -26,6 +26,7 @@ event Burn:
 event Purchase:
     tokenId: uint256
     consumer: indexed(address)
+    producer: indexed(address)
 
 # @dev Emits when a token subscription is cancelled by a consumer.
 # @param tokenId The identifier for the token.
@@ -33,6 +34,7 @@ event Purchase:
 event Cancel:
     tokenId: uint256
     consumer: indexed(address)
+    producer: indexed(address)
 
 # @dev Emits when a token subscription is revoked for a consumer.
 # @param tokenId The identifier for the token.
@@ -40,14 +42,18 @@ event Cancel:
 event Revoke:
     tokenId: uint256
     consumer: indexed(address)
+    producer: indexed(address)
 
 ### CONSTANTS AND STORAGE VARIABLES ###
 
-# @dev The maximum number of tokens that one consumer could subscribe to.
-MAX_TOKENS_PER_CONSUMER: constant(uint256) = 1024
+# @dev The empty address.
+EMPTY_ADDRESS: constant(address) = empty(address)
 
-# @dev The maximum number of consumers who can subscribe to one token.
-MAX_CONSUMERS_PER_TOKEN: constant(uint256) = 1024
+# @dev The maximum number of permitted consumers per producer.
+MAX_CONSUMERS_PER_PRODUCER: constant(uint256) = 1024
+
+# @dev The maximum number of permitted producers per consumer.
+MAX_PRODUCERS_PER_CONSUMER: constant(uint256) = 1024
 
 # @dev Address of minter, who can mint a token.
 minter: public(address)
@@ -55,17 +61,17 @@ minter: public(address)
 # @dev The number of total tokens that have been created.
 tokenCount: public(uint256)
 
-# @dev Mapping from token ID to the producer address whose data it is associated with.
-idToProducer: HashMap[uint256, address]
+# @dev { producer: tokenId }
+producerToTokenId: HashMap[address, uint256]
 
-# @dev Mapping from consumer address to the tokens that they have purchased.
-consumerToTokenIds: HashMap[address, DynArray[uint256, MAX_TOKENS_PER_CONSUMER]]
+# @dev { producer: [...consumers] }
+producerToConsumers: HashMap[address, DynArray[address, MAX_CONSUMERS_PER_PRODUCER]]
 
-# @dev Mapping from token ID to the consumers who have purchased it.
-tokenIdToConsumers: HashMap[uint256, DynArray[address, MAX_CONSUMERS_PER_TOKEN]]
+# @dev { consumer: [...producers] }
+consumerToProducers: HashMap[address, DynArray[address, MAX_PRODUCERS_PER_CONSUMER]]
 
-# @dev Mapping from consumer address to the tokens they have purchased as well as the subscription end date.
-consumerToSubscriptionTerms: HashMap[address, HashMap[uint256, uint256]]
+# @dev { consumer: { producer: subscriptionEnd } }
+consumerToSubscriptions: HashMap[address, HashMap[address, uint256]]
 
 ### FUNCTIONS ###
 
@@ -80,126 +86,114 @@ def __init__():
 ### PRODUCER PERMISSION HELPERS ###
 
 @internal
-def _producerOf(_tokenId: uint256) -> address:
+def _producerTokenId(_producer: address) -> uint256:
     """
     @dev Returns the producer of the token associated with `_tokenId`.
          Throws if `_tokenId` is invalid.
          Throws if the the token has no associated producer.
-    @param _tokenId The identifier for a token.
-    @return The address of the token producer.
-    """
-    assert _tokenId > 0
-    producer: address = self.idToProducer[_tokenId]
-
-    return producer
-
-@internal
-def _isProducerOf(_tokenId: uint256, _producer: address) -> bool:
-    """
-    @dev Returns if a producer is the owner of a token.
-         Throws if `_tokenId` is invalid or `_producer` is the zero address.
-    @param _tokenId The identifier for a token.
     @param _producer The address of the producer.
-    @return A boolean representing whether the producer is the token owner.
+    @return The producer's associated token ID.
     """
-    assert _tokenId > 0 and _producer != empty(address)
+    assert _producer != EMPTY_ADDRESS
+    tokenId: uint256 = self.producerToTokenId[_producer]
 
-    return _producer == self._producerOf(_tokenId)
+    return tokenId
+
 
 @internal
-def _createProducerToken(_tokenId: uint256, _producer: address):
+def _createProducerToken(_producer: address, _tokenId: uint256):
     """
     @dev Create a token for the specified producer.
          Throws if `_tokenId` is invalid or `_producer` is the zero address.
          Throws if `_producer` already has an associated token.
-    @param _tokenId The identifier for a token.
     @param _producer The address of the producer.
+    @param _tokenId The identifier for a token.
     """
-    assert _tokenId > 0 and _producer != empty(address)
-    assert self.idToProducer[_tokenId] == empty(address)
+    assert _producer != EMPTY_ADDRESS and _tokenId > 0 
+    assert self.producerToTokenId[_producer] == 0
 
-    self.idToProducer[_tokenId] = _producer
+    self.producerToTokenId[_producer] = _tokenId
 
 @internal
-def _removeProducerToken(_tokenId: uint256):
+def _removeProducerToken(_producer: address):
     """
-    @dev Remove the association between a token and its producer.
+    @dev Remove the association between a producer and its token.
          Throws if `_tokenId` is invalid.
          Throws if `_tokenId` has no producer initially.
-    @param _tokenId The identifier for a token.
+    @param _producer The address of the producer.
     """
-    assert _tokenId > 0
-    assert self.idToProducer[_tokenId] != empty(address)
+    assert _producer != EMPTY_ADDRESS
+    assert self.producerToTokenId[_producer] != 0
 
-    self.idToProducer[_tokenId] = empty(address)
+    self.producerToTokenId[_producer] = 0
 
 ### CONSUMER PERMISSION HELPERS ###
 
 @internal
-def _hasConsumerAccessRights(_tokenId: uint256, _consumer: address) -> bool:
+def _hasConsumerAccessRights(_consumer: address, _producer: address) -> bool:
     """
     @dev Returns if a consumer's subscription term for a token is still valid.
          Throws if `_tokenId` is invalid or `_consumer` is the zero address.
          Throws if `_consumer` is not subscribed to `_tokenId`.
-    @param _tokenId The identifier for a token.
     @param _consumer The address of the consumer.
+    @param _producer The address of the producer.
     @return A boolean representing whether the consumer has access rights to the token.
     """
-    assert _tokenId > 0 and _consumer != empty(address)
-    subscriptionEnd: uint256 = (self.consumerToSubscriptionTerms[_consumer])[_tokenId]
+    assert _consumer != EMPTY_ADDRESS and _producer != EMPTY_ADDRESS
+    subscriptionEnd: uint256 = (self.consumerToSubscriptions[_consumer])[_producer]
 
     return subscriptionEnd >= block.timestamp
 
 @internal
-def _addConsumerAccess(_tokenId: uint256, _consumer: address, _subscriptionLength: uint256):
+def _addConsumerAccess(_consumer: address, _producer: address, _subscriptionLength: uint256):
     """
     @dev Add a consumer to the list of those who purchased access rights for a token, along with the subscription length.
          Throws if `_tokenId` is invalid, `_consumer` is the zero address, or `_subscriptionLength` is invalid.
          Throws if `_tokenId` has no producer.
          Throws if a subsciption record already exists.
-    @param _tokenId The identifier for a token.
     @param _consumer The address of the consumer.
+    @param _producer The address of the producer.
     @param _subscriptionLength The length of the purchased subscription.
     """
-    assert _tokenId > 0 and _consumer != empty(address) and _subscriptionLength > 0
-    assert self.idToProducer[_tokenId] != empty(address)
-    assert self.consumerToSubscriptionTerms[_consumer][_tokenId] == 0
+    assert _consumer != EMPTY_ADDRESS and _producer != EMPTY_ADDRESS and _subscriptionLength > 0
+    assert self.producerToTokenId[_producer] != 0
+    assert self.consumerToSubscriptions[_consumer][_producer] == 0
 
-    # Consumer-token relationship
-    self.consumerToTokenIds[_consumer].append(_tokenId)
-    self.tokenIdToConsumers[_tokenId].append(_consumer)
+    # Consumer-producer relationship
+    self.consumerToProducers[_consumer].append(_producer)
+    self.producerToConsumers[_producer].append(_consumer)
 
     # Subscription term
     currentTime: uint256 = block.timestamp
-    self.consumerToSubscriptionTerms[_consumer][_tokenId] = currentTime + _subscriptionLength
+    self.consumerToSubscriptions[_consumer][_producer] = currentTime + _subscriptionLength
 
 @internal
-def _removeConsumerAccess(_tokenId: uint256, _consumer: address):
+def _removeConsumerAccess(_consumer: address, _producer: address):
     """
     @dev Remove all associations between a token and a consumer who had previously purchased the token.
          Throws if `_tokenId` is invalid or `_consumer` is the zero address.
          Throws if `_consumer` is not currently a consumer for `_tokenId`
-    @param _tokenId The identifier for a token.
     @param _consumer The address of the consumer.
+    @param _producer The address of the producer.
     """
-    assert _tokenId > 0 and _consumer != empty(address)
-    assert self.consumerToSubscriptionTerms[_consumer][_tokenId] != 0
+    assert _consumer != EMPTY_ADDRESS and _producer != EMPTY_ADDRESS
+    assert self.consumerToSubscriptions[_consumer][_producer] != 0
 
-    tokens: DynArray[uint256, MAX_TOKENS_PER_CONSUMER] = self.consumerToTokenIds[_consumer]
-    for i in range(MAX_TOKENS_PER_CONSUMER):
-        if tokens[i] == _tokenId:
-            self.consumerToTokenIds[_consumer][i] = self.consumerToTokenIds[_consumer][len(self.consumerToTokenIds[_consumer]) - 1]
-            self.consumerToTokenIds[_consumer].pop()
+    producers: DynArray[address, MAX_PRODUCERS_PER_CONSUMER] = self.consumerToProducers[_consumer]
+    for i in range(MAX_PRODUCERS_PER_CONSUMER):
+        if producers[i] == _producer:
+            self.consumerToProducers[_consumer][i] = self.consumerToProducers[_consumer][len(self.consumerToProducers[_consumer]) - 1]
+            self.consumerToProducers[_consumer].pop()
             break
 
-    consumers: DynArray[address, MAX_CONSUMERS_PER_TOKEN] = self.tokenIdToConsumers[_tokenId]
-    for i in range(MAX_CONSUMERS_PER_TOKEN):
+    consumers: DynArray[address, MAX_CONSUMERS_PER_PRODUCER] = self.producerToConsumers[_producer]
+    for i in range(MAX_CONSUMERS_PER_PRODUCER):
         if consumers[i] == _consumer:
-            self.tokenIdToConsumers[_tokenId][i] = self.tokenIdToConsumers[_tokenId][len(self.tokenIdToConsumers[_tokenId]) - 1]
-            self.tokenIdToConsumers[_tokenId].pop()
+            self.producerToConsumers[_producer][i] = self.producerToConsumers[_producer][len(self.producerToConsumers[_producer]) - 1]
+            self.producerToConsumers[_producer].pop()
             break
 
-    self.consumerToSubscriptionTerms[_consumer][_tokenId] = 0
+    self.consumerToSubscriptions[_consumer][_producer] = 0
 
 @internal
 def _removeConsumerExpiredSubscriptions(_consumer: address):
@@ -208,45 +202,45 @@ def _removeConsumerExpiredSubscriptions(_consumer: address):
          Throws if `_consumer` is the zero address.
     @param _consumer The address of the consumer.
     """
-    assert _consumer != empty(address)
+    assert _consumer != EMPTY_ADDRESS
 
-    tokens: DynArray[uint256, MAX_TOKENS_PER_CONSUMER] = self.consumerToTokenIds[_consumer]
-    for tokenId in tokens:
-        if not self._hasConsumerAccessRights(tokenId, _consumer):
-            self._removeConsumerAccess(tokenId, _consumer)
+    producers: DynArray[address, MAX_PRODUCERS_PER_CONSUMER] = self.consumerToProducers[_consumer]
+    for producer in producers:
+        if not self._hasConsumerAccessRights(_consumer, producer):
+            self._removeConsumerAccess(_consumer, producer)
 
 @internal
-def _removeTokenExpiredSubscriptions(_tokenId: uint256):
+def _removeProducerExpiredSubscriptions(_producer: address):
     """
     @dev Removes a token's expired consumer subscriptions.
          Throws if `_tokenId` is invalid.
-    @param _tokenId The identifier for a token.
+    @param _producer The address of the producer.
     """
-    assert _tokenId > 0
+    assert _producer != EMPTY_ADDRESS
 
-    consumers: DynArray[address, MAX_CONSUMERS_PER_TOKEN] = self.tokenIdToConsumers[_tokenId]
+    consumers: DynArray[address, MAX_CONSUMERS_PER_PRODUCER] = self.producerToConsumers[_producer]
     for consumer in consumers:
-        if not self._hasConsumerAccessRights(_tokenId, consumer):
-            self._removeConsumerAccess(_tokenId, consumer)
+        if not self._hasConsumerAccessRights(consumer, _producer):
+            self._removeConsumerAccess(consumer, _producer)
 
-### PRODUCER TOKENS ###
+## PRODUCER TOKENS ###
 
 @external
-def producerOf(_tokenId: uint256) -> address:
+def producerTokenId(_producer: address) -> uint256:
     """
     @dev Returns the producer of the token associated with `_tokenId`.
          Throws if `_tokenId` is invalid.
          Throws if the the token has no associated producer.
-    @param _tokenId The identifier for a token.
+    @param _producer The address of the producer.
     @return The address of the token producer.
     """
 
-    return self._producerOf(_tokenId)
+    return self._producerTokenId(_producer)
 
-### CONSUMER TOKEN SUBSCRIPTIONS ###
+### CONSUMER SUBSCRIPTIONS ###
 
 @external
-def consumerTokens(_consumer: address) -> DynArray[uint256, MAX_TOKENS_PER_CONSUMER]:
+def consumerProducers(_consumer: address) -> DynArray[address, MAX_PRODUCERS_PER_CONSUMER]:
     """
     @dev Returns the token IDs purchased by a consumer.
     @param _consumer The address of the consumer.
@@ -254,58 +248,63 @@ def consumerTokens(_consumer: address) -> DynArray[uint256, MAX_TOKENS_PER_CONSU
     """
     self._removeConsumerExpiredSubscriptions(_consumer)
 
-    return self.consumerToTokenIds[_consumer]
+    return self.consumerToProducers[_consumer]
 
 @external
-def tokenConsumers(_tokenId: uint256) -> DynArray[address, MAX_CONSUMERS_PER_TOKEN]:
+def producerConsumers(_producer: address) -> DynArray[address, MAX_CONSUMERS_PER_PRODUCER]:
     """
     @dev Returns the consumers who have purchased access rights to a token.
          Throws if `_tokenId` is invalid.
-    @param _tokenId The identifier for a token.
+    @param _producer The address of the producer.
     @return An array of all the consumers that have purchased access rights to the token.
     """
-    self._removeTokenExpiredSubscriptions(_tokenId)
+    self._removeProducerExpiredSubscriptions(_producer)
 
-    return self.tokenIdToConsumers[_tokenId]
+    return self.producerToConsumers[_producer]
 
 ### CONSUMER ACTIONS ###
 
 @payable
 @external
-def consumerPurchaseToken(_tokenId: uint256, _consumer: address, _subscriptionLength: uint256):
+def consumerPurchaseToken(_consumer: address, _producer: address, _subscriptionLength: uint256):
     """
     @dev Consumer purchases access rights to a token for a specified subscription length.
          Throws if `_tokenId` is invalid, `_consumer` is the zero address, or `_subscriptionLength` is invalid.
          Throws if `_tokenId` has no producer.
          Throws if the address interacting with the contract is not `_consumer`.
-    @param _tokenId The identifier for a token.
+    @param _consumer The address of the consumer.
+    @param _producer The address of the producer.
+    @param _subscriptionLength The specified subscription period lenth (in seconds).
     """
-    assert _tokenId > 0 and _consumer != empty(address) and _subscriptionLength > 0
-    assert self.idToProducer[_tokenId] != empty(address)
+    assert _consumer != EMPTY_ADDRESS and _producer != EMPTY_ADDRESS and _subscriptionLength > 0
+    tokenId: uint256 = self.producerToTokenId[_producer]
+    assert tokenId > 0
     assert msg.sender == _consumer
     
-    self._addConsumerAccess(_tokenId, _consumer, _subscriptionLength)
+    self._addConsumerAccess(_consumer, _producer, _subscriptionLength)
 
-    log Purchase(_tokenId, _consumer)
+    log Purchase(tokenId, _consumer, _producer)
 
 @external
-def consumerCancelToken(_tokenId: uint256, _consumer: address):
+def consumerCancelToken(_consumer: address, _producer: address):
     """
     @dev Consumer cancels access rights to a token they had previously purchased.
          Throws if `_tokenId` is invalid or `_consumer` is the zero address.
          Throws if `_tokenId` has no producer.
          Throws if the address interacting with the contract is not `_consumer`.
          Throws if `_consumer` does not already have access rights to the token.
-    @param _tokenId The identifier for a token.
+    @param _consumer The address of the consumer.
+    @param _producer The address of the producer.
     """
-    assert _tokenId > 0 and _consumer != empty(address)
-    assert self.idToProducer[_tokenId] != empty(address)
+    assert _consumer != EMPTY_ADDRESS and _producer != EMPTY_ADDRESS
+    tokenId: uint256 = self.producerToTokenId[_producer]
+    assert tokenId > 0
     assert msg.sender == _consumer
-    assert self._hasConsumerAccessRights(_tokenId, _consumer)
+    assert self._hasConsumerAccessRights(_consumer, _producer)
     
-    self._removeConsumerAccess(_tokenId, _consumer)
+    self._removeConsumerAccess(_consumer, _producer)
 
-    log Cancel(_tokenId, _consumer)
+    log Cancel(tokenId, _consumer, _producer)
 
 ### MINT & BURN FUNCTIONS ###
 
@@ -319,35 +318,35 @@ def mint(_producer: address) -> uint256:
     @return The created token ID.
     """
     assert msg.sender == self.minter
-    assert _producer != empty(address)
+    assert _producer != EMPTY_ADDRESS
 
     self.tokenCount += 1
-    self._createProducerToken(self.tokenCount, _producer)
+    self._createProducerToken(_producer, self.tokenCount)
 
     log Mint(self.tokenCount, _producer)
     
     return self.tokenCount
 
 @external
-def burn(_tokenId: uint256):
+def burn(_producer: address):
     """
     @dev Burns a specific token.
          Throws if `_tokenId` is invalid.
          Throws if `_tokenId` has no producer.
          Throws if the address interacting with the contract is not the producer of the token.
-    @param _tokenId The identifier for a token to be burned.
+    @param _producer The address of the producer whose token will be burned.
     """
-    assert _tokenId > 0
-    producer: address = self.idToProducer[_tokenId]
-    assert producer != empty(address)
-    assert self._isProducerOf(_tokenId, msg.sender)
+    assert _producer != EMPTY_ADDRESS
+    tokenId: uint256 = self.producerToTokenId[_producer]
+    assert tokenId > 0
+    assert msg.sender == _producer
 
-    consumers: DynArray[address, MAX_CONSUMERS_PER_TOKEN] = self.tokenIdToConsumers[_tokenId]
+    consumers: DynArray[address, MAX_CONSUMERS_PER_PRODUCER] = self.producerToConsumers[_producer]
     for consumer in consumers:
-        self._removeConsumerAccess(_tokenId, consumer)
-        log Revoke(_tokenId, consumer)
+        self._removeConsumerAccess(consumer, _producer)
+        log Revoke(tokenId, consumer, _producer)
 
-    self._removeProducerToken(_tokenId)
+    self._removeProducerToken(_producer)
 
     self.tokenCount -= 1
-    log Burn(_tokenId, producer)
+    log Burn(tokenId, _producer)
