@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import apis from "../../api/index";
 
 interface LoginProps {
   loginUser: (user: string, pass: string) => void;
@@ -12,10 +13,18 @@ const Login: React.FC<LoginProps> = ({ loginUser }) => {
   const [isLogin, setIsLogin] = useState(true); // render create account form instead
 
   // Function to handle create account form submission
-  const handleCreateAccount = (event: React.FormEvent) => {
+  const handleCreateAccount = async (event: React.FormEvent) => {
     event.preventDefault();
+    const payload = {
+      email: username,
+      password: password,
+      is_active: true,
+      is_superuser: false,
+      is_verified: false,
+    };
     // Perform create account logic here
-    console.log("Creating account...", username, password);
+    const res = await apis.createUser(payload);
+    console.log(res);
   };
 
   return (
@@ -45,7 +54,7 @@ const Login: React.FC<LoginProps> = ({ loginUser }) => {
             <br />
             <button type="submit">Login</button>
             <br />
-            <a href="/create" onClick={() => setIsLogin(false)}>
+            <a href="/#" onClick={() => setIsLogin(false)}>
               Create account here
             </a>
           </form>

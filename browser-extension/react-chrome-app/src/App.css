@@ -1,11 +1,10 @@
 .browserContainer {
     height: 550px;
     width: 450px;
-    background: gray;
+    background: rgb(94, 113, 119);
     display: flex;
     flex-direction: column;
-    border-style: solid;
-    border-width: thin;
+    border: 5px solid #204553;
 }
 
 .row {

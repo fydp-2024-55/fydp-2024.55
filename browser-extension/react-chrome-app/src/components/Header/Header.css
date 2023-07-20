@@ -1,9 +1,9 @@
 .nav {
     height: 14%;
     width: 100%;
-    background: lightgray;
+    background: rgb(117, 141, 148);
     display: flex;
-    flex: 0 0 15%;
+    flex: 0 0 12%;
     justify-content: space-evenly;
     align-items: center;
 
@@ -16,10 +16,15 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    border: none;
+    border: 5px solid #204553;
+    border-right: none;
     text-decoration: none;
-    color: black;
+    color: #ffffff;
 }
+
+.nav-link:first-child {
+    border-left: none;
+  }
 
 .nav-link:hover {
     background-color: cornflowerblue;
