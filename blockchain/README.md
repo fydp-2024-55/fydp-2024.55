@@ -12,19 +12,22 @@
 2. Activate the Python virtual environment: `source venv/bin/activate`
 3. Install the required libraries: `pip install -r requirements.txt`
 
-## Compile the Contract
+## Automated Tests
+
+1. Install Ganache globally: `npm install -g ganache`
+2. Run the test suites: `brownie test`
+3. To test out individual functions defined in the smart contract, use the Brownie console: `brownie console`
+
+## Interacting with the Contract Manually
+
+### Compile the Contract
 
 1. Generate the smart contract bytecode: `vyper Tokens.vy`
 2. Generate the smart contract ABI: `vyper -f abi Tokens.vy`
 
-## Deploy the Contract
+### Deploy the Contract
 
 1. Go to https://www.myetherwallet.com/wallet/deploy > `Contract` > `Interact with Contract`
 2. Select the `Sepolia Testnet` network
 3. Paste the smart contract `Bytecode` and `ABI` that were generated when compiling the contracts into the appropriate fields, and provide a `Contract name`
 4. `Sign transaction`
-
-## Automated Tests
-
-1. Install Ganache globally: `npm install -g ganache`
-2. Run `brownie test`
