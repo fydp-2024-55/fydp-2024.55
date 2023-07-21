@@ -3,6 +3,7 @@ import time
 
 from brownie import Token, accounts
 
+SUBSCRIPTION_PRICE = 1
 
 @pytest.fixture
 def token_contract():
@@ -23,12 +24,12 @@ def test_token_purchase(token_contract):
 
     # Consumer purchase of the token with a subscription length of 5 seconds
     token_contract.consumerPurchaseMultipleTokens(
-        test_consumer, [test_producer], 5, {"from": test_consumer, "value": 10}
+        test_consumer, [test_producer], 5, {"from": test_consumer, "value": SUBSCRIPTION_PRICE}
     )
 
     # Check that ETH was transacted from the consumer to producer
-    assert test_consumer.balance() == initial_consumer_balance - 10
-    assert test_producer.balance() == initial_producer_balance + 10
+    assert test_consumer.balance() == initial_consumer_balance - SUBSCRIPTION_PRICE
+    assert test_producer.balance() == initial_producer_balance + SUBSCRIPTION_PRICE
 
     # Check that the token was added to the list of tokens for `test_consumer`
     producers_tx = token_contract.consumerProducers(test_consumer)
@@ -64,7 +65,7 @@ def test_token_cancel(token_contract):
 
     # Consumer purchase of the token
     token_contract.consumerPurchaseMultipleTokens(
-        test_consumer, [test_producer], 20, {"from": test_consumer, "value": 10}
+        test_consumer, [test_producer], 20, {"from": test_consumer, "value": SUBSCRIPTION_PRICE}
     )
 
     # Cancel the token subscription
@@ -96,7 +97,7 @@ def test_tokens_list(token_contract):
         test_consumer,
         [test_producer_1, test_producer_2, test_producer_3],
         100,
-        {"from": test_consumer, "value": 10 * 3},
+        {"from": test_consumer, "value": SUBSCRIPTION_PRICE * 3},
     )
 
     # Check that the producer purchase references were all successful

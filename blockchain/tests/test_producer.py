@@ -3,6 +3,7 @@ import pytest
 from brownie import Token, accounts
 
 EMPTY_ADDRESS = "0x0000000000000000000000000000000000000000"
+SUBSCRIPTION_PRICE = 1
 
 
 @pytest.fixture
@@ -53,22 +54,22 @@ def test_producers_list(token_contract):
 
     # Consumer purchase of the token
     token_contract.consumerPurchaseMultipleTokens(
-        test_consumer_1, [test_producer], 100, {"from": test_consumer_1, "value": 10}
+        test_consumer_1, [test_producer], 100, {"from": test_consumer_1, "value": SUBSCRIPTION_PRICE}
     )
     token_contract.consumerPurchaseMultipleTokens(
-        test_consumer_2, [test_producer], 100, {"from": test_consumer_2, "value": 10}
+        test_consumer_2, [test_producer], 100, {"from": test_consumer_2, "value": SUBSCRIPTION_PRICE}
     )
     token_contract.consumerPurchaseMultipleTokens(
-        test_consumer_3, [test_producer], 100, {"from": test_consumer_3, "value": 10}
+        test_consumer_3, [test_producer], 100, {"from": test_consumer_3, "value": SUBSCRIPTION_PRICE}
     )
 
     # Check that ETH was transacted from the consumers to producer
     assert (
-        test_consumer_1.balance() == initial_consumer_1_balance - 10
-        and test_consumer_2.balance() == initial_consumer_2_balance - 10
-        and test_consumer_3.balance() == initial_consumer_3_balance - 10
+        test_consumer_1.balance() == initial_consumer_1_balance - SUBSCRIPTION_PRICE
+        and test_consumer_2.balance() == initial_consumer_2_balance - SUBSCRIPTION_PRICE
+        and test_consumer_3.balance() == initial_consumer_3_balance - SUBSCRIPTION_PRICE
     )
-    assert test_producer.balance() == initial_producer_balance + 10 * 3
+    assert test_producer.balance() == initial_producer_balance + SUBSCRIPTION_PRICE * 3
 
     # Check that the producer purchase references were all successful
     consumers = token_contract.producerConsumers.call(

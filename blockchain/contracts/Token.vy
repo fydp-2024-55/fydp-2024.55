@@ -56,7 +56,7 @@ struct Subscription:
 EMPTY_ADDRESS: constant(address) = empty(address)
 
 # @dev The price to subscribe to a producer's data (in Ether).
-SUBSCRIPTION_PRICE: constant(uint256) = 10
+SUBSCRIPTION_PRICE: constant(uint256) = 1
 
 # @dev The maximum number of permitted consumers per producer.
 MAX_CONSUMERS_PER_PRODUCER: constant(uint256) = 1024
