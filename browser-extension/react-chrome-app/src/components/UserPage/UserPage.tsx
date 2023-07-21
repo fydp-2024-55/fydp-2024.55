@@ -22,19 +22,35 @@ const UserPage: React.FC<UserPageProps> = ({
         height: "100%",
         display: "flex",
         flexDirection: "column",
-        justifyContent: "space-between",
         alignItems: "center",
       }}
     >
       <Typography align="left" variant="h4">
         User Profile
       </Typography>
-      <p>Username: {username}</p>
-      <p>
-        Full name: {first_name} {last_name}
-      </p>
-      <p>Phone number: {phone}</p>
-      <p>Email: {email}</p>
+      <div
+        style={{
+          marginTop: "20%",
+          height: "70%",
+          display: "flex",
+          flexDirection: "column",
+          justifyContent: "space-between",
+          alignItems: "center",
+        }}
+      >
+        <Typography align="left" variant="h6">
+          Username: {username}
+        </Typography>
+        <Typography align="left" variant="h6">
+          Full name: {first_name} {last_name}
+        </Typography>
+        <Typography align="left" variant="h6">
+          Phone number: {phone}
+        </Typography>
+        <Typography align="left" variant="h6">
+          Email: {email}
+        </Typography>
+      </div>
     </div>
   );
 };
