@@ -2,3 +2,8 @@ compiler:
   evm_version: istanbul
   vyper:
     version: 0.3.7
+networks:
+  default: development
+  sepolia:
+    host: ${SEPOLIA_INFURA_API_KEY}
+dotenv: .env
