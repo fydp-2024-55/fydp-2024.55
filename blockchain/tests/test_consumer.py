@@ -2,8 +2,8 @@ import pytest
 import time
 
 from brownie import Token, accounts
+from .util import SUBSCRIPTION_PRICE, producer_consumers, consumer_producers
 
-SUBSCRIPTION_PRICE = 1
 
 @pytest.fixture
 def token_contract():
@@ -24,7 +24,10 @@ def test_token_purchase(token_contract):
 
     # Consumer purchase of the token with a subscription length of 5 seconds
     token_contract.consumerPurchaseMultipleTokens(
-        test_consumer, [test_producer], 5, {"from": test_consumer, "value": SUBSCRIPTION_PRICE}
+        test_consumer,
+        [test_producer],
+        5,
+        {"from": test_consumer, "value": SUBSCRIPTION_PRICE},
     )
 
     # Check that ETH was transacted from the consumer to producer
@@ -32,13 +35,11 @@ def test_token_purchase(token_contract):
     assert test_producer.balance() == initial_producer_balance + SUBSCRIPTION_PRICE
 
     # Check that the token was added to the list of tokens for `test_consumer`
-    producers_tx = token_contract.consumerProducers(test_consumer)
-    producers = producers_tx.return_value
+    producers = consumer_producers(token_contract, test_consumer)
     assert len(producers) == 1 and producers[0] == test_producer
 
     # Check that the consumer was added to the list of consumers for `token_id`
-    consumers_tx = token_contract.producerConsumers(test_producer)
-    consumers = consumers_tx.return_value
+    consumers = producer_consumers(token_contract, test_producer)
     assert len(consumers) == 1 and consumers[0] == test_consumer
 
     # Sleep 7 seconds to pass the expiration period
@@ -46,12 +47,10 @@ def test_token_purchase(token_contract):
 
     # Check that the token expired
 
-    producers_tx = token_contract.consumerProducers(test_consumer)
-    producers = producers_tx.return_value
+    producers = consumer_producers(token_contract, test_consumer)
     assert len(producers) == 0
 
-    consumers_tx = token_contract.producerConsumers(test_producer)
-    consumers = consumers_tx.return_value
+    consumers = producer_consumers(token_contract, test_producer)
     assert len(consumers) == 0
 
 
@@ -65,18 +64,20 @@ def test_token_cancel(token_contract):
 
     # Consumer purchase of the token
     token_contract.consumerPurchaseMultipleTokens(
-        test_consumer, [test_producer], 20, {"from": test_consumer, "value": SUBSCRIPTION_PRICE}
+        test_consumer,
+        [test_producer],
+        20,
+        {"from": test_consumer, "value": SUBSCRIPTION_PRICE},
     )
 
     # Cancel the token subscription
     token_contract.consumerCancelMultipleTokens(
         test_consumer, [test_producer], {"from": test_consumer}
     )
+
     # Check that all associations have been removed
-    consumers_tx = token_contract.producerConsumers(test_producer)
-    consumers = consumers_tx.return_value
-    producers_tx = token_contract.consumerProducers(test_consumer)
-    producers = producers_tx.return_value
+    consumers = producer_consumers(token_contract, test_producer)
+    producers = consumer_producers(token_contract, test_consumer)
     assert len(consumers) == 0 and len(producers) == 0
 
 
@@ -101,9 +102,7 @@ def test_tokens_list(token_contract):
     )
 
     # Check that the producer purchase references were all successful
-    producers = token_contract.consumerProducers.call(
-        test_consumer, {"from": test_consumer}
-    )
+    producers = consumer_producers(token_contract, test_consumer)
     assert len(producers) == 3
     assert (
         producers[0] == test_producer_1

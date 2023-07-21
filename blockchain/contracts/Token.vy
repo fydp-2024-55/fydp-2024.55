@@ -94,6 +94,7 @@ def __init__():
 
 ### PRODUCER PERMISSION HELPERS ###
 
+@view
 @internal
 def _producerTokenId(_producer: address) -> uint256:
     """
@@ -212,8 +213,8 @@ def _removeConsumerAccess(_consumer: address, _producer: address):
 
     self.consumerToSubscriptions[_consumer][_producer] = Subscription({subscriptionLength: 0, subscriptionEnd: 0})
 
-@internal
-def _removeConsumerExpiredSubscriptions(_consumer: address):
+@external
+def removeConsumerExpiredSubscriptions(_consumer: address):
     """
     @dev Removes a consumer's expired subscriptions.
          Throws if `_consumer` is the zero address.
@@ -226,8 +227,8 @@ def _removeConsumerExpiredSubscriptions(_consumer: address):
         if not self._hasConsumerAccessRights(_consumer, producer):
             self._removeConsumerAccess(_consumer, producer)
 
-@internal
-def _removeProducerExpiredSubscriptions(_producer: address):
+@external
+def removeProducerExpiredSubscriptions(_producer: address):
     """
     @dev Removes a token's expired consumer subscriptions.
          Throws if `_tokenId` is invalid.
@@ -242,6 +243,7 @@ def _removeProducerExpiredSubscriptions(_producer: address):
 
 ## PRODUCER TOKENS ###
 
+@view
 @external
 def producerTokenId(_producer: address) -> uint256:
     """
@@ -256,6 +258,7 @@ def producerTokenId(_producer: address) -> uint256:
 
 ### CONSUMER SUBSCRIPTIONS ###
 
+@view
 @external
 def consumerProducers(_consumer: address) -> DynArray[address, MAX_PRODUCERS_PER_CONSUMER]:
     """
@@ -263,10 +266,10 @@ def consumerProducers(_consumer: address) -> DynArray[address, MAX_PRODUCERS_PER
     @param _consumer The address of the consumer.
     @return An array of all the tokens the consumer has purchased access rights to.
     """
-    self._removeConsumerExpiredSubscriptions(_consumer)
 
     return self.consumerToProducers[_consumer]
 
+@view
 @external
 def producerConsumers(_producer: address) -> DynArray[address, MAX_CONSUMERS_PER_PRODUCER]:
     """
@@ -275,7 +278,6 @@ def producerConsumers(_producer: address) -> DynArray[address, MAX_CONSUMERS_PER
     @param _producer The address of the producer.
     @return An array of all the consumers that have purchased access rights to the token.
     """
-    self._removeProducerExpiredSubscriptions(_producer)
 
     return self.producerToConsumers[_producer]
 
