@@ -3,7 +3,6 @@ import subprocess
 
 from dotenv import load_dotenv
 from web3 import Web3, HTTPProvider, contract
-from .constants import CONTRACT_PATH
 
 load_dotenv()
 CONNECTION_URL = os.getenv("CONNECTION_URL")
