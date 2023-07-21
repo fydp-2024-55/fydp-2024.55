@@ -18,12 +18,10 @@ const Login: React.FC<LoginProps> = ({ loginUser }) => {
     const payload = {
       email: username,
       password: password,
-      is_active: true,
-      is_superuser: false,
-      is_verified: false,
     };
     // Perform create account logic here
     const res = await apis.createUser(payload);
+    // create producer after
     console.log(res);
   };
 

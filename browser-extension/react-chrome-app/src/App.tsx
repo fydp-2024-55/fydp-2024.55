@@ -36,32 +36,79 @@ const App = () => {
 
   function loadUser() {}
 
+  const PageContent = () => {
+    // if (!(username !== "" && password !== "")) {
+    //   return <Login loginUser={loginUser} />;
+    // }
+
+    if (page === "data") {
+      return <DataPage updateValue={updateValue} options={dataOpt} />;
+    }
+
+    if (page === "user") {
+      return (
+        <UserPage
+          username={data.username}
+          phone={data.phone}
+          first_name={data.first_name}
+          last_name={data.last_name}
+          email={data.email}
+        />
+      );
+    }
+
+    if (page === "wallet") {
+      return <WalletPage balance={data.wallet} />;
+    }
+
+    return <></>;
+  };
+
   return (
-    <div className="browserContainer">
-      {!(username !== "" && password !== "") ? (
-        <Login loginUser={loginUser} />
-      ) : (
-        <>
-          <div className="row">
-            {page === "user" && (
-              <UserPage
-                username={data.username}
-                phone={data.phone}
-                first_name={data.first_name}
-                last_name={data.last_name}
-                email={data.email}
-              />
-            )}
-            {page === "data" && (
-              <DataPage updateValue={updateValue} options={dataOpt} />
-            )}
-            {page === "wallet" && <WalletPage balance={data.wallet} />}
-          </div>
-          <Header changePage={changePage} />
-        </>
-      )}
+    <div
+      style={{
+        height: 550,
+        width: 450,
+        background: "azure",
+        display: "flex",
+        flexDirection: "column",
+        borderWidth: 5,
+        borderColor: "black",
+        borderStyle: "solid",
+        alignItems: "center",
+      }}
+    >
+      <PageContent />
+      <Header page={page} changePage={changePage} />
     </div>
   );
+
+  // return (
+  //   <div className="browserContainer">
+  //     {!(username !== "" && password !== "") ? (
+  //       <Login loginUser={loginUser} />
+  //     ) : (
+  //       <>
+  //         <div className="row">
+  //           {page === "user" && (
+  //             <UserPage
+  //               username={data.username}
+  //               phone={data.phone}
+  //               first_name={data.first_name}
+  //               last_name={data.last_name}
+  //               email={data.email}
+  //             />
+  //           )}
+  //           {page === "data" && (
+  //             <DataPage updateValue={updateValue} options={dataOpt} />
+  //           )}
+  //           {page === "wallet" && <WalletPage balance={data.wallet} />}
+  //         </div>
+  //         <Header page={page} changePage={changePage} />
+  //       </>
+  //     )}
+  //   </div>
+  // );
 };
 
 export default App;

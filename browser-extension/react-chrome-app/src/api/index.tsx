@@ -5,7 +5,8 @@ const api: AxiosInstance = axios.create({
   baseURL: url,
 });
 
-export const createUser = (data: any) => api.post(`/auth/register`, data);
+export const createUser = (data: { email: string; password: string }) =>
+  api.post(`/auth/register`, data);
 // export const getUser = () => api.get(`/user/get`);
 // export const updateWeeklySpent = (data: string) =>
 //   api.patch(`/user/update/weeklyspent`, data);

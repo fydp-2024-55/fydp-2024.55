@@ -1,3 +1,4 @@
+import { Typography } from "@material-ui/core";
 import "./UserPage.css";
 
 interface UserPageProps {
@@ -16,16 +17,24 @@ const UserPage: React.FC<UserPageProps> = ({
   email,
 }) => {
   return (
-    <div>
-      <h2>User Profile</h2>
-      <div className="infobox">
-        <p>Username: {username}</p>
-        <p>
-          Full name: {first_name} {last_name}
-        </p>
-        <p>Phone number: {phone}</p>
-        <p>Email: {email}</p>
-      </div>
+    <div
+      style={{
+        height: "100%",
+        display: "flex",
+        flexDirection: "column",
+        justifyContent: "space-between",
+        alignItems: "center",
+      }}
+    >
+      <Typography align="left" variant="h4">
+        User Profile
+      </Typography>
+      <p>Username: {username}</p>
+      <p>
+        Full name: {first_name} {last_name}
+      </p>
+      <p>Phone number: {phone}</p>
+      <p>Email: {email}</p>
     </div>
   );
 };
