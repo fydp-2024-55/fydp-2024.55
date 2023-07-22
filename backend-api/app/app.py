@@ -1,8 +1,16 @@
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 
 from .routes import auth, consumers, histories, producers, subscriptions, users
 
 app = FastAPI()
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 app.include_router(
     auth.router,
@@ -16,13 +24,11 @@ app.include_router(
     tags=["users"],
 )
 
-
 app.include_router(
     producers.router,
     prefix="/producer",
     tags=["producer"],
 )
-
 
 app.include_router(
     consumers.router,
@@ -35,7 +41,6 @@ app.include_router(
     prefix="/histories",
     tags=["histories"],
 )
-
 
 app.include_router(
     subscriptions.router,
