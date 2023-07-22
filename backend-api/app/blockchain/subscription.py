@@ -1,18 +1,16 @@
-from web3 import Web3, contract, types
-from .constants import SUBSCRIPTION_PRICE
-
-
-def get_balance(web3: Web3, address: str) -> types.Wei:
-    return web3.eth.get_balance(address)
+from web3 import contract
+from config import connect_to_eth_network
+from constants import SUBSCRIPTION_PRICE
 
 
 def consumer_purchase_tokens(
-    web3: Web3,
     token_contract: contract.Contract,
     consumer: str,
     producers: list[str],
     subscriptionLength: int,
 ):
+    web3 = connect_to_eth_network()
+
     tx_hash = token_contract.functions.consumerPurchaseMultipleTokens(
         consumer, producers, subscriptionLength
     ).transact(

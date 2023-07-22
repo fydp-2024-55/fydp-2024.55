@@ -20,10 +20,12 @@ def connect_to_eth_network() -> Web3:
     return web3
 
 
-def deploy_contract(web3: Web3, minter: str) -> contract.Contract:
+def deploy_contract(minter: str) -> contract.Contract:
+    web3 = connect_to_eth_network()
+
     # Compile the contract
-    bytecode = subprocess.getoutput(f"vyper {os.getcwd()}/contracts/Token.vy")
-    abi = subprocess.getoutput(f"vyper -f abi {os.getcwd()}/contracts/Token.vy")
+    bytecode = subprocess.getoutput(f"vyper ../../../blockchain/contracts/Token.vy")
+    abi = subprocess.getoutput(f"vyper -f abi ../../../blockchain/contracts/Token.vy")
     Token = web3.eth.contract(bytecode=bytecode, abi=abi)
 
     # Deploy the contract
