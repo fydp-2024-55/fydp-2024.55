@@ -16,7 +16,6 @@ def connect_to_eth_network() -> Web3:
     if not web3.is_connected():
         raise Exception("Ethereum network connection failed")
 
-    print("Ethereum network connection successful")
     return web3
 
 
@@ -24,8 +23,9 @@ def deploy_contract(minter: str) -> contract.Contract:
     web3 = connect_to_eth_network()
 
     # Compile the contract
-    bytecode = subprocess.getoutput(f"vyper ../../../blockchain/contracts/Token.vy")
-    abi = subprocess.getoutput(f"vyper -f abi ../../../blockchain/contracts/Token.vy")
+    CONTRACT_PATH = "../../../blockchain/contracts/Token.vy"
+    bytecode = subprocess.getoutput(f"vyper {CONTRACT_PATH}")
+    abi = subprocess.getoutput(f"vyper -f abi {CONTRACT_PATH}")
     Token = web3.eth.contract(bytecode=bytecode, abi=abi)
 
     # Deploy the contract
