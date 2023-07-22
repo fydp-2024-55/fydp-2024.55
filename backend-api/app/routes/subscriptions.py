@@ -3,6 +3,7 @@ import random
 from fastapi import APIRouter, status
 
 from ..schemas.subscriptions import SubscriptionRead, SubscriptionUpdate, UserData
+from blockchain.utils.purchase import consumer_purchase_tokens
 
 router = APIRouter()
 
