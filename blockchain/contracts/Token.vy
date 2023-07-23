@@ -47,8 +47,9 @@ event Revoke:
 ### STRUCTS ###
 
 struct Subscription:
-    subscriptionLength: uint256
-    subscriptionEnd: uint256
+    creationDate: uint256
+    expirationDate: uint256
+    active: bool
 
 ### CONSTANTS AND STORAGE VARIABLES ###
 
@@ -149,34 +150,35 @@ def _hasConsumerAccessRights(_consumer: address, _producer: address) -> bool:
     @return A boolean representing whether the consumer has access rights to the token.
     """
     assert _consumer != EMPTY_ADDRESS and _producer != EMPTY_ADDRESS
-    subscriptionEnd: uint256 = self.consumerToSubscriptions[_consumer][_producer].subscriptionEnd
+    expirationDate: uint256 = self.consumerToSubscriptions[_consumer][_producer].expirationDate
 
-    return subscriptionEnd >= block.timestamp
+    return expirationDate >= block.timestamp
 
 @internal
-def _addConsumerAccess(_consumer: address, _producer: address, _subscriptionLength: uint256):
+def _addConsumerAccess(_consumer: address, _producer: address, _creationDate: uint256, _expirationDate: uint256):
     """
     @dev Add a consumer to the list of those who purchased access rights for a token, along with the subscription length.
-         Throws if `_tokenId` is invalid, `_consumer` is the zero address, or `_subscriptionLength` is invalid.
+         Throws if `_tokenId` is invalid, `_consumer` is the zero address, `_creationDate` is invalid.
          Throws if `_tokenId` has no producer.
          Throws if a subscription record already exists.
     @param _consumer The address of the consumer.
     @param _producer The address of the producer.
-    @param _subscriptionLength The length of the purchased subscription.
+    @param _creationDate The creation date of the purchased subscription.
+    @param _expirationDate The expiration date of the purchased subscription.
     """
-    assert _consumer != EMPTY_ADDRESS and _producer != EMPTY_ADDRESS and _subscriptionLength > 0
+    assert _consumer != EMPTY_ADDRESS and _producer != EMPTY_ADDRESS and _creationDate >= block.timestamp and _expirationDate > _creationDate
     assert self.producerToTokenId[_producer] != 0
-    subscription: Subscription = self.consumerToSubscriptions[_consumer][_producer]
-    assert subscription.subscriptionLength == 0 and subscription.subscriptionEnd == 0
+    subscriptionActive: bool = self.consumerToSubscriptions[_consumer][_producer].active
+    assert subscriptionActive == False
 
     # Consumer-producer relationship
     self.consumerToProducers[_consumer].append(_producer)
     self.producerToConsumers[_producer].append(_consumer)
 
-    # Subscription term
-    currentTime: uint256 = block.timestamp
-    self.consumerToSubscriptions[_consumer][_producer].subscriptionLength = _subscriptionLength
-    self.consumerToSubscriptions[_consumer][_producer].subscriptionEnd = currentTime + _subscriptionLength
+    # Subscription record
+    self.consumerToSubscriptions[_consumer][_producer].creationDate = _creationDate
+    self.consumerToSubscriptions[_consumer][_producer].expirationDate = _expirationDate
+    self.consumerToSubscriptions[_consumer][_producer].active = True
 
 @internal
 def _removeConsumerAccess(_consumer: address, _producer: address):
@@ -189,7 +191,7 @@ def _removeConsumerAccess(_consumer: address, _producer: address):
     """
     assert _consumer != EMPTY_ADDRESS and _producer != EMPTY_ADDRESS
     subscription: Subscription = self.consumerToSubscriptions[_consumer][_producer]
-    assert subscription.subscriptionLength != 0 and subscription.subscriptionEnd != 0
+    assert subscription.creationDate > 0 and subscription.expirationDate > subscription.creationDate and subscription.active == True
 
     producers: DynArray[address, MAX_PRODUCERS_PER_CONSUMER] = self.consumerToProducers[_consumer]
     lenProducers: uint256 = len(producers)
@@ -211,7 +213,7 @@ def _removeConsumerAccess(_consumer: address, _producer: address):
         if i >= lenConsumers:
             break
 
-    self.consumerToSubscriptions[_consumer][_producer] = Subscription({subscriptionLength: 0, subscriptionEnd: 0})
+    self.consumerToSubscriptions[_consumer][_producer].active = False
 
 @external
 def removeConsumerExpiredSubscriptions(_consumer: address):
@@ -285,17 +287,18 @@ def producerConsumers(_producer: address) -> DynArray[address, MAX_CONSUMERS_PER
 
 @payable
 @internal
-def _consumerPurchaseToken(_consumer: address, _producer: address, _subscriptionLength: uint256, _value: uint256):
+def _consumerPurchaseToken(_consumer: address, _producer: address, _creationDate: uint256, _expirationDate: uint256, _value: uint256):
     """
     @dev Consumer purchases access rights to a token for a specified subscription length.
-         Throws if `_tokenId` is invalid, `_consumer` is the zero address, or `_subscriptionLength` is invalid.
+         Throws if `_tokenId` is invalid, `_consumer` is the zero address, `_creationDate` is invalid, or _expirationDate is invalid.
          Throws if `_tokenId` has no producer.
          Throws if the address interacting with the contract is not `_consumer`.
     @param _consumer The address of the consumer.
     @param _producer The address of the producer.
-    @param _subscriptionLength The specified subscription period lenth (in seconds).
+    @param _creationDate The creation date of the purchased subscription.
+    @param _expirationDate The expiration date of the purchased subscription.
     """
-    assert _consumer != EMPTY_ADDRESS and _producer != EMPTY_ADDRESS and _subscriptionLength > 0
+    assert _consumer != EMPTY_ADDRESS and _producer != EMPTY_ADDRESS and _creationDate >= block.timestamp and _expirationDate > _creationDate
     tokenId: uint256 = self.producerToTokenId[_producer]
     assert tokenId > 0
     assert msg.sender == _consumer
@@ -304,7 +307,7 @@ def _consumerPurchaseToken(_consumer: address, _producer: address, _subscription
     # Send ETH funds to the producer
     send(_producer, _value)
     
-    self._addConsumerAccess(_consumer, _producer, _subscriptionLength)
+    self._addConsumerAccess(_consumer, _producer, _creationDate, _expirationDate)
 
     log Purchase(tokenId, _consumer, _producer)
 
@@ -333,7 +336,7 @@ def _consumerCancelToken(_consumer: address, _producer: address):
 
 @payable
 @external
-def consumerPurchaseMultipleTokens(_consumer: address, _producers: DynArray[address, MAX_PRODUCERS_PER_CONSUMER], _subscriptionLength: uint256):
+def consumerPurchaseMultipleTokens(_consumer: address, _producers: DynArray[address, MAX_PRODUCERS_PER_CONSUMER], _creationDate: uint256, _expirationDate: uint256):
     assert _consumer != EMPTY_ADDRESS
     lenProducers: uint256 = len(_producers)
     assert lenProducers > 0
@@ -342,7 +345,7 @@ def consumerPurchaseMultipleTokens(_consumer: address, _producers: DynArray[addr
     for i in range(MAX_PRODUCERS_PER_CONSUMER):
         if i >= lenProducers:
             break
-        self._consumerPurchaseToken(_consumer, _producers[i], _subscriptionLength, msg.value / lenProducers)
+        self._consumerPurchaseToken(_consumer, _producers[i], _creationDate, _expirationDate, msg.value / lenProducers)
 
 @external
 def consumerCancelMultipleTokens(_consumer: address, _producers: DynArray[address, MAX_PRODUCERS_PER_CONSUMER]):

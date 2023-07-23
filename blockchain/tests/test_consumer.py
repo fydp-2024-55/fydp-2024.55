@@ -22,11 +22,13 @@ def test_token_purchase(token_contract):
     initial_consumer_balance = test_consumer.balance()
     initial_producer_balance = test_producer.balance()
 
-    # Consumer purchase of the token with a subscription length of 5 seconds
+    # Consumer purchase of the token with a subscription length of 3 seconds
+    current_time = time.time()
     token_contract.consumerPurchaseMultipleTokens(
         test_consumer,
         [test_producer],
-        5,
+        current_time,
+        current_time + 3,
         {"from": test_consumer, "value": SUBSCRIPTION_PRICE},
     )
 
@@ -42,8 +44,8 @@ def test_token_purchase(token_contract):
     consumers = producer_consumers(token_contract, test_producer)
     assert len(consumers) == 1 and consumers[0] == test_consumer
 
-    # Sleep 7 seconds to pass the expiration period
-    time.sleep(7)
+    # Sleep 5 seconds to pass the expiration period
+    time.sleep(5)
 
     # Check that the token expired
 
@@ -63,10 +65,12 @@ def test_token_cancel(token_contract):
     token_contract.mint(test_producer, {"from": minter})
 
     # Consumer purchase of the token
+    current_time = time.time()
     token_contract.consumerPurchaseMultipleTokens(
         test_consumer,
         [test_producer],
-        20,
+        current_time,
+        current_time + 20,
         {"from": test_consumer, "value": SUBSCRIPTION_PRICE},
     )
 
@@ -94,10 +98,12 @@ def test_tokens_list(token_contract):
     token_contract.mint(test_producer_3, {"from": minter})
 
     # Consumer purchase of the tokens
+    current_time = time.time()
     token_contract.consumerPurchaseMultipleTokens(
         test_consumer,
         [test_producer_1, test_producer_2, test_producer_3],
-        100,
+        current_time,
+        current_time + 100,
         {"from": test_consumer, "value": SUBSCRIPTION_PRICE * 3},
     )
 

@@ -1,4 +1,5 @@
 import pytest
+import time
 
 from brownie import Token, accounts
 from .util import SUBSCRIPTION_PRICE, producer_consumers
@@ -48,22 +49,27 @@ def test_producers_list(token_contract):
     initial_producer_balance = test_producer.balance()
 
     # Consumer purchase of the token
+
+    current_time = time.time()
     token_contract.consumerPurchaseMultipleTokens(
         test_consumer_1,
         [test_producer],
-        100,
+        current_time,
+        current_time + 100,
         {"from": test_consumer_1, "value": SUBSCRIPTION_PRICE},
     )
     token_contract.consumerPurchaseMultipleTokens(
         test_consumer_2,
         [test_producer],
-        100,
+        current_time,
+        current_time + 100,
         {"from": test_consumer_2, "value": SUBSCRIPTION_PRICE},
     )
     token_contract.consumerPurchaseMultipleTokens(
         test_consumer_3,
         [test_producer],
-        100,
+        current_time,
+        current_time + 100,
         {"from": test_consumer_3, "value": SUBSCRIPTION_PRICE},
     )
 
