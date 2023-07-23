@@ -1,7 +1,8 @@
 from eth_account import Account
 from web3 import types
-from config import connect_to_eth_network
-from constants import WALLET_ENTROPY
+
+from .config import connect_to_eth_network
+from .constants import WALLET_ENTROPY
 
 
 def create_wallet() -> Account:

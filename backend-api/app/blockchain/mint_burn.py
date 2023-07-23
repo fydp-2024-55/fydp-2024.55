@@ -1,5 +1,6 @@
 from web3 import contract, types
-from config import connect_to_eth_network
+
+from .config import connect_to_eth_network
 
 
 # Mint a token for a producer

@@ -1,5 +1,6 @@
 from web3 import contract
-from config import connect_to_eth_network
+
+from .config import connect_to_eth_network
 
 
 def producer_consumers(token_contract: contract.Contract, producer: str) -> list[str]:

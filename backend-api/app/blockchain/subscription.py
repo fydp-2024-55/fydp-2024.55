@@ -1,6 +1,7 @@
 from web3 import contract
-from config import connect_to_eth_network
-from constants import SUBSCRIPTION_PRICE
+
+from .config import connect_to_eth_network
+from .constants import SUBSCRIPTION_PRICE
 
 
 def consumer_purchase_tokens(

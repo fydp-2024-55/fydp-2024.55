@@ -2,6 +2,7 @@ import os
 import subprocess
 
 from dotenv import load_dotenv
+
 from web3 import Web3, HTTPProvider, contract
 
 load_dotenv()
@@ -19,11 +20,16 @@ def connect_to_eth_network() -> Web3:
     return web3
 
 
+def get_minter():
+    web3 = connect_to_eth_network()
+    return web3.eth.accounts[0]
+
+
 def deploy_contract(minter: str) -> contract.Contract:
     web3 = connect_to_eth_network()
 
     # Compile the contract
-    CONTRACT_PATH = "../../../blockchain/contracts/Token.vy"
+    CONTRACT_PATH = "../blockchain/contracts/Token.vy"
     bytecode = subprocess.getoutput(f"vyper {CONTRACT_PATH}")
     abi = subprocess.getoutput(f"vyper -f abi {CONTRACT_PATH}")
     Token = web3.eth.contract(bytecode=bytecode, abi=abi)
