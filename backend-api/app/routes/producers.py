@@ -1,12 +1,16 @@
 import random
 
-from fastapi import APIRouter, status
+from fastapi import APIRouter, status, Request
 
 from ..schemas.producers import ProducerCreate, ProducerRead, ProducerUpdate
+from ..blockchain.mint_burn import mint_token, burn_token
 
 router = APIRouter()
 
 producer_dict = {
+    "id": 100,
+    "eth_address": "0x1234567890123456789012345678901234567890",
+    "email": "dre@gmail.com",
     "name": "Dre",
     "gender": "M",
     "ethnicity": "B",
@@ -21,20 +25,36 @@ producer_dict = {
 
 
 @router.post("/", status_code=status.HTTP_201_CREATED)
-async def create_producer(producer: ProducerCreate):
-    return ProducerRead(id=random.randint(1, 1000), **producer_dict)
+async def create_producer(producer: ProducerCreate, request: Request):
+    # Mint token for the producer
+    mint_token(
+        request.app.state.token_contract, request.app.state.minter, producer.eth_address
+    )
+
+    # Create database instance, retrieve ID
+
+    return ProducerRead(**producer_dict)
 
 
-@router.get("/me")
-async def read_producer():
-    return ProducerRead(id=1000, **producer_dict)
+@router.get("/{eth_address}}", status_code=status.HTTP_200_OK)
+async def read_producer(eth_address: str):
+    # Query database instance
+
+    return ProducerRead(**producer_dict)
 
 
-@router.patch("/me")
-async def update_producer(producer: ProducerUpdate):
-    return ProducerRead(id=random.randint(1, 1000), **producer_dict)
+@router.patch("/{eth_address}}", status_code=status.HTTP_204_NO_CONTENT)
+async def update_producer(eth_address: str, producer: ProducerUpdate):
+    # Update database instance
+
+    return None
 
 
-@router.delete("/me", status_code=status.HTTP_204_NO_CONTENT)
-async def delete_producer():
-    return
+@router.delete("/{eth_address}}", status_code=status.HTTP_204_NO_CONTENT)
+async def delete_producer(eth_address: str, request: Request):
+    # Burn the producer's token
+    burn_token(request.app.state.token_contract, eth_address)
+
+    # Delete database instance
+
+    return None

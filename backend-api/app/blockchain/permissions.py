@@ -1,6 +1,7 @@
 from web3 import contract
 
 from .config import connect_to_eth_network
+from ..utils.date import epoch_to_date
 
 
 def producer_consumers(token_contract: contract.Contract, producer: str) -> list[str]:
@@ -32,8 +33,8 @@ def consumer_subscriptions(
     return [
         {
             "producer_eth_address": subscription[0],
-            "creation_date": subscription[1],
-            "expiration_date": subscription[2],
+            "creation_date": epoch_to_date(subscription[1]),
+            "expiration_date": epoch_to_date(subscription[2]),
             "active": subscription[3],
         }
         for subscription in subscriptions

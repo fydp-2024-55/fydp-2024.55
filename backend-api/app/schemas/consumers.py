@@ -1,17 +1,16 @@
 from pydantic import BaseModel
 
 
-class ConsumerBase(BaseModel):
-    ethereum_address: str
+class ConsumerCreate(BaseModel):
+    eth_address: str
+    email: str
 
 
-class ConsumerCreate(ConsumerBase):
-    pass
-
-
-class ConsumerRead(ConsumerBase):
+class ConsumerRead(BaseModel):
     id: int
+    eth_address: str
+    email: str
 
 
-class ConsumerUpdate(ConsumerBase):
-    pass
+class ConsumerUpdate(BaseModel):
+    email: str
