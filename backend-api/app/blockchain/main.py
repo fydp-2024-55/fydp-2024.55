@@ -3,7 +3,7 @@ import time
 from .constants import SUBSCRIPTION_PRICE
 from .config import connect_to_eth_network, deploy_contract, get_minter
 from .mint_burn import mint_token, burn_token
-from .permissions import consumer_producers, producer_consumers
+from .permissions import producer_consumers, consumer_subscriptions
 from .subscription import consumer_purchase_tokens
 from .wallet import get_balance
 
@@ -67,9 +67,9 @@ consumers = producer_consumers(token_contract, producer_1)
 assert len(consumers) == 3
 print("Consumers: ", consumers)
 
-producers = consumer_producers(token_contract, consumer_1)
-assert len(producers) == 1
-print("Producers: ", producers)
+subscriptions = consumer_subscriptions(token_contract, consumer_1)
+assert len(subscriptions) == 1
+print("Subscriptions: ", subscriptions)
 
 # Burn token
 burn_token(token_contract, producer_1)

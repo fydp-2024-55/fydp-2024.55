@@ -2,7 +2,7 @@ import pytest
 import time
 
 from brownie import Token, accounts
-from .util import SUBSCRIPTION_PRICE, producer_consumers, consumer_producers
+from .util import SUBSCRIPTION_PRICE, producer_consumers, consumer_subscriptions
 
 
 @pytest.fixture
@@ -37,8 +37,11 @@ def test_token_purchase(token_contract):
     assert test_producer.balance() == initial_producer_balance + SUBSCRIPTION_PRICE
 
     # Check that the token was added to the list of tokens for `test_consumer`
-    producers = consumer_producers(token_contract, test_consumer)
-    assert len(producers) == 1 and producers[0] == test_producer
+    subscriptions = consumer_subscriptions(token_contract, test_consumer)
+    assert (
+        len(subscriptions) == 1
+        and subscriptions[0]["producer_address"] == test_producer
+    )
 
     # Check that the consumer was added to the list of consumers for `token_id`
     consumers = producer_consumers(token_contract, test_producer)
@@ -49,8 +52,8 @@ def test_token_purchase(token_contract):
 
     # Check that the token expired
 
-    producers = consumer_producers(token_contract, test_consumer)
-    assert len(producers) == 0
+    subscriptions = consumer_subscriptions(token_contract, test_consumer)
+    assert len(subscriptions) == 0
 
     consumers = producer_consumers(token_contract, test_producer)
     assert len(consumers) == 0
@@ -81,8 +84,8 @@ def test_token_cancel(token_contract):
 
     # Check that all associations have been removed
     consumers = producer_consumers(token_contract, test_producer)
-    producers = consumer_producers(token_contract, test_consumer)
-    assert len(consumers) == 0 and len(producers) == 0
+    subscriptions = consumer_subscriptions(token_contract, test_consumer)
+    assert len(consumers) == 0 and len(subscriptions) == 0
 
 
 def test_tokens_list(token_contract):
@@ -108,10 +111,11 @@ def test_tokens_list(token_contract):
     )
 
     # Check that the producer purchase references were all successful
-    producers = consumer_producers(token_contract, test_consumer)
-    assert len(producers) == 3
+    subscriptions = consumer_subscriptions(token_contract, test_consumer)
+    assert len(subscriptions) == 3
+    print(subscriptions)
     assert (
-        producers[0] == test_producer_1
-        and producers[1] == test_producer_2
-        and producers[2] == test_producer_3
+        subscriptions[0]["producer_address"] == test_producer_1
+        and subscriptions[1]["producer_address"] == test_producer_2
+        and subscriptions[2]["producer_address"] == test_producer_3
     )

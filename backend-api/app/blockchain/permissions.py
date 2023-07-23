@@ -16,7 +16,9 @@ def producer_consumers(token_contract: contract.Contract, producer: str) -> list
     return token_contract.functions.producerConsumers(producer).call()
 
 
-def consumer_producers(token_contract: contract.Contract, consumer: str) -> list[str]:
+def consumer_subscriptions(
+    token_contract: contract.Contract, consumer: str
+) -> list[dict[str, str, int, bool]]:
     web3 = connect_to_eth_network()
 
     # Remove expired subscriptions
@@ -25,4 +27,14 @@ def consumer_producers(token_contract: contract.Contract, consumer: str) -> list
     ).transact({"from": consumer})
     web3.eth.wait_for_transaction_receipt(tx_hash)
 
-    return token_contract.functions.consumerProducers(consumer).call()
+    subscriptions = token_contract.functions.consumerSubscriptions(consumer).call()
+
+    return [
+        {
+            "producer_address": subscription[0],
+            "creation_date": subscription[1],
+            "expiration_date": subscription[2],
+            "active": subscription[3],
+        }
+        for subscription in subscriptions
+    ]
