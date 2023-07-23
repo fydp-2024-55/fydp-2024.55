@@ -18,7 +18,7 @@ def producer_consumers(token_contract: contract.Contract, producer: str) -> list
 
 def consumer_subscriptions(
     token_contract: contract.Contract, consumer: str
-) -> list[dict[str, str, int, bool]]:
+) -> list[dict[str, any]]:
     web3 = connect_to_eth_network()
 
     # Remove expired subscriptions
@@ -31,7 +31,7 @@ def consumer_subscriptions(
 
     return [
         {
-            "producer_address": subscription[0],
+            "producer_eth_address": subscription[0],
             "creation_date": subscription[1],
             "expiration_date": subscription[2],
             "active": subscription[3],

@@ -40,7 +40,7 @@ def test_token_purchase(token_contract):
     subscriptions = consumer_subscriptions(token_contract, test_consumer)
     assert (
         len(subscriptions) == 1
-        and subscriptions[0]["producer_address"] == test_producer
+        and subscriptions[0]["producer_eth_address"] == test_producer
     )
 
     # Check that the consumer was added to the list of consumers for `token_id`
@@ -115,7 +115,7 @@ def test_tokens_list(token_contract):
     assert len(subscriptions) == 3
     print(subscriptions)
     assert (
-        subscriptions[0]["producer_address"] == test_producer_1
-        and subscriptions[1]["producer_address"] == test_producer_2
-        and subscriptions[2]["producer_address"] == test_producer_3
+        subscriptions[0]["producer_eth_address"] == test_producer_1
+        and subscriptions[1]["producer_eth_address"] == test_producer_2
+        and subscriptions[2]["producer_eth_address"] == test_producer_3
     )
