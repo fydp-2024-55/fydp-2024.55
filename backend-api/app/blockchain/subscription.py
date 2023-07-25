@@ -14,7 +14,7 @@ def consumer_purchase_tokens(
     web3 = connect_to_eth_network()
 
     tx_hash = token_contract.functions.consumerPurchaseMultipleTokens(
-        consumer, producers, creationDate, expirationDate
+        consumer, producers, creation_date, expiration_date
     ).transact(
         {"from": consumer, "value": SUBSCRIPTION_PRICE},
     )
