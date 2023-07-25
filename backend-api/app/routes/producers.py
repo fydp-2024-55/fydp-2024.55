@@ -14,7 +14,6 @@ router = APIRouter()
 producer_dict = {
     "id": 100,
     "eth_address": "0x1234567890123456789012345678901234567890",
-    "email": "dre@gmail.com",
     "name": "Dre",
     "gender": "M",
     "ethnicity": "B",
