@@ -1,12 +1,28 @@
 import { CircularProgress, Typography } from "@material-ui/core";
 import { FC, useEffect, useState } from "react";
+import client from "../api/client";
 import { History } from "../types";
+import axios, { AxiosError } from "axios";
 
 const HistoryPage: FC = () => {
   const [histories, setHistories] = useState<History[]>();
 
+  // HELP
   const loadHistories = async () => {
-    // Todo: Replace timeout with api call
+    // try {
+    //   const historyArr: History[] = await client.getHistory();
+    //   historyArr.forEach((history: History) => {
+    //     console.log(history);
+    //   });
+    // } catch (error) {
+    //   if (axios.isAxiosError(error)) {
+    //     const axiosError = error as AxiosError;
+    //     alert(`${axiosError.status}:  ${axiosError.message}`);
+    //   } else {
+    //     alert(`Error ${error}`);
+    //   }
+    // }
+
     setTimeout(
       () =>
         setHistories([

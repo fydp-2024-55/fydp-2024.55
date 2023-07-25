@@ -30,33 +30,27 @@ const logOut = async () => {
   return response;
 };
 
+
+const getProducer = async () => {
+  const response = await api.get<Producer>(`/producer/me`)
+  return response.data
+}
+
+
+// TODO: HELP
+const updateProducer = async () => {
+  // const response = await api.patch(`producer/me`)
+  console.log('called')
+  // return response
+}
+
+const getHistory = async () => {
+  const response = await api.get<History[]>(`/histories/`)
+  const histories: History[] = response.data
+  return histories
+}
+
 const getUser = () => api.get<{ email: string }>(`/users/me`);
-
-const getProducer = () => api.get<Producer>(`/producers/me`);
-
-// export const updateWeeklySpent = (data: string) =>
-//   api.patch(`/user/update/weeklyspent`, data);
-// export const updateMonthlySpent = (data: string) =>
-//   api.patch(`/user/update/monthlyspent`, data);
-// export const updateMonthlyLimit = (data: string) =>
-//   api.patch(`/user/update/monthlylimit`, data);
-// export const updateWeeklyLimit = (data: string) =>
-//   api.patch(`/user/update/weeklylimit`, data);
-// export const updateTotalProducts = (data: string) =>
-//   api.patch(`/user/update/totalproducts`, data);
-// export const updateWeeklyItemsNotPurchased = (data: string) =>
-//   api.patch(`/user/update/weeklyitemsnotpurchased`, data);
-// export const updateMonthlyItemsNotPurchased = (data: string) =>
-//   api.patch(`/user/update/monthlyitemsnotpurchased`, data);
-// export const updateMonthlySaved = (data: string) =>
-//   api.patch(`/user/update/monthlySaved`, data);
-// export const updateWeeklySaved = (data: string) =>
-//   api.patch(`/user/update/weeklySaved`, data);
-// export const updatePurchases = (data: string) =>
-//   api.patch(`/user/update/purchases`, data);
-// export const updateAvoidanceList = (data: string) =>
-//   api.patch(`/user/update/avoidancelist`, data);
-// export const deleteUser = () => api.delete(`/user/delete`);
 
 const client = {
   register,
@@ -64,19 +58,8 @@ const client = {
   logOut,
   getUser,
   getProducer,
-  //   getUser,
-  //   updateWeeklySpent,
-  //   updateMonthlySpent,
-  //   updateMonthlyLimit,
-  //   updateWeeklyLimit,
-  //   updateTotalProducts,
-  //   updateWeeklyItemsNotPurchased,
-  //   updateMonthlyItemsNotPurchased,
-  //   updateWeeklySaved,
-  //   updateMonthlySaved,
-  //   updatePurchases,
-  //   updateAvoidanceList,
-  //   deleteUser,
+  updateProducer,
+  getHistory,
 };
 
 export default client;
