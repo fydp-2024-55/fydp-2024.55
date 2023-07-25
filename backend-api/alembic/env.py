@@ -22,7 +22,6 @@ from app.models.producers import *
 from app.models.consumers import *
 from app.models.locations import *
 from app.models.histories import *
-from app.models.urls import *
 from app.models.categories import *
 
 target_metadata = Base.metadata
