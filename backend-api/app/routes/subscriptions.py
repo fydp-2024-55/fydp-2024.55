@@ -1,3 +1,5 @@
+import random
+
 from datetime import datetime
 from fastapi import APIRouter, status, Request, HTTPException
 
@@ -47,23 +49,27 @@ async def read_subscriptions(consumer_eth_address: str, request: Request):
     return SubscriptionRead(subscriptions=subscriptions)
 
 
-@router.patch("/", status_code=status.HTTP_204_NO_CONTENT)
-async def update_subscriptions(consumer_eth_address: str):
+@router.patch("/{consumer_eth_address}", status_code=status.HTTP_200_OK)
+async def update_subscriptions(consumer_eth_address: str, request: Request):
     # TODO: Implement later
 
-    return None
+    subscriptions = consumer_subscriptions(
+        request.app.state.token_contract, consumer_eth_address
+    )
+
+    return SubscriptionRead(subscriptions=subscriptions)
 
 
 @router.delete("/{consumer_eth_address}", status_code=status.HTTP_204_NO_CONTENT)
 async def delete_subscriptions(consumer_eth_address: str):
     # TODO: Implement later
 
-    return None
+    return
 
 
-# @router.get("/available")
-# async def read_subscriptions_available():
-#     return [str(random.randint(1, 1000)) for _ in range(5)]
+@router.get("/available")
+async def read_subscriptions_available():
+    return [str(random.randint(1, 1000)) for _ in range(5)]
 
 
 # user_data_dict = {
