@@ -5,6 +5,7 @@ from pydantic import BaseModel
 
 class ProducerBase(BaseModel):
     name: str
+    eth_address: str
     email: str
     gender: str
     ethnicity: str
@@ -18,12 +19,11 @@ class ProducerBase(BaseModel):
 
 
 class ProducerCreate(ProducerBase):
-    eth_address: str
+    pass
 
 
 class ProducerRead(ProducerBase):
     id: int
-    eth_address: str
 
 
 class ProducerUpdate(ProducerBase):
