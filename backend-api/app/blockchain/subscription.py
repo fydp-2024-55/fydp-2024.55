@@ -8,8 +8,8 @@ def consumer_purchase_tokens(
     token_contract: contract.Contract,
     consumer: str,
     producers: list[str],
-    creationDate: int,
-    expirationDate: int,
+    creation_date: int,
+    expiration_date: int,
 ):
     web3 = connect_to_eth_network()
 
