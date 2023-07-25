@@ -2,7 +2,7 @@ from pydantic import BaseModel
 
 
 class ConsumerBase(BaseModel):
-    ethereum_address: str
+    eth_address: str
 
 
 class ConsumerCreate(ConsumerBase):

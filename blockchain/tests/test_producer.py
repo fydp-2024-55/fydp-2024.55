@@ -1,8 +1,8 @@
 import pytest
+import time
 
 from brownie import Token, accounts
-
-EMPTY_ADDRESS = "0x0000000000000000000000000000000000000000"
+from .util import SUBSCRIPTION_PRICE, producer_consumers
 
 
 @pytest.fixture
@@ -25,15 +25,12 @@ def test_mint_burn(token_contract):
     # Mint a token and associate it with a producer
     token_contract.mint(test_producer, {"from": minter})
     assert token_contract.tokenCount() == token_count + 1
-    assert (
-        token_contract.producerTokenId.call(test_producer, {"from": minter})
-        == token_count + 1
-    )
+    assert token_contract.producerTokenId.call(test_producer) == token_count + 1
 
     # Burn a token and check that it is no longer associated with a producer
     token_contract.burn(test_producer, {"from": test_producer})
     assert token_contract.tokenCount() == token_count
-    assert token_contract.producerTokenId.call(test_producer, {"from": minter}) == 0
+    assert token_contract.producerTokenId.call(test_producer) == 0
 
 
 def test_producers_list(token_contract):
@@ -52,28 +49,40 @@ def test_producers_list(token_contract):
     initial_producer_balance = test_producer.balance()
 
     # Consumer purchase of the token
+
+    current_time = time.time()
     token_contract.consumerPurchaseMultipleTokens(
-        test_consumer_1, [test_producer], 100, {"from": test_consumer_1, "value": 10}
+        test_consumer_1,
+        [test_producer],
+        current_time,
+        current_time + 100,
+        {"from": test_consumer_1, "value": SUBSCRIPTION_PRICE},
     )
     token_contract.consumerPurchaseMultipleTokens(
-        test_consumer_2, [test_producer], 100, {"from": test_consumer_2, "value": 10}
+        test_consumer_2,
+        [test_producer],
+        current_time,
+        current_time + 100,
+        {"from": test_consumer_2, "value": SUBSCRIPTION_PRICE},
     )
     token_contract.consumerPurchaseMultipleTokens(
-        test_consumer_3, [test_producer], 100, {"from": test_consumer_3, "value": 10}
+        test_consumer_3,
+        [test_producer],
+        current_time,
+        current_time + 100,
+        {"from": test_consumer_3, "value": SUBSCRIPTION_PRICE},
     )
 
     # Check that ETH was transacted from the consumers to producer
     assert (
-        test_consumer_1.balance() == initial_consumer_1_balance - 10
-        and test_consumer_2.balance() == initial_consumer_2_balance - 10
-        and test_consumer_3.balance() == initial_consumer_3_balance - 10
+        test_consumer_1.balance() == initial_consumer_1_balance - SUBSCRIPTION_PRICE
+        and test_consumer_2.balance() == initial_consumer_2_balance - SUBSCRIPTION_PRICE
+        and test_consumer_3.balance() == initial_consumer_3_balance - SUBSCRIPTION_PRICE
     )
-    assert test_producer.balance() == initial_producer_balance + 10 * 3
+    assert test_producer.balance() == initial_producer_balance + SUBSCRIPTION_PRICE * 3
 
     # Check that the producer purchase references were all successful
-    consumers = token_contract.producerConsumers.call(
-        test_producer, {"from": test_producer}
-    )
+    consumers = producer_consumers(token_contract, test_producer)
     assert len(consumers) == 3
     assert (
         consumers[0] == test_consumer_1

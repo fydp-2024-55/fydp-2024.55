@@ -6,4 +6,4 @@ build/
 reports/
 
 .pytest_cache/
-venv/
+env/
