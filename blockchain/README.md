@@ -2,8 +2,8 @@
 
 ## Environment Setup
 
-1. Create a new Python virtual environment: `python -m venv venv`
-2. Activate the Python virtual environment: `source venv/bin/activate`
+1. Create a new Python virtual environment: `python -m venv env`
+2. Activate the Python virtual environment: `source env/bin/activate`
 3. Install the required libraries: `pip install -r requirements.txt`
 
 ## Automated Tests
