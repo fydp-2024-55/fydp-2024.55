@@ -12,12 +12,32 @@ const SubscribersPage: FC = () => {
           {
             ethAddress: "0x342...4324",
             name: "Louis Vutton",
-            subscribedSince: "Sept 7, 2024",
+            email: "louis@vutton.com",
           },
           {
-            ethAddress: "0x342...4324",
+            ethAddress: "0x342...4325",
             name: "Target Vutton",
-            subscribedSince: "Jan 3, 2026",
+            email: "target@vutton.com",
+          },
+          {
+            ethAddress: "0x342...4326",
+            name: "CVS Vutton",
+            email: "CVS@vutton.com",
+          },
+          {
+            ethAddress: "0x342...4327",
+            name: "safeway Vutton",
+            email: "safeway@vutton.com",
+          },
+          {
+            ethAddress: "0x342...4328",
+            name: "costco Vutton",
+            email: "costco@vutton.com",
+          },
+          {
+            ethAddress: "0x342...4329",
+            name: "walmart Vutton",
+            email: "walmart@vutton.com",
           },
         ]),
       1000
@@ -36,6 +56,7 @@ const SubscribersPage: FC = () => {
         flexDirection: "column",
         alignItems: "center",
         justifyContent: "space-between",
+        overflowY: "auto",
       }}
     >
       <Typography align="left" variant="h4">
@@ -45,12 +66,17 @@ const SubscribersPage: FC = () => {
         <CircularProgress />
       ) : (
         subscribers.map((subscriber) => (
-          <div key={subscriber.ethAddress}>
+          <div
+            style={{
+              margin: "3%",
+            }}
+            key={subscriber.ethAddress}
+          >
             <Typography variant="h6">
               {subscriber.ethAddress}: {subscriber.name}
             </Typography>
             <Typography variant="body1">
-              Subscribed since: {subscriber.subscribedSince}
+              Subscriber email: {subscriber.email}
             </Typography>
           </div>
         ))
