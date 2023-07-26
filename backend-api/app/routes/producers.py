@@ -8,9 +8,11 @@ from ..schemas.producers import (
     ProducerRead,
     ProducerUpdate,
     ProducerSubscriptionsRead,
+    ProducerWalletBalanceRead,
 )
 from ..blockchain.mint_burn import mint_token, burn_token
 from ..blockchain.permissions import producer_subscriptions
+from ..blockchain.wallet import get_balance
 
 router = APIRouter()
 
@@ -31,7 +33,11 @@ producer_dict = {
 
 
 @router.post("/", status_code=status.HTTP_201_CREATED)
-async def create_producer(producer: ProducerCreate, request: Request):
+async def create_producer(
+    body: ProducerCreate,
+    request: Request,
+    producer: User = Depends(get_current_active_user),
+):
     # Mint token for the producer
     mint_token(
         request.app.state.token_contract, request.app.state.minter, producer.eth_address
@@ -50,7 +56,7 @@ async def read_producer():
 
 
 @router.patch("/me", status_code=status.HTTP_200_OK)
-async def update_producer(producer: ProducerUpdate):
+async def update_producer(body: ProducerUpdate):
     # Update database instance
 
     return ProducerRead(**producer_dict)
@@ -80,3 +86,12 @@ async def read_producer_subscriptions(
     )
 
     return ProducerSubscriptionsRead(subscriptions=subscriptions)
+
+
+@router.get("/me/wallet", status_code=status.HTTP_200_OK)
+async def read_wallet_balance(
+    user: User = Depends(get_current_active_user),
+):
+    balance = get_balance(user.eth_address)
+
+    return ProducerWalletBalanceRead(balance=balance)

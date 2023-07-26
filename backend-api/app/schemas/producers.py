@@ -37,3 +37,7 @@ class ProducerSubscriptionItem(BaseModel):
 
 class ProducerSubscriptionsRead(BaseModel):
     subscriptions: list[ProducerSubscriptionItem]
+
+
+class ProducerWalletBalanceRead(BaseModel):
+    balance: float

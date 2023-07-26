@@ -1,7 +1,7 @@
 import random
 
 from datetime import datetime
-from fastapi import APIRouter, status, Request, HTTPException, Depends
+from fastapi import APIRouter, status, Request, HTTPException, Depends, Query
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -26,7 +26,7 @@ consumer_dict = {"eth_address": "somewhareOnTheBlockchain"}
 
 
 @router.post("/", status_code=status.HTTP_201_CREATED)
-async def create_consumer(consumer: ConsumerCreate):
+async def create_consumer(body: ConsumerCreate):
     # Create database instance, retrieve ID
 
     return ConsumerRead(id=random.randint(1, 1000), **consumer_dict)
@@ -40,7 +40,7 @@ async def read_consumer():
 
 
 @router.patch("/me", status_code=status.HTTP_200_OK)
-async def update_consumer(consumer: ConsumerUpdate):
+async def update_consumer(body: ConsumerUpdate):
     # Update database instance
 
     return ConsumerRead(id=random.randint(1, 1000), **consumer_dict)
@@ -57,13 +57,13 @@ async def delete_consumer():
 async def read_subscriptions_available(
     min_age: int | None = None,
     max_age: int | None = None,
-    gender: list[str] | None = None,
-    ethnicity: list[str] | None = None,
-    country: list[str] | None = None,
+    gender: list[str] = Query(None),
+    ethnicity: list[str] = Query(None),
+    country: list[str] = Query(None),
     min_income: int | None = None,
     max_income: int | None = None,
-    marital_status: list[str] | None = None,
-    parental_status: list[str] | None = None,
+    marital_status: list[str] = Query(None),
+    parental_status: list[str] = Query(None),
     session: AsyncSession = Depends(get_async_session),
 ):
     query = select(Producer.eth_address)
@@ -88,9 +88,10 @@ async def read_subscriptions_available(
 
 @router.post("/me/subscriptions", status_code=status.HTTP_201_CREATED)
 async def create_consumer_subscriptions(
-    subscriptions: ConsumerSubscriptionsCreate,
+    body: ConsumerSubscriptionsCreate,
     request: Request,
     consumer: User = Depends(get_current_active_user),
+    session: AsyncSession = Depends(get_async_session),
 ):
     # Check for a valid expiration date
     current_date = datetime.now().date()
@@ -104,13 +105,13 @@ async def create_consumer_subscriptions(
     consumer_purchase_tokens(
         request.app.state.token_contract,
         consumer.eth_address,
-        subscriptions.eth_addresses,
+        body.eth_addresses,
         date_to_epoch(current_date),
         date_to_epoch(expiration_date),
     )
 
     subscriptions = consumer_subscriptions(
-        request.app.state.token_contract, consumer.eth_address
+        request.app.state.token_contract, consumer.eth_address, session
     )
 
     return ConsumerSubscriptionsRead(subscriptions=subscriptions)
