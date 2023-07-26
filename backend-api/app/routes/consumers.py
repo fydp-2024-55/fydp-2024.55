@@ -131,12 +131,14 @@ async def read_consumer_subscriptions(
 
 @router.patch("/me/subscriptions", status_code=status.HTTP_200_OK)
 async def update_consumer_subscriptions(
-    request: Request, consumer: User = Depends(get_current_active_user)
+    request: Request,
+    consumer: User = Depends(get_current_active_user),
+    session: AsyncSession = Depends(get_async_session),
 ):
     # TODO: Implement later
 
     subscriptions = consumer_subscriptions(
-        request.app.state.token_contract, consumer.eth_address
+        request.app.state.token_contract, consumer.eth_address, session
     )
 
     return ConsumerSubscriptionsRead(subscriptions=subscriptions)
