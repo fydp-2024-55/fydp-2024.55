@@ -2,6 +2,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from .routes import auth, consumers, histories, producers, subscriptions, users
+from .blockchain.config import get_minter, deploy_contract
 
 app = FastAPI()
 
@@ -11,6 +12,13 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+
+# Store smart contract state on the app instance
+minter = get_minter()
+token_contract = deploy_contract(minter)
+app.state.minter = minter
+app.state.token_contract = token_contract
 
 app.include_router(
     auth.router,

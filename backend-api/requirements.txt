@@ -3,3 +3,5 @@ black
 fastapi-users[sqlalchemy]
 aiosqlite
 alembic
+vyper
+web3
