@@ -1,4 +1,5 @@
 import sqlalchemy as sa
+from fastapi_users_db_sqlalchemy.generics import GUID
 from sqlalchemy.orm import relationship
 
 from ..database import Base
@@ -10,9 +11,7 @@ class Producer(Base):
     __tablename__ = "Producers"
 
     id = sa.Column(sa.Integer, primary_key=True, index=True, nullable=False)
-    user_id = sa.Column(
-        sa.Integer, sa.ForeignKey("Users.id"), index=True, nullable=False
-    )
+    user_id = sa.Column(GUID, sa.ForeignKey("Users.id"), index=True, nullable=False)
     name = sa.Column(sa.String, nullable=False)
     location_id = sa.Column(sa.Integer, sa.ForeignKey("Locations.id"), nullable=False)
     date_of_birth = sa.Column(sa.Date, nullable=False)
@@ -24,3 +23,9 @@ class Producer(Base):
 
     user = relationship(User, back_populates="producer")
     location = relationship(Location, back_populates="producers")
+    histories = relationship("History", back_populates="producer")
+    restricted_categories = relationship(
+        "Category",
+        "Producer_Restricted_Categories",
+        back_populates="restricting_producers",
+    )

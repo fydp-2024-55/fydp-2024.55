@@ -1,8 +1,8 @@
-"""Create Tables
+"""Create tables
 
-Revision ID: 2224bba6aec3
+Revision ID: 4cdace619443
 Revises: 
-Create Date: 2023-07-25 21:42:46.403307
+Create Date: 2023-07-25 22:37:42.862706
 
 """
 import fastapi_users_db_sqlalchemy
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 from alembic import op
 
 # revision identifiers, used by Alembic.
-revision = "2224bba6aec3"
+revision = "4cdace619443"
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -78,7 +78,9 @@ def upgrade() -> None:
     op.create_table(
         "Producers",
         sa.Column("id", sa.Integer(), nullable=False),
-        sa.Column("user_id", sa.Integer(), nullable=False),
+        sa.Column(
+            "user_id", fastapi_users_db_sqlalchemy.generics.GUID(), nullable=False
+        ),
         sa.Column("name", sa.String(), nullable=False),
         sa.Column("location_id", sa.Integer(), nullable=False),
         sa.Column("date_of_birth", sa.Date(), nullable=False),
