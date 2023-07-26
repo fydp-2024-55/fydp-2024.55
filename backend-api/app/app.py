@@ -2,7 +2,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from .blockchain.config import deploy_contract, get_minter
-from .routes import auth, consumers, histories, producers, subscriptions, users
+from .routes import auth, consumers, histories, producers, users
 
 app = FastAPI()
 
