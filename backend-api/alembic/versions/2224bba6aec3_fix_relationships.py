@@ -1,17 +1,17 @@
-"""Added tables to db
+"""Create Tables
 
-Revision ID: c3acc6db53e8
-Revises: 7d10a86d55e1
-Create Date: 2023-07-24 21:52:14.810809
+Revision ID: 2224bba6aec3
+Revises: 
+Create Date: 2023-07-25 21:42:46.403307
 
 """
-from alembic import op
-import sqlalchemy as sa
 import fastapi_users_db_sqlalchemy
+import sqlalchemy as sa
+from alembic import op
 
 # revision identifiers, used by Alembic.
-revision = "c3acc6db53e8"
-down_revision = "7d10a86d55e1"
+revision = "2224bba6aec3"
+down_revision = None
 branch_labels = None
 depends_on = None
 
@@ -26,6 +26,16 @@ def upgrade() -> None:
         sa.UniqueConstraint("title"),
     )
     op.create_table(
+        "Consumer_Categories",
+        sa.Column("id", sa.Integer(), nullable=False),
+        sa.PrimaryKeyConstraint("id"),
+    )
+    op.create_table(
+        "History_Categories",
+        sa.Column("id", sa.Integer(), nullable=False),
+        sa.PrimaryKeyConstraint("id"),
+    )
+    op.create_table(
         "Locations",
         sa.Column("id", sa.Integer(), nullable=False),
         sa.Column("city", sa.String(), nullable=False),
@@ -35,7 +45,13 @@ def upgrade() -> None:
     )
     op.create_index(op.f("ix_Locations_id"), "Locations", ["id"], unique=False)
     op.create_table(
+        "Producer_Restricted_Categories",
+        sa.Column("id", sa.Integer(), nullable=False),
+        sa.PrimaryKeyConstraint("id"),
+    )
+    op.create_table(
         "Users",
+        sa.Column("eth_address", sa.String(), nullable=False),
         sa.Column("id", fastapi_users_db_sqlalchemy.generics.GUID(), nullable=False),
         sa.Column("email", sa.String(length=320), nullable=False),
         sa.Column("hashed_password", sa.String(length=1024), nullable=False),
@@ -49,15 +65,11 @@ def upgrade() -> None:
         "Consumers",
         sa.Column("id", sa.Integer(), nullable=False),
         sa.Column("user_id", sa.Integer(), nullable=False),
-        sa.Column("eth_address", sa.String(), nullable=False),
         sa.ForeignKeyConstraint(
             ["user_id"],
             ["Users.id"],
         ),
         sa.PrimaryKeyConstraint("id"),
-    )
-    op.create_index(
-        op.f("ix_Consumers_eth_address"), "Consumers", ["eth_address"], unique=True
     )
     op.create_index(op.f("ix_Consumers_id"), "Consumers", ["id"], unique=False)
     op.create_index(
@@ -67,7 +79,6 @@ def upgrade() -> None:
         "Producers",
         sa.Column("id", sa.Integer(), nullable=False),
         sa.Column("user_id", sa.Integer(), nullable=False),
-        sa.Column("eth_address", sa.String(), nullable=False),
         sa.Column("name", sa.String(), nullable=False),
         sa.Column("location_id", sa.Integer(), nullable=False),
         sa.Column("date_of_birth", sa.Date(), nullable=False),
@@ -86,25 +97,9 @@ def upgrade() -> None:
         ),
         sa.PrimaryKeyConstraint("id"),
     )
-    op.create_index(
-        op.f("ix_Producers_eth_address"), "Producers", ["eth_address"], unique=True
-    )
     op.create_index(op.f("ix_Producers_id"), "Producers", ["id"], unique=False)
     op.create_index(
         op.f("ix_Producers_user_id"), "Producers", ["user_id"], unique=False
-    )
-    op.create_table(
-        "Consumer_Categories",
-        sa.Column("consumer_id", sa.Integer(), nullable=True),
-        sa.Column("category_id", sa.Integer(), nullable=True),
-        sa.ForeignKeyConstraint(
-            ["category_id"],
-            ["Categories.id"],
-        ),
-        sa.ForeignKeyConstraint(
-            ["consumer_id"],
-            ["Consumers.id"],
-        ),
     )
     op.create_table(
         "Histories",
@@ -112,8 +107,8 @@ def upgrade() -> None:
         sa.Column("title", sa.String(), nullable=False),
         sa.Column("visit_time", sa.DateTime(), nullable=False),
         sa.Column("time_spent", sa.Integer(), nullable=False),
-        sa.Column("producer_id", sa.Integer(), nullable=False),
         sa.Column("url", sa.String(), nullable=False),
+        sa.Column("producer_id", sa.Integer(), nullable=False),
         sa.ForeignKeyConstraint(
             ["producer_id"],
             ["Producers.id"],
@@ -121,66 +116,25 @@ def upgrade() -> None:
         sa.PrimaryKeyConstraint("id"),
     )
     op.create_index(op.f("ix_Histories_id"), "Histories", ["id"], unique=False)
-    op.create_table(
-        "Producer_Restricted_Categories",
-        sa.Column("producer_id", sa.Integer(), nullable=True),
-        sa.Column("category_id", sa.Integer(), nullable=True),
-        sa.ForeignKeyConstraint(
-            ["category_id"],
-            ["Categories.id"],
-        ),
-        sa.ForeignKeyConstraint(
-            ["producer_id"],
-            ["Producers.id"],
-        ),
-    )
-    op.create_table(
-        "History_Categories",
-        sa.Column("history_id", sa.Integer(), nullable=True),
-        sa.Column("category_id", sa.Integer(), nullable=True),
-        sa.ForeignKeyConstraint(
-            ["category_id"],
-            ["Categories.id"],
-        ),
-        sa.ForeignKeyConstraint(
-            ["history_id"],
-            ["Histories.id"],
-        ),
-    )
-    op.drop_index("ix_user_email", table_name="user")
-    op.drop_table("user")
     # ### end Alembic commands ###
 
 
 def downgrade() -> None:
     # ### commands auto generated by Alembic - please adjust! ###
-    op.create_table(
-        "user",
-        sa.Column("id", sa.CHAR(length=36), nullable=False),
-        sa.Column("email", sa.VARCHAR(length=320), nullable=False),
-        sa.Column("hashed_password", sa.VARCHAR(length=1024), nullable=False),
-        sa.Column("is_active", sa.BOOLEAN(), nullable=False),
-        sa.Column("is_superuser", sa.BOOLEAN(), nullable=False),
-        sa.Column("is_verified", sa.BOOLEAN(), nullable=False),
-        sa.PrimaryKeyConstraint("id"),
-    )
-    op.create_index("ix_user_email", "user", ["email"], unique=False)
-    op.drop_table("History_Categories")
-    op.drop_table("Producer_Restricted_Categories")
     op.drop_index(op.f("ix_Histories_id"), table_name="Histories")
     op.drop_table("Histories")
-    op.drop_table("Consumer_Categories")
     op.drop_index(op.f("ix_Producers_user_id"), table_name="Producers")
     op.drop_index(op.f("ix_Producers_id"), table_name="Producers")
-    op.drop_index(op.f("ix_Producers_eth_address"), table_name="Producers")
     op.drop_table("Producers")
     op.drop_index(op.f("ix_Consumers_user_id"), table_name="Consumers")
     op.drop_index(op.f("ix_Consumers_id"), table_name="Consumers")
-    op.drop_index(op.f("ix_Consumers_eth_address"), table_name="Consumers")
     op.drop_table("Consumers")
     op.drop_index(op.f("ix_Users_email"), table_name="Users")
     op.drop_table("Users")
+    op.drop_table("Producer_Restricted_Categories")
     op.drop_index(op.f("ix_Locations_id"), table_name="Locations")
     op.drop_table("Locations")
+    op.drop_table("History_Categories")
+    op.drop_table("Consumer_Categories")
     op.drop_table("Categories")
     # ### end Alembic commands ###

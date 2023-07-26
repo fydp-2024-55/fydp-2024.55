@@ -1,27 +1,46 @@
-from ..database import Base
 import sqlalchemy as sa
 from sqlalchemy.orm import relationship
 
-Producer_Restricted_Categories = sa.Table(
-    "Producer_Restricted_Categories",
-    Base.metadata,
-    sa.Column("producer_id", sa.Integer, sa.ForeignKey("Producers.id")),
-    sa.Column("category_id", sa.Integer, sa.ForeignKey("Categories.id")),
-)
+from ..database import Base
+from .consumers import Consumer
+from .histories import History
+from .producers import Producer
 
-Consumer_Categories = sa.Table(
-    "Consumer_Categories",
-    Base.metadata,
-    sa.Column("consumer_id", sa.Integer, sa.ForeignKey("Consumers.id")),
-    sa.Column("category_id", sa.Integer, sa.ForeignKey("Categories.id")),
-)
 
-History_Categories = sa.Table(
-    "History_Categories",
-    Base.metadata,
-    sa.Column("history_id", sa.Integer, sa.ForeignKey("Histories.id")),
-    sa.Column("category_id", sa.Integer, sa.ForeignKey("Categories.id")),
-)
+class ProducerRestictedCategories(Base):
+    __tablename__ = "Producer_Restricted_Categories"
+
+    id = sa.Column(sa.Integer, primary_key=True, nullable=False)
+    producer_id = (
+        sa.Column(sa.Integer, sa.ForeignKey("Producers.id"), nullable=False),
+    )
+    category_id = (
+        sa.Column(sa.Integer, sa.ForeignKey("Categories.id"), nullable=False),
+    )
+
+
+class ConsumerCategories(Base):
+    __tablename__ = "Consumer_Categories"
+
+    id = sa.Column(sa.Integer, primary_key=True, nullable=False)
+    consumer_id = (
+        sa.Column(sa.Integer, sa.ForeignKey("Consumers.id"), nullable=False),
+    )
+    category_id = (
+        sa.Column(sa.Integer, sa.ForeignKey("Categories.id"), nullable=False),
+    )
+
+
+class HistoryCategories(Base):
+    __tablename__ = "History_Categories"
+
+    id = sa.Column(sa.Integer, primary_key=True, nullable=False)
+    consumer_id = (
+        sa.Column(sa.Integer, sa.ForeignKey("Histories.id"), nullable=False),
+    )
+    category_id = (
+        sa.Column(sa.Integer, sa.ForeignKey("Categories.id"), nullable=False),
+    )
 
 
 class Category(Base):
@@ -29,14 +48,10 @@ class Category(Base):
     id = sa.Column(sa.Integer, primary_key=True, nullable=False)
     title = sa.Column(sa.String, unique=True, nullable=False)
 
-    histories = relationship(
-        "History", secondary="History_Categories", back_populates="categories"
-    )
     restricting_producers = relationship(
-        "Producer",
-        secondary="Producer_Restricted_Categories",
+        Producer,
+        ProducerRestictedCategories,
         back_populates="restricted_categories",
     )
-    consumers = relationship(
-        "Consumer", secondary="Consumer_Categories", back_populates="categories"
-    )
+    consumers = relationship(Consumer, ConsumerCategories, back_populates="categories")
+    histories = relationship(History, HistoryCategories, back_populates="categories")

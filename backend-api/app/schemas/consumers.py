@@ -2,7 +2,7 @@ from pydantic import BaseModel
 
 
 class ConsumerBase(BaseModel):
-    eth_address: str
+    pass
 
 
 class ConsumerCreate(ConsumerBase):
@@ -11,6 +11,7 @@ class ConsumerCreate(ConsumerBase):
 
 class ConsumerRead(ConsumerBase):
     id: int
+    user_id: int
 
 
 class ConsumerUpdate(ConsumerBase):
