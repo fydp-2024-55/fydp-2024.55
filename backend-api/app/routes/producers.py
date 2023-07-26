@@ -1,5 +1,3 @@
-import random
-
 from fastapi import APIRouter, status, Request
 
 from ..schemas.producers import (

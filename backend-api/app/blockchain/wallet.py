@@ -5,7 +5,7 @@ from .config import connect_to_eth_network
 from .constants import WALLET_ENTROPY
 
 
-def create_wallet() -> Account:
+def create_eth_wallet() -> Account:
     acct = Account.create(WALLET_ENTROPY)
     return acct
 
@@ -13,3 +13,8 @@ def create_wallet() -> Account:
 def get_balance(address: str) -> types.Wei:
     web3 = connect_to_eth_network()
     return web3.eth.get_balance(address)
+
+
+def delete_wallet(address: str):
+    web3 = connect_to_eth_network()
+    web3.eth.accounts.wallet.remove(address)

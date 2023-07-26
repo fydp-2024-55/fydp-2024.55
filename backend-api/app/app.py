@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from .routes import auth, consumers, histories, producers, subscriptions, users
+from .routes import auth, consumers, histories, producers, subscriptions, users, wallets
 from .blockchain.config import get_minter, deploy_contract
 
 app = FastAPI()
@@ -53,4 +53,10 @@ app.include_router(
     subscriptions.router,
     prefix="/subscriptions",
     tags=["subscriptions"],
+)
+
+app.include_router(
+    wallets.router,
+    prefix="/wallets",
+    tags=["wallets"],
 )
