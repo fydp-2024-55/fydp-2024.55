@@ -3,6 +3,7 @@ import BottomNav from "./components/BottomNav";
 import LoginPage from "./components/LoginPage";
 import PageContent from "./components/PageContent";
 import { Page } from "./types";
+import LogoutButton from "./components/LogoutButton";
 
 const App = () => {
   const [page, setPage] = useState(Page.Profile);
@@ -34,8 +35,10 @@ const App = () => {
             flexDirection: "column",
             justifyContent: "space-between",
             overflowY: "hidden",
+            position: "relative",
           }}
         >
+          <LogoutButton onLogout={() => setIsLoggedIn(false)} />
           <PageContent page={page} />
           <BottomNav page={page} setPage={setPage} />
         </div>
