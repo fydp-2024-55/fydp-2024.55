@@ -13,6 +13,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+
 # Store smart contract state on the app instance
 minter = get_minter()
 token_contract = deploy_contract(minter)

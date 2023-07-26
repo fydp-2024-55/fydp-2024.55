@@ -1,64 +1,43 @@
-import Header from "./components/Header/Header";
-import UserPage from "./components/UserPage/UserPage";
-import DataPage from "./components/DataPage/DataPage";
-import Login from "./components/LoginPage/LoginPage";
-import { useState, useEffect } from "react";
-import "./App.css";
-import data from "./sample.json";
-import WalletPage from "./components/WalletPage/WalletPage";
+import { useState } from "react";
+import BottomNav from "./components/BottomNav";
+import LoginPage from "./components/LoginPage";
+import PageContent from "./components/PageContent";
+import { Page } from "./types";
 
 const App = () => {
-  useEffect(() => {
-    loadUser();
-  }, []); // Pass an empty array to only call the function once on mount.
-
-  const [page, setPage] = useState("user");
-  const [dataOpt, setDataOpt] = useState(data.data_options);
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
-
-  const changePage = (p: string) => {
-    setPage(p);
-  };
-
-  const loginUser = (user: string, pass: string) => {
-    setUsername(user);
-    setPassword(pass);
-  };
-
-  const updateValue = (key: string) => {
-    setDataOpt((prevState) => ({
-      ...prevState,
-      [key]: !prevState[key as keyof typeof prevState],
-    }));
-    console.log(dataOpt);
-  };
-
-  function loadUser() {}
+  const [page, setPage] = useState(Page.Profile);
+  const [isLoggedIn, setIsLoggedIn] = useState<boolean>(true);
 
   return (
-    <div className="browserContainer">
-      {!(username !== "" && password !== "") ? (
-        <Login loginUser={loginUser} />
+    <div
+      style={{
+        height: 550,
+        width: 450,
+        background: "azure",
+        display: "flex",
+        flexDirection: "column",
+        borderWidth: 5,
+        borderColor: "black",
+        borderStyle: "solid",
+        alignItems: "center",
+      }}
+    >
+      {!isLoggedIn ? (
+        <LoginPage onLogIn={() => setIsLoggedIn(true)} />
       ) : (
-        <>
-          <div className="row">
-            {page === "user" && (
-              <UserPage
-                username={data.username}
-                phone={data.phone}
-                first_name={data.first_name}
-                last_name={data.last_name}
-                email={data.email}
-              />
-            )}
-            {page === "data" && (
-              <DataPage updateValue={updateValue} options={dataOpt} />
-            )}
-            {page === "wallet" && <WalletPage balance={data.wallet} />}
-          </div>
-          <Header changePage={changePage} />
-        </>
+        <div
+          style={{
+            height: "100%",
+            width: "100%",
+            paddingTop: 20,
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "space-between",
+          }}
+        >
+          <PageContent page={page} />
+          <BottomNav page={page} setPage={setPage} />
+        </div>
       )}
     </div>
   );
