@@ -27,3 +27,13 @@ class ProducerRead(ProducerBase):
 
 class ProducerUpdate(ProducerBase):
     pass
+
+
+class ProducerSubscriptionItem(BaseModel):
+    eth_address: str
+    name: str
+    email: str
+
+
+class ProducerSubscriptionsRead(BaseModel):
+    subscriptions: list[ProducerSubscriptionItem]

@@ -49,9 +49,3 @@ app.include_router(
     prefix="/histories",
     tags=["histories"],
 )
-
-app.include_router(
-    subscriptions.router,
-    prefix="/subscriptions",
-    tags=["subscriptions"],
-)

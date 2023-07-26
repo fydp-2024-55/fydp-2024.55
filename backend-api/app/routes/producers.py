@@ -1,13 +1,16 @@
-import random
+from fastapi import APIRouter, status, Request, Depends
+from sqlalchemy.ext.asyncio import AsyncSession
 
-from fastapi import APIRouter, status, Request
-
+from ..models.users import User
+from ..dependencies import get_current_active_user, get_async_session
 from ..schemas.producers import (
     ProducerCreate,
     ProducerRead,
     ProducerUpdate,
+    ProducerSubscriptionsRead,
 )
 from ..blockchain.mint_burn import mint_token, burn_token
+from ..blockchain.permissions import producer_subscriptions
 
 router = APIRouter()
 
@@ -64,3 +67,16 @@ async def delete_producer(request: Request):
     # Delete database instance
 
     return
+
+
+@router.get("/me/subscriptions", status_code=status.HTTP_200_OK)
+async def read_producer_subscriptions(
+    request: Request,
+    producer: User = Depends(get_current_active_user),
+    session: AsyncSession = Depends(get_async_session),
+):
+    subscriptions = producer_subscriptions(
+        request.app.state.token_contract, producer.eth_address, session
+    )
+
+    return ProducerSubscriptionsRead(subscriptions=subscriptions)
