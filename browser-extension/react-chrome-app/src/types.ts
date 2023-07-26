@@ -10,13 +10,13 @@ export interface Producer {
   name: string;
   gender: string;
   ethnicity: string;
-  dateOfBirth: string;
+  date_of_birth: string;
   city: string;
   state: string;
   country: string;
   income: number;
-  maritalStatus: string;
-  parentalStatus: string;
+  marital_status: string;
+  parental_status: string;
 }
 
 export interface Wallet {

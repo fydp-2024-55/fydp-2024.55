@@ -1,30 +1,24 @@
 import { CircularProgress, Typography } from "@material-ui/core";
 import { FC, useEffect, useState } from "react";
+import client from "../api/client";
 import { History } from "../types";
+import axios, { AxiosError } from "axios";
 
 const HistoryPage: FC = () => {
-  const [histories, setHistories] = useState<History[]>();
+  const [histories, setHistories] = useState<History[]>([]);
 
   const loadHistories = async () => {
-    // Todo: Replace timeout with api call
-    setTimeout(
-      () =>
-        setHistories([
-          {
-            title: "Google",
-            url: "https://google.com",
-            timeSpent: "",
-            visitTime: "",
-          },
-          {
-            title: "Reddit",
-            url: "https://reddit.com",
-            timeSpent: "",
-            visitTime: "f",
-          },
-        ]),
-      1000
-    );
+    try {
+      const historyArr: History[] = await client.getHistory();
+      setHistories(historyArr);
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        const axiosError = error as AxiosError;
+        alert(`${axiosError.status}:  ${axiosError.message}`);
+      } else {
+        alert(`Error ${error}`);
+      }
+    }
   };
 
   useEffect(() => {
@@ -48,8 +42,8 @@ const HistoryPage: FC = () => {
         <CircularProgress />
       ) : (
         <div>
-          {histories.map((history) => (
-            <Typography key={history.visitTime} align="left" variant="h6">
+          {histories.map((history, index) => (
+            <Typography key={index} align="left" variant="h6">
               {history.title} - {history.url}
             </Typography>
           ))}
