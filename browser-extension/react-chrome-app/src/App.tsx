@@ -33,6 +33,7 @@ const App = () => {
             display: "flex",
             flexDirection: "column",
             justifyContent: "space-between",
+            overflowY: "hidden",
           }}
         >
           <PageContent page={page} />
