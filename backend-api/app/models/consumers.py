@@ -14,4 +14,6 @@ class Consumer(Base):
     )
 
     user = relationship(User, back_populates="consumer")
-
+    categories = relationship(
+        "Category", "Consumer_Categories", back_populates="consumers"
+    )
