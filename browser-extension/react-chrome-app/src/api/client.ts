@@ -1,5 +1,5 @@
 import axios from "axios";
-import { Producer } from "../types";
+import { Producer, History } from "../types";
 
 const api = axios.create({
   baseURL: "http://localhost:8000",
