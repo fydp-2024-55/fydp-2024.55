@@ -21,7 +21,7 @@ async def create_consumer(db: AsyncSession, consumer: ConsumerCreate, user: User
 async def update_consumer(db: AsyncSession, consumer_id: int, consumer: ConsumerUpdate):
     db_consumer = await db.get(Consumer, consumer_id)
     statement = update(Consumer).where(Consumer.id == consumer.id).values(**consumer.model_dump())
-    r = await db.execute(statement)
+    await db.execute(statement)
     await db.commit()
     await db.refresh(db_consumer)
     return db_consumer

@@ -1,6 +1,7 @@
 import random
 
 from fastapi import APIRouter, status, Request
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from ..schemas.producers import (
     ProducerCreate,

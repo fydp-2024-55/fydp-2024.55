@@ -21,7 +21,7 @@ async def create_producer(db: AsyncSession, producer: ProducerCreate, user: User
 async def update_producer(db: AsyncSession, producer_id: int, producer: ProducerUpdate):
     db_producer = await db.get(Producer, producer_id)
     statement = update(Producer).where(Producer.id == producer.id).values(**producer.model_dump())
-    r = await db.execute(statement)
+    await db.execute(statement)
     await db.commit()
     await db.refresh(db_producer)
     return db_producer

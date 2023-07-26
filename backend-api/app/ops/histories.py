@@ -8,6 +8,8 @@ from ..schemas.histories import HistoryCreate, HistoryRead
 async def get_history(db: AsyncSession, history: HistoryRead):
     return await db.get(History, history.id)
 
+async def list_history(db: AsyncSession, producer: Producer):
+    historyList = select(History).where(History.producer_id == producer.id)
 
 async def create_history(db: AsyncSession, history: HistoryCreate, producer: Producer):
     db_history = History(**history.model_dump(), producer_id = producer.id)
