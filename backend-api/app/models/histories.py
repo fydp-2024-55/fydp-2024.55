@@ -16,3 +16,6 @@ class History(Base):
     producer_id = sa.Column(sa.Integer, sa.ForeignKey("Producers.id"), nullable=False)
 
     producer = relationship(Producer, back_populates="histories")
+    categories = relationship(
+        "Category", "History_Categories", back_populates="histories"
+    )

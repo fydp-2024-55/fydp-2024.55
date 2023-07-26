@@ -18,7 +18,13 @@ const WalletPage: FC = () => {
   };
 
   useEffect(() => {
-    loadWallet();
+    const interval = setInterval(() => {
+      loadWallet();
+    }, 600000); // 10 minutes
+
+    return () => {
+      clearInterval(interval);
+    };
   }, []);
 
   return (

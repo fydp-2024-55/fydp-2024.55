@@ -38,5 +38,5 @@ export interface History {
 export interface Subscriber {
   name: string;
   ethAddress: string;
-  subscribedSince: string;
+  email: string;
 }
