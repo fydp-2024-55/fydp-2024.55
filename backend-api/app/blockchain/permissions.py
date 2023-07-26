@@ -8,7 +8,7 @@ from .config import connect_to_eth_network
 from ..utils.date import epoch_to_date
 
 
-def producer_subscriptions(
+async def producer_subscriptions(
     token_contract: contract.Contract, producer: str, session: AsyncSession
 ) -> list[str]:
     web3 = connect_to_eth_network()
@@ -23,7 +23,9 @@ def producer_subscriptions(
     result = []
     consumers = token_contract.functions.producerConsumers(producer).call()
     for eth_address in consumers:
-        db_consumer = session.execute(select(Consumer).where(eth_address=eth_address))
+        db_consumer = await session.execute(
+            select(Consumer).where(eth_address=eth_address)
+        )
         if db_consumer is None:
             continue
 
@@ -38,7 +40,7 @@ def producer_subscriptions(
     return result
 
 
-def consumer_subscriptions(
+async def consumer_subscriptions(
     token_contract: contract.Contract,
     consumer: str,
     session: AsyncSession,
@@ -56,7 +58,9 @@ def consumer_subscriptions(
     for subscription in subscriptions:
         eth_address = subscription[0]
 
-        db_producer = session.execute(select(Producer).where(eth_address=eth_address))
+        db_producer = await session.execute(
+            select(Producer).where(eth_address=eth_address)
+        )
         if db_producer is None:
             continue
 
