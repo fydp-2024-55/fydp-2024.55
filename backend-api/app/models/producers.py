@@ -1,10 +1,9 @@
 import sqlalchemy as sa
-from fastapi_users_db_sqlalchemy.generics import GUID
 from sqlalchemy.orm import relationship
 
 from ..database import Base
 from .locations import Location
-from .users import User
+from .users import GUID, User
 
 
 class Producer(Base):

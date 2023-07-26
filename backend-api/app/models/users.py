@@ -1,5 +1,6 @@
 import sqlalchemy as sa
 from fastapi_users.db import SQLAlchemyBaseUserTableUUID
+from fastapi_users_db_sqlalchemy.generics import GUID
 from sqlalchemy.orm import relationship
 
 from ..database import Base
