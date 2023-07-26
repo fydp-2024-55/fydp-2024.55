@@ -36,12 +36,9 @@ const getProducer = async () => {
   return response.data
 }
 
-
-// TODO: HELP
-const updateProducer = async () => {
-  // const response = await api.patch(`producer/me`)
-  console.log('called')
-  // return response
+const updateProducer = async (data: Producer) => {
+  const response = await api.patch(`producer/me`, data)
+  console.log(response)
 }
 
 const getHistory = async () => {

@@ -10,27 +10,14 @@ import { Producer } from "../types";
 import axios, { AxiosError } from "axios";
 
 const ProfilePage: FC = () => {
-  const [profile, setProfile] = useState<{ [key: string]: string | number }>();
-  const [updateProfile, setUpdateProfile] = useState<{
-    [key: string]: string | number;
-  }>();
+  const [profile, setProfile] = useState<Producer>();
+  const [updateProfile, setUpdateProfile] = useState<Producer>();
 
   const loadProfile = async () => {
     try {
       const producer: Producer = await client.getProducer();
-      setProfile({
-        name: producer.name,
-        gender: producer.gender,
-        ethnicity: producer.ethnicity,
-        dateOfBirth: producer.date_of_birth, // change to camel case
-        city: producer.city,
-        state: producer.state,
-        country: producer.country,
-        income: producer.income,
-        maritalStatus: producer.marital_status, // change to camel case is not displaying
-        parentalStatus: producer.parental_status, // change to camel case is not displaying
-      });
-      setUpdateProfile(profile);
+      setProfile(producer);
+      setUpdateProfile(producer);
     } catch (error) {
       if (axios.isAxiosError(error)) {
         const axiosError = error as AxiosError;
@@ -43,7 +30,12 @@ const ProfilePage: FC = () => {
 
   const updateProducer = async () => {
     try {
-      await client.updateProducer();
+      if (updateProfile) {
+        await client.updateProducer(updateProfile);
+        // const producer: Producer = await client.getProducer(); // put back later
+        setProfile(updateProfile);
+        console.log("saved");
+      }
     } catch (error) {
       if (axios.isAxiosError(error)) {
         const axiosError = error as AxiosError;
@@ -54,11 +46,12 @@ const ProfilePage: FC = () => {
     }
   };
 
-  const onEdit = (key: string, value: string | number) => {
-    setUpdateProfile((prev) => ({
-      ...prev,
-      [key]: value,
-    }));
+  const onEdit = <T extends keyof Producer>(field: T, value: Producer[T]) => {
+    let temp: Producer | undefined = updateProfile;
+    if (temp) {
+      temp[field] = value;
+      setUpdateProfile(temp);
+    }
   };
 
   useEffect(() => {
@@ -93,9 +86,11 @@ const ProfilePage: FC = () => {
                 key={key}
                 style={{ margin: 10 }}
                 label={key}
-                defaultValue={profile[key]}
+                defaultValue={profile[key as keyof Producer]}
                 variant="standard"
-                onChange={(event) => onEdit(key, event?.target.value)}
+                onChange={(event) =>
+                  onEdit(key as keyof Producer, event?.target.value)
+                }
               />
             ))}
           </div>
