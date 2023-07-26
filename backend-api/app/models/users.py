@@ -9,3 +9,12 @@ class User(SQLAlchemyBaseUserTableUUID, Base):
     __tablename__ = "Users"
 
     eth_address = sa.Column(sa.String, nullable=False)
+
+    producer = relationship(
+        "Producer",
+        back_populates="user",
+    )
+    consumer = relationship(
+        "Consumer",
+        back_populates="user",
+    )

@@ -11,36 +11,24 @@ class ProducerRestictedCategories(Base):
     __tablename__ = "Producer_Restricted_Categories"
 
     id = sa.Column(sa.Integer, primary_key=True, nullable=False)
-    producer_id = (
-        sa.Column(sa.Integer, sa.ForeignKey("Producers.id"), nullable=False),
-    )
-    category_id = (
-        sa.Column(sa.Integer, sa.ForeignKey("Categories.id"), nullable=False),
-    )
+    producer_id = sa.Column(sa.Integer, sa.ForeignKey("Producers.id"), nullable=False)
+    category_id = sa.Column(sa.Integer, sa.ForeignKey("Categories.id"), nullable=False)
 
 
 class ConsumerCategories(Base):
     __tablename__ = "Consumer_Categories"
 
     id = sa.Column(sa.Integer, primary_key=True, nullable=False)
-    consumer_id = (
-        sa.Column(sa.Integer, sa.ForeignKey("Consumers.id"), nullable=False),
-    )
-    category_id = (
-        sa.Column(sa.Integer, sa.ForeignKey("Categories.id"), nullable=False),
-    )
+    consumer_id = sa.Column(sa.Integer, sa.ForeignKey("Consumers.id"), nullable=False)
+    category_id = sa.Column(sa.Integer, sa.ForeignKey("Categories.id"), nullable=False)
 
 
 class HistoryCategories(Base):
     __tablename__ = "History_Categories"
 
     id = sa.Column(sa.Integer, primary_key=True, nullable=False)
-    consumer_id = (
-        sa.Column(sa.Integer, sa.ForeignKey("Histories.id"), nullable=False),
-    )
-    category_id = (
-        sa.Column(sa.Integer, sa.ForeignKey("Categories.id"), nullable=False),
-    )
+    consumer_id = sa.Column(sa.Integer, sa.ForeignKey("Histories.id"), nullable=False)
+    category_id = sa.Column(sa.Integer, sa.ForeignKey("Categories.id"), nullable=False)
 
 
 class Category(Base):
@@ -50,8 +38,10 @@ class Category(Base):
 
     restricting_producers = relationship(
         Producer,
-        ProducerRestictedCategories,
+        "Producer_Restricted_Categories",
         back_populates="restricted_categories",
     )
-    consumers = relationship(Consumer, ConsumerCategories, back_populates="categories")
-    histories = relationship(History, HistoryCategories, back_populates="categories")
+    consumers = relationship(
+        Consumer, "Consumer_Categories", back_populates="categories"
+    )
+    histories = relationship(History, "History_Categories", back_populates="categories")
