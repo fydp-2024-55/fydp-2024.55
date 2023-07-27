@@ -1,47 +1,24 @@
 import { CircularProgress, Typography } from "@material-ui/core";
 import { FC, useEffect, useState } from "react";
 import { Subscriber } from "../types";
+import client from "../api/client";
+import axios, { AxiosError } from "axios";
 
 const SubscribersPage: FC = () => {
   const [subscribers, setSubscribers] = useState<Subscriber[]>();
 
   const loadSubscribers = async () => {
-    setTimeout(
-      () =>
-        setSubscribers([
-          {
-            ethAddress: "0x342...4324",
-            name: "Louis Vutton",
-            email: "louis@vutton.com",
-          },
-          {
-            ethAddress: "0x342...4325",
-            name: "Target Vutton",
-            email: "target@vutton.com",
-          },
-          {
-            ethAddress: "0x342...4326",
-            name: "CVS Vutton",
-            email: "CVS@vutton.com",
-          },
-          {
-            ethAddress: "0x342...4327",
-            name: "safeway Vutton",
-            email: "safeway@vutton.com",
-          },
-          {
-            ethAddress: "0x342...4328",
-            name: "costco Vutton",
-            email: "costco@vutton.com",
-          },
-          {
-            ethAddress: "0x342...4329",
-            name: "walmart Vutton",
-            email: "walmart@vutton.com",
-          },
-        ]),
-      1000
-    );
+    try {
+      const subscriptions: Subscriber[] = await client.getSubscribers();
+      setSubscribers(subscriptions);
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        const axiosError = error as AxiosError;
+        alert(`${axiosError.status}:  ${axiosError.message}`);
+      } else {
+        alert(`Error ${error}`);
+      }
+    }
   };
 
   useEffect(() => {
@@ -64,22 +41,24 @@ const SubscribersPage: FC = () => {
       </Typography>
       {subscribers === undefined ? (
         <CircularProgress />
-      ) : (
+      ) : subscribers.length > 0 ? (
         subscribers.map((subscriber) => (
           <div
             style={{
               margin: "3%",
             }}
-            key={subscriber.ethAddress}
+            key={subscriber.eth_address}
           >
             <Typography variant="h6">
-              {subscriber.ethAddress}: {subscriber.name}
+              {subscriber.eth_address}: {subscriber.name}
             </Typography>
             <Typography variant="body1">
               Subscriber email: {subscriber.email}
             </Typography>
           </div>
         ))
+      ) : (
+        <Typography variant="h6">no active subscriptions!</Typography>
       )}
       <div />
     </div>

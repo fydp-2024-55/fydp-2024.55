@@ -81,18 +81,20 @@ const ProfilePage: FC = () => {
               gridTemplateColumns: "1fr 1fr",
             }}
           >
-            {Object.keys(profile).map((key) => (
-              <TextField
-                key={key}
-                style={{ margin: 10 }}
-                label={key}
-                defaultValue={profile[key as keyof Producer]}
-                variant="standard"
-                onChange={(event) =>
-                  onEdit(key as keyof Producer, event?.target.value)
-                }
-              />
-            ))}
+            {Object.keys(profile)
+              .filter((key) => ["user_id", "id"].includes(key) === false)
+              .map((key) => (
+                <TextField
+                  key={key}
+                  style={{ margin: 10 }}
+                  label={key}
+                  defaultValue={profile[key as keyof Producer]}
+                  variant="standard"
+                  onChange={(event) =>
+                    onEdit(key as keyof Producer, event?.target.value)
+                  }
+                />
+              ))}
           </div>
           <Button variant="contained" onClick={updateProducer}>
             Save

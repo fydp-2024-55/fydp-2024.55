@@ -1,9 +1,17 @@
 import sqlalchemy as sa
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from datetime import date, timedelta
+from ..models.producers import Producer
 from ..models.consumers import Consumer
 from ..models.users import User
-from ..schemas.consumers import ConsumerCreate, ConsumerRead, ConsumerUpdate
+from ..schemas.consumers import (
+    ConsumerCreate,
+    ConsumerRead,
+    ConsumerUpdate,
+    ProducersQuery,
+    ProducersQueryResults,
+)
 
 
 async def get_consumer(db: AsyncSession, user: User):
@@ -56,3 +64,12 @@ async def delete_consumer(db: AsyncSession, user: User):
     statement = sa.delete(Consumer).where(Consumer.user_id == user.id)
     await db.execute(statement)
     await db.commit()
+
+
+# async def query_producers(db: AsyncSession, query: ProducersQuery):
+# statement = sa.select(Producer).where()
+# earliest_date = date() - timedelta(days = 365 * query.max_age)
+# latest_date = date.today() - timedelta(days = 365 * query.min_age)
+# statement = statement.where(Producer.date_of_birth >= date query.min_age) if query.min_age else statement
+# statement = statement.where(Producer.date_of_birth <= query.max_age) if query.max_age else statement
+# statement = statement.where(Producer.gender.in_.ethnicities) if query.ethnicities else statement

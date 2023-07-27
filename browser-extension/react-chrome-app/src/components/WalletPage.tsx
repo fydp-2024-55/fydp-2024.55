@@ -1,30 +1,39 @@
 import { CircularProgress, Typography } from "@material-ui/core";
 import { FC, useEffect, useState } from "react";
 import { Wallet } from "../types";
+import client from "../api/client";
+import axios, { AxiosError } from "axios";
 
 const WalletPage: FC = () => {
   const [wallet, setWallet] = useState<Wallet>();
 
   const loadWallet = async () => {
-    // Todo: Replace timeout with api call
-    setTimeout(
-      () =>
-        setWallet({
-          ethAddress: "0x123...4567",
-          balance: 200,
-        }),
-      1000
-    );
+    try {
+      const wallet: Wallet = await client.getWallet();
+      console.log(wallet);
+      setWallet(wallet);
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        const axiosError = error as AxiosError;
+        alert(`${axiosError.status}:  ${axiosError.message}`);
+      } else {
+        alert(`Error ${error}`);
+      }
+    }
   };
 
-  useEffect(() => {
-    const interval = setInterval(() => {
-      loadWallet();
-    }, 600000); // 10 minutes
+  // useEffect(() => {
+  //   const interval = setInterval(() => {
+  //     loadWallet();
+  //   }, 600000); // 10 minutes
 
-    return () => {
-      clearInterval(interval);
-    };
+  //   return () => {
+  //     clearInterval(interval);
+  //   };
+  // }, []);
+
+  useEffect(() => {
+    loadWallet();
   }, []);
 
   return (
@@ -56,7 +65,7 @@ const WalletPage: FC = () => {
           <Typography variant="h5">Address:</Typography>
           <Typography variant="body1">0x123...4567</Typography>
           <Typography variant="h5">Current balance:</Typography>
-          <Typography variant="h3">{wallet.balance} ETH</Typography>
+          <Typography variant="body1">{wallet.balance} ETH</Typography>
         </div>
       )}
       <div />
