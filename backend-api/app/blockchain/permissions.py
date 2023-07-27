@@ -6,10 +6,11 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from ..models.users import User
 from .config import connect_to_eth_network
 from ..utils.date import epoch_to_date
+from ..ops.consumers import get_consumer
 
 
 async def producer_subscriptions(
-    token_contract: contract.Contract, producer: str, session: AsyncSession
+    token_contract: contract.Contract, producer: str, db: AsyncSession
 ) -> list[str]:
     web3 = connect_to_eth_network()
 
@@ -22,17 +23,17 @@ async def producer_subscriptions(
     result = []
     consumers = token_contract.functions.producerConsumers(producer).call()
     for eth_address in consumers:
-        res = await session.execute(
-            sa.select(User).where(User.eth_address == eth_address)
-        )
+        res = await db.execute(sa.select(User).where(User.eth_address == eth_address))
         user = res.scalar_one_or_none()
         if user is None:
             continue
 
+        consumer = await get_consumer(db, user)
+
         result.append(
             {
                 "eth_address": eth_address,
-                "name": user.consumer.name,
+                "name": consumer.name,
                 "email": user.email,
             }
         )
@@ -40,10 +41,9 @@ async def producer_subscriptions(
     return result
 
 
-async def consumer_subscriptions(
+def consumer_subscriptions(
     token_contract: contract.Contract,
     consumer: str,
-    session: AsyncSession,
 ) -> list[dict[str, any]]:
     web3 = connect_to_eth_network()
 
@@ -53,26 +53,15 @@ async def consumer_subscriptions(
     ).transact({"from": consumer})
     web3.eth.wait_for_transaction_receipt(tx_hash)
 
-    result = []
-    subscriptions = token_contract.functions.consumerSubscriptions(consumer).call()
-    for subscription in subscriptions:
-        eth_address = subscription[0]
+    subscriptions: list[
+        tuple[str, int, int, bool]
+    ] = token_contract.functions.consumerSubscriptions(consumer).call()
 
-        res = await session.execute(
-            sa.select(User).where(User.eth_address == eth_address)
-        )
-        user = res.scalar_one_or_none()
-        if user is None:
-            continue
-
-        result.append(
-            {
-                "eth_address": eth_address,
-                "name": user.producer.name,
-                "email": user.email,
-                "creation_date": epoch_to_date(subscription[1]),
-                "expiration_date": epoch_to_date(subscription[2]),
-            }
-        )
-
-    return result
+    return [
+        {
+            "eth_address": eth_address,
+            "creation_date": epoch_to_date(creation_epoch),
+            "expiration_date": epoch_to_date(expiration_epoch),
+        }
+        for eth_address, creation_epoch, expiration_epoch, _ in subscriptions
+    ]
