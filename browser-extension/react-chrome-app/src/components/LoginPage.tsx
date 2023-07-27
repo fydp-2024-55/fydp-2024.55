@@ -30,7 +30,7 @@ const LoginPage: FC<Props> = ({ onLogIn }) => {
       await client.register({
         email,
         password,
-        eth_address: "0x2122d9749FB820b89A2d432Efd99067CcDb4893c",
+        eth_address: "0x30dAF33071B6c1496aA9aCBe0861dA7eb75988D1",
       });
       await client.logIn({ email, password });
       await client.createProducer({

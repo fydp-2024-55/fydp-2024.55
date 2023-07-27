@@ -48,8 +48,21 @@ const updateProducer = async (data: Producer) => {
 };
 
 const getHistory = async () => {
-  const response = await api.get<History[]>(`/histories/`);
-  const histories: History[] = response.data;
+  const response = await api.get<History[]>(`/producers/me/histories/`);
+  const histories: History[] = [
+    {
+      url: "https://facebook.com",
+      title: "Facebook",
+      visit_time: "2023-07-20 04:30",
+      time_spent: 50000,
+    },
+    {
+      url: "https://khanacademy.org",
+      title: "Khan Academy",
+      visit_time: "2023-06-30 12:40",
+      time_spent: 5000,
+    },
+  ];
   return histories;
 };
 
