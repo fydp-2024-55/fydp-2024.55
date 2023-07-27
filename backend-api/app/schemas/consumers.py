@@ -47,3 +47,24 @@ class ConsumerSubscriptionItem(BaseModel):
 
 class ConsumerSubscriptionsRead(BaseModel):
     subscriptions: list[ConsumerSubscriptionItem]
+
+
+class ProducersQuery(BaseModel):
+    min_age: int | None = None
+    max_age: int | None = None
+    genders: list[str] = []
+    ethnicities: list[str] = []
+    countries: list[str] = []
+    min_income: int | None = None
+    max_income: int | None = None
+    marital_statuses: list[str] = []
+    parental_statuses: list[str] = []
+
+
+class ProducersQueryResults(BaseModel):
+    eth_addresses: list[str]
+    genders: dict[str, int]
+    ethnicities: dict[str, int]
+    countries: dict[str, int]
+    marital_statuses: dict[str, int]
+    parental_statuses: dict[str, int]

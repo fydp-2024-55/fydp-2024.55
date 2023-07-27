@@ -68,9 +68,9 @@ assert get_balance(producer_1) == producer_1_balance + SUBSCRIPTION_PRICE * 3
 # assert len(consumers) == 3
 # print("Consumers: ", consumers)
 
-# subscriptions = asyncio.run(consumer_subscriptions(token_contract, consumer_1))
-# assert len(subscriptions) == 1
-# print("Subscriptions: ", subscriptions)
+subscriptions = consumer_subscriptions(token_contract, consumer_1)
+assert len(subscriptions) == 1
+print("Subscriptions: ", subscriptions)
 
 # Burn token
 burn_token(token_contract, producer_1)

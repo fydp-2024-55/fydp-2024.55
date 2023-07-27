@@ -13,11 +13,13 @@ from ..schemas.consumers import (
     ConsumerSubscriptionsAvailable,
     ConsumerSubscriptionsCreate,
     ConsumerSubscriptionsRead,
+    ConsumerSubscriptionItem,
 )
 from ..utils.date import date_to_epoch
 from ..blockchain.subscription import consumer_purchase_tokens
 from ..blockchain.permissions import consumer_subscriptions
 from ..ops import consumers as ops
+from ..ops.producers import get_producer
 
 router = APIRouter()
 
@@ -58,6 +60,7 @@ async def delete_consumer(
     await ops.delete_consumer(db, user)
 
 
+# TODO: NOW!
 @router.get("/subscriptions/available")
 async def read_subscriptions_available(
     min_age: int | None = None,
@@ -96,7 +99,7 @@ async def create_consumer_subscriptions(
     body: ConsumerSubscriptionsCreate,
     request: Request,
     user: User = Depends(get_current_active_user),
-    session: AsyncSession = Depends(get_async_session),
+    db: AsyncSession = Depends(get_async_session),
 ):
     # Check for a valid expiration date
     current_date = datetime.now().date()
@@ -115,40 +118,83 @@ async def create_consumer_subscriptions(
         date_to_epoch(expiration_date),
     )
 
-    subscriptions = await consumer_subscriptions(
-        request.app.state.token_contract, user.eth_address, session
+    # Return additional data
+    subscriptions = consumer_subscriptions(
+        request.app.state.token_contract, user.eth_address
     )
 
-    return ConsumerSubscriptionsRead(subscriptions=subscriptions)
+    result: list[ConsumerSubscriptionItem] = []
+    for subscription in subscriptions:
+        statement = select(User).where(User.eth_address == subscription["eth_address"])
+        res = await db.execute(statement)
+        user = res.scalar_one_or_none()
+        producer = await get_producer(db, user)
+        result.append(
+            ConsumerSubscriptionItem(
+                eth_address=producer.eth_address,
+                name=producer.name,
+                email=user.email,
+                gender=producer.gender,
+                ethnicity=producer.ethnicity,
+                date_of_birth=producer.date_of_birth,
+                country=producer.country,
+                income=producer.income,
+                parental_status=producer.parental_status,
+                marital_status=producer.marital_status,
+                creation_date=subscription["creation_date"],
+                expiration_date=subscription["expiration_date"],
+            )
+        )
+
+    return ConsumerSubscriptionsRead(subscriptions=result)
 
 
 @router.get("/me/subscriptions", status_code=status.HTTP_200_OK)
 async def read_consumer_subscriptions(
     request: Request,
     user: User = Depends(get_current_active_user),
-    session: AsyncSession = Depends(get_async_session),
+    db: AsyncSession = Depends(get_async_session),
 ):
-    producer_eth_addresses = await consumer_subscriptions(
-        request.app.state.token_contract, user.eth_address, session
+    subscriptions = consumer_subscriptions(
+        request.app.state.token_contract, user.eth_address
     )
 
-    subscriptions = []
-    for eth_address in producer_eth_addresses:
-        statement = select(User).where(User.eth_address == eth_address)
+    result: list[ConsumerSubscriptionItem] = []
+    for subscription in subscriptions:
+        statement = select(User).where(User.eth_address == subscription["eth_address"])
+        res = await db.execute(statement)
+        user = res.scalar_one_or_none()
+        producer = await get_producer(db, user)
+        result.append(
+            ConsumerSubscriptionItem(
+                eth_address=producer.eth_address,
+                name=producer.name,
+                email=user.email,
+                gender=producer.gender,
+                ethnicity=producer.ethnicity,
+                date_of_birth=producer.date_of_birth,
+                country=producer.country,
+                income=producer.income,
+                parental_status=producer.parental_status,
+                marital_status=producer.marital_status,
+                creation_date=subscription["creation_date"],
+                expiration_date=subscription["expiration_date"],
+            )
+        )
 
-    return ConsumerSubscriptionsRead(subscriptions=producer_eth_addresses)
+    return ConsumerSubscriptionsRead(subscriptions=result)
 
 
 @router.patch("/me/subscriptions", status_code=status.HTTP_200_OK)
 async def update_consumer_subscriptions(
     request: Request,
     user: User = Depends(get_current_active_user),
-    session: AsyncSession = Depends(get_async_session),
+    db: AsyncSession = Depends(get_async_session),
 ):
     # TODO: Implement later
 
     subscriptions = consumer_subscriptions(
-        request.app.state.token_contract, user.eth_address, session
+        request.app.state.token_contract, user.eth_address, db
     )
 
     return ConsumerSubscriptionsRead(subscriptions=subscriptions)
