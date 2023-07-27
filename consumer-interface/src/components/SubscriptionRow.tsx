@@ -46,10 +46,22 @@ const SubscriptionRow: React.FC<SubscriptionRowProps> = ({ subscription }) => {
         <TableCell>{subscription.parentalStatus}</TableCell>
       </TableRow>
       <TableRow>
-        <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={6}>
+        <TableCell
+          style={{
+            paddingBottom: 0,
+            paddingTop: 0,
+          }}
+          align="center"
+          colSpan={12}
+        >
           <Collapse in={open} timeout="auto" unmountOnExit>
             <Box sx={{ m: 1 }}>
-              <Typography variant="h6" gutterBottom component="div">
+              <Typography
+                variant="h6"
+                gutterBottom
+                component="div"
+                align="center"
+              >
                 History
               </Typography>
               <Table size="medium" aria-label="history">

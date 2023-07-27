@@ -145,7 +145,7 @@ const Purchase: React.FC = () => {
     maritalStatuses: [],
     parentalStatuses: [],
   });
-  const [results, setResults] = useState<Result | undefined>([]);
+  const [results, setResults] = useState<Result | undefined>();
 
   const handleCheck = (
     event: React.ChangeEvent<HTMLInputElement>,
@@ -220,163 +220,180 @@ const Purchase: React.FC = () => {
                   <TableCell>{results.ethAddresses.length}</TableCell>
                   <TableCell>
                     <Box fontWeight="fontWeightMedium" display="inline">
-                      {Gender.M}: {results.gender}
-                    </Box>
+                      {Gender.M}:
+                    </Box>{" "}
+                    {results.gender.M}
                     <br />
                     <br />
                     <Box fontWeight="fontWeightMedium" display="inline">
-                      {Gender.F}:{" "}
-                    </Box>
+                      {Gender.F}:
+                    </Box>{" "}
+                    {results.gender.F}
                   </TableCell>
                   <TableCell>
                     <Box fontWeight="fontWeightMedium" display="inline">
-                      {Ethnicity.N}:{" "}
-                    </Box>
+                      {Ethnicity.N}:
+                    </Box>{" "}
+                    {results.ethnicities.N}
                     <br />
                     <br />
                     <Box fontWeight="fontWeightMedium" display="inline">
-                      {Ethnicity.A}:{" "}
-                    </Box>
+                      {Ethnicity.A}:
+                    </Box>{" "}
+                    {results.ethnicities.A}
                     <br />
                     <br />
                     <Box fontWeight="fontWeightMedium" display="inline">
-                      {Ethnicity.B}:{" "}
-                    </Box>
+                      {Ethnicity.B}:
+                    </Box>{" "}
+                    {results.ethnicities.B}
                     <br />
                     <br />
                     <Box fontWeight="fontWeightMedium" display="inline">
-                      {Ethnicity.H}:{" "}
-                    </Box>
+                      {Ethnicity.H}:
+                    </Box>{" "}
+                    {results.ethnicities.H}
                     <br />
                     <br />
                     <Box fontWeight="fontWeightMedium" display="inline">
-                      {Ethnicity.W}:{" "}
-                    </Box>
+                      {Ethnicity.W}:
+                    </Box>{" "}
+                    {results.ethnicities.W}
                     <br />
                     <br />
                     <Box fontWeight="fontWeightMedium" display="inline">
-                      {Ethnicity.O}:{" "}
-                    </Box>
+                      {Ethnicity.O}:
+                    </Box>{" "}
+                    {results.ethnicities.O}
                   </TableCell>
                   <TableCell>
                     <Box fontWeight="fontWeightMedium" display="inline">
                       10-20:{" "}
-                    </Box>
+                    </Box>{" "}
                     <br />
                     <br />
                     <Box fontWeight="fontWeightMedium" display="inline">
                       20-30:{" "}
-                    </Box>
+                    </Box>{" "}
                     <br />
                     <br />
                     <Box fontWeight="fontWeightMedium" display="inline">
                       30-40:{" "}
-                    </Box>
+                    </Box>{" "}
                     <br />
                     <br />
                     <Box fontWeight="fontWeightMedium" display="inline">
                       40-50:{" "}
-                    </Box>
+                    </Box>{" "}
                     <br />
                     <br />
                     <Box fontWeight="fontWeightMedium" display="inline">
                       50-60:{" "}
-                    </Box>
+                    </Box>{" "}
                     <br />
                     <br />
                     <Box fontWeight="fontWeightMedium" display="inline">
                       60-70:{" "}
-                    </Box>
+                    </Box>{" "}
                     <br />
                     <br />
                     <Box fontWeight="fontWeightMedium" display="inline">
                       70-80:{" "}
-                    </Box>
+                    </Box>{" "}
                     <br />
                     <br />
                     <Box fontWeight="fontWeightMedium" display="inline">
                       80-90:{" "}
-                    </Box>
+                    </Box>{" "}
                   </TableCell>
                   <TableCell>
                     <Box fontWeight="fontWeightMedium" display="inline">
-                      Canada:{" "}
-                    </Box>
+                      Canada:
+                    </Box>{" "}
+                    {results.countries.Canada}
                     <br />
                     <br />
                     <Box fontWeight="fontWeightMedium" display="inline">
                       United States of America:{" "}
-                    </Box>
+                    </Box>{" "}
+                    {results.countries["United States of America"]}
                     <br />
                     <br />
                     <Box fontWeight="fontWeightMedium" display="inline">
-                      Mexico:{" "}
-                    </Box>
+                      Mexico:
+                    </Box>{" "}
+                    {results.countries.Mexico}
                   </TableCell>
                   <TableCell>
                     <Box fontWeight="fontWeightMedium" display="inline">
                       $0-50,000:{" "}
-                    </Box>
+                    </Box>{" "}
                     <br />
                     <br />
                     <Box fontWeight="fontWeightMedium" display="inline">
                       $50,000-100,000:{" "}
-                    </Box>
+                    </Box>{" "}
                     <br />
                     <br />
                     <Box fontWeight="fontWeightMedium" display="inline">
                       $100,000-150,000:{" "}
-                    </Box>
+                    </Box>{" "}
                     <br />
                     <br />
                     <Box fontWeight="fontWeightMedium" display="inline">
                       $150,000-200,000:{" "}
-                    </Box>
+                    </Box>{" "}
                     <br />
                     <br />
                     <Box fontWeight="fontWeightMedium" display="inline">
                       $200,000-250,000:{" "}
-                    </Box>
+                    </Box>{" "}
                     <br />
                     <br />
                     <Box fontWeight="fontWeightMedium" display="inline">
                       $250,000-300,000:{" "}
-                    </Box>
+                    </Box>{" "}
                     <br />
                     <br />
                     <Box fontWeight="fontWeightMedium" display="inline">
                       $300,000-350,000:{" "}
-                    </Box>
+                    </Box>{" "}
                   </TableCell>
                   <TableCell>
                     <Box fontWeight="fontWeightMedium" display="inline">
-                      {MaritalStatus.M}:{" "}
-                    </Box>
+                      {MaritalStatus.M}:
+                    </Box>{" "}
+                    {results.maritalStatuses.M}
                     <br />
                     <br />
                     <Box fontWeight="fontWeightMedium" display="inline">
-                      {MaritalStatus.S}:{" "}
-                    </Box>
+                      {MaritalStatus.S}:
+                    </Box>{" "}
+                    {results.maritalStatuses.S}
                     <br />
                     <br />
                     <Box fontWeight="fontWeightMedium" display="inline">
-                      {MaritalStatus.D}:{" "}
-                    </Box>
+                      {MaritalStatus.D}:
+                    </Box>{" "}
+                    {results.maritalStatuses.D}
                     <br />
                     <br />
                     <Box fontWeight="fontWeightMedium" display="inline">
-                      {MaritalStatus.W}:{" "}
-                    </Box>
+                      {MaritalStatus.W}:
+                    </Box>{" "}
+                    {results.maritalStatuses.W}
                   </TableCell>
                   <TableCell>
                     <Box fontWeight="fontWeightMedium" display="inline">
-                      {ParentalStatus.Y}:{" "}
-                    </Box>
+                      {ParentalStatus.Y}:
+                    </Box>{" "}
+                    {results.parentalStatuses.Y}
                     <br />
                     <br />
                     <Box fontWeight="fontWeightMedium" display="inline">
-                      {ParentalStatus.N}:{" "}
-                    </Box>
+                      {ParentalStatus.N}:
+                    </Box>{" "}
+                    {results.parentalStatuses.N}
                   </TableCell>
                 </TableRow>
               </TableBody>
