@@ -7,7 +7,7 @@ import LogoutButton from "./components/LogoutButton";
 
 const App = () => {
   const [page, setPage] = useState(Page.Profile);
-  const [isLoggedIn, setIsLoggedIn] = useState<boolean>(true);
+  const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
 
   return (
     <div

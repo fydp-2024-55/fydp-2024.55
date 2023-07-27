@@ -5,7 +5,7 @@ const api = axios.create({
   baseURL: "http://localhost:8000",
 });
 
-const register = async (data: { email: string; password: string }) =>
+const register = async (data: { email: string; password: string, eth_address: string }) =>
   api.post(`/auth/register`, data);
 
 const logIn = async (data: { email: string; password: string }) => {
@@ -25,9 +25,8 @@ const logIn = async (data: { email: string; password: string }) => {
 };
 
 const logOut = async () => {
-  const response = await api.post(`/auth/jwt/logout`);
-  delete api.defaults.headers.common["Authorization"];
-  return response;
+  await api.post(`/auth/jwt/logout`);
+  // delete api.defaults.headers.common["Authorization"];
 };
 
 

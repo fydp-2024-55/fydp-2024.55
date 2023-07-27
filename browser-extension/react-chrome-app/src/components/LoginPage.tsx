@@ -27,7 +27,7 @@ const LoginPage: FC<Props> = ({ onLogIn }) => {
 
   const register = async () => {
     try {
-      await client.register({ email, password });
+      await client.register({ email, password, eth_address: "0x123...456" });
       await logIn();
       onLogIn();
     } catch (error) {
