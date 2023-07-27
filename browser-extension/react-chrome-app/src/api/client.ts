@@ -72,8 +72,10 @@ const getWallet = async () => {
 };
 
 const getSubscribers = async () => {
-  const response = await api.get<Subscriber[]>(`/producers/me/subscriptions`);
-  return response.data;
+  const response = await api.get<{ subscriptions: Subscriber[] }>(
+    `/producers/me/subscriptions`
+  );
+  return response.data.subscriptions;
 };
 
 const getUser = () => api.get<{ email: string }>(`/users/me`);
