@@ -47,10 +47,10 @@ const SubscribersPage: FC = () => {
             style={{
               margin: "3%",
             }}
-            key={subscriber.ethAddress}
+            key={subscriber.eth_address}
           >
             <Typography variant="h6">
-              {subscriber.ethAddress}: {subscriber.name}
+              {subscriber.eth_address}: {subscriber.name}
             </Typography>
             <Typography variant="body1">
               Subscriber email: {subscriber.email}

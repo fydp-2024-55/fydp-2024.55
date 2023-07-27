@@ -34,12 +34,12 @@ app.include_router(
 
 app.include_router(
     producers.router,
-    prefix="/producer",
-    tags=["producer"],
+    prefix="/producers",
+    tags=["producers"],
 )
 
 app.include_router(
     consumers.router,
-    prefix="/consumer",
-    tags=["consumer"],
+    prefix="/consumers",
+    tags=["consumers"],
 )

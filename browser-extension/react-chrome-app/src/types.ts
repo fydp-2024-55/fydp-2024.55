@@ -7,12 +7,12 @@ export enum Page {
 }
 
 export interface Producer {
+  // email: string;
+  eth_address: string;
   name: string;
   gender: string;
   ethnicity: string;
   date_of_birth: string;
-  city: string;
-  state: string;
   country: string;
   income: number;
   marital_status: string;
@@ -20,7 +20,7 @@ export interface Producer {
 }
 
 export interface Wallet {
-  // ethAddress: string;
+  // eth_address: string;
   balance: number;
 }
 
@@ -31,12 +31,12 @@ export interface Permissions {
 export interface History {
   url: string;
   title: string;
-  visitTime: string;
-  timeSpent: string;
+  visit_time: string;
+  time_spent: number;
 }
 
 export interface Subscriber {
   name: string;
-  ethAddress: string;
+  eth_address: string;
   email: string;
 }

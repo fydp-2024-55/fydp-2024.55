@@ -27,8 +27,23 @@ const LoginPage: FC<Props> = ({ onLogIn }) => {
 
   const register = async () => {
     try {
-      await client.register({ email, password, eth_address: "0x123...456" });
-      await logIn();
+      await client.register({
+        email,
+        password,
+        eth_address: "0x2122d9749FB820b89A2d432Efd99067CcDb4893c",
+      });
+      await client.logIn({ email, password });
+      await client.createProducer({
+        name: "",
+        eth_address: "0x2122d9749FB820b89A2d432Efd99067CcDb4893c",
+        gender: "",
+        ethnicity: "",
+        date_of_birth: new Date().toISOString().split("T")[0],
+        income: 0,
+        country: "",
+        marital_status: "",
+        parental_status: "",
+      });
       onLogIn();
     } catch (error) {
       if (axios.isAxiosError(error)) {

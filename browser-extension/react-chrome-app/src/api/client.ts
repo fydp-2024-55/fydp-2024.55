@@ -33,12 +33,17 @@ const logOut = async () => {
 };
 
 const getProducer = async () => {
-  const response = await api.get<Producer>(`/producer/me`);
+  const response = await api.get<Producer>(`/producers/me`);
   return response.data;
 };
 
+const createProducer = async (data: Producer) => {
+  await api.post(`/producers/`, data);
+  console.log(data);
+};
+
 const updateProducer = async (data: Producer) => {
-  const response = await api.patch(`producer/me`, data);
+  const response = await api.patch(`/producers/me`, data);
   console.log(response);
 };
 
@@ -49,12 +54,12 @@ const getHistory = async () => {
 };
 
 const getWallet = async () => {
-  const response = await api.get<Wallet>(`/producer/me/wallet/`);
+  const response = await api.get<Wallet>(`/producers/me/wallet/`);
   return response.data;
 };
 
 const getSubscribers = async () => {
-  const response = await api.get<Subscriber[]>(`/producer/me/subscriptions`);
+  const response = await api.get<Subscriber[]>(`/producers/me/subscriptions`);
   return response.data;
 };
 
@@ -65,6 +70,7 @@ const client = {
   logIn,
   logOut,
   getUser,
+  createProducer,
   getProducer,
   updateProducer,
   getHistory,
