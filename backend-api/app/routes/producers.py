@@ -19,9 +19,6 @@ async def create_producer(
     user: User = Depends(get_current_active_user),
 ):
     if producer.eth_address:
-        if user.eth_address:
-            burn_token(request.app.state.token_contract, user.eth_address)
-
         mint_token(
             request.app.state.token_contract, request.app.state.minter, user.eth_address
         )
