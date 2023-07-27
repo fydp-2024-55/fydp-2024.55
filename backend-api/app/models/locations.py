@@ -12,4 +12,3 @@ class Location(Base):
     state = sa.Column(sa.String, nullable=False)
     country = sa.Column(sa.String, nullable=False)
 
-    producers = relationship("Producer", back_populates="location")

@@ -9,7 +9,7 @@ from ..database import Base
 class User(SQLAlchemyBaseUserTableUUID, Base):
     __tablename__ = "Users"
 
-    eth_address = sa.Column(sa.String, nullable=False)
+    eth_address = sa.Column(sa.String)
 
     producer = relationship(
         "Producer",

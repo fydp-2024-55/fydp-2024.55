@@ -1,35 +1,36 @@
-from sqlalchemy import select, update
+import sqlalchemy as sa
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from ..models.producers import Producer
-from ..schemas.producers import ProducerCreate, ProducerUpdate
+from ..schemas.producers import ProducerCreate, ProducerUpdate, ProducerRead
 from ..models.users import User
 
 
-async def get_producer(db: AsyncSession, producer_id: int):
-    return await db.get(Producer, producer_id)
+async def get_producer(db: AsyncSession, user: User):
+    statement = sa.select(Producer).where(Producer.user_id == user.id)
+    result = await db.execute(statement)
+    producer = result.scalar_one_or_none()
+    if producer is None:
+        return None
+    return ProducerRead(**producer.__dict__)
 
 
 async def create_producer(db: AsyncSession, producer: ProducerCreate, user: User):
-    db_producer = Producer(**producer.model_dump(), user_id=user.id)
-    db.add(db_producer)
-    await db.commit()
-    await db.refresh(db_producer)
-    return db_producer
-
-
-async def update_producer(db: AsyncSession, producer_id: int, producer: ProducerUpdate):
-    db_producer = await db.get(Producer, producer_id)
-    statement = update(Producer).where(Producer.id == producer.id).values(**producer.model_dump())
+    statement = sa.insert(Producer).values(**producer.model_dump(), user_id=user.id)
     await db.execute(statement)
     await db.commit()
-    await db.refresh(db_producer)
-    return db_producer
 
 
-async def delete_producer(db: AsyncSession, producer_id: int):
-    statement = select(Producer).where(Producer.id == producer_id)
-    db_producer = await db.execute(statement)
-    db.delete(db_producer)
+async def update_producer(db: AsyncSession, producer: ProducerUpdate, user: User):
+    statement = (
+        sa.update(Producer)
+        .values(**producer.model_dump())
+        .where(Producer.user_id == user.id)
+    )
+    await db.execute(statement)
     await db.commit()
-    return db_producer
+
+async def delete_producer(db: AsyncSession, user: User):
+    statement = sa.delete(Producer).where(Producer.user_id == user.id)
+    await db.execute(statement)
+    await db.commit()

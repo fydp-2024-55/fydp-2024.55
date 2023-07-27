@@ -5,15 +5,13 @@ from pydantic import BaseModel
 
 class ProducerBase(BaseModel):
     name: str
-    gender: str
-    ethnicity: str
-    date_of_birth: date
-    city: str
-    state: str
-    country: str
-    income: int
-    marital_status: str
-    parental_status: str
+    gender: str | None
+    ethnicity: str | None
+    date_of_birth: date | None
+    country: str | None
+    income: int | None
+    marital_status: str | None
+    parental_status: str | None
 
 
 class ProducerCreate(ProducerBase):
