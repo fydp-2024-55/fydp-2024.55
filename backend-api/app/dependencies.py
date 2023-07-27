@@ -34,8 +34,9 @@ fastapi_users = FastAPIUsers[User, uuid.UUID](
 
 get_current_active_user = fastapi_users.current_user(active=True)
 
+
 async def get_current_producer(
     db: AsyncSession = Depends(get_async_session),
     user: User = Depends(get_current_active_user),
-    ):
+):
     return await get_producer(db, user)

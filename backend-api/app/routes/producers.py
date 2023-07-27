@@ -3,10 +3,13 @@ from fastapi.params import Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from ..blockchain.mint_burn import burn_token, mint_token
-from ..dependencies import get_async_session, get_current_active_user
+from ..dependencies import (get_async_session, get_current_active_user,
+                            get_current_producer)
+from ..models.producers import Producer
 from ..models.users import User
 from ..ops import producers as ops
-from ..schemas.producers import ProducerCreate, ProducerRead, ProducerUpdate
+from ..schemas.histories import HistoryCreate
+from ..schemas.producers import ProducerCreate, ProducerUpdate
 
 router = APIRouter()
 
@@ -75,3 +78,21 @@ async def delete_producer(
         burn_token(request.app.state.token_contract, user.eth_address)
 
     await ops.delete_producer(db, user)
+
+
+@router.post("/me/histories", status_code=status.HTTP_201_CREATED)
+async def create_histories(
+    histories: list[HistoryCreate],
+    db: AsyncSession = Depends(get_async_session),
+    producer: Producer = Depends(get_current_producer),
+):
+    await ops.create_histories(db, histories, producer)
+    return await ops.get_histories(db, producer)
+
+
+@router.get("/me/histories", status_code=status.HTTP_200_OK)
+async def read_histories(
+    db: AsyncSession = Depends(get_async_session),
+    producer: Producer = Depends(get_current_producer),
+):
+    return await ops.get_histories(db, producer)
