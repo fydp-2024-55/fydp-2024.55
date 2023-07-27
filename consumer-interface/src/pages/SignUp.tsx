@@ -88,7 +88,12 @@ const SignUp: React.FC = () => {
             variant="contained"
             sx={{ mt: 3, mb: 2 }}
           >
-            Sign Up
+            <Link
+              href="/"
+              style={{ color: "inherit", textDecoration: "inherit" }}
+            >
+              Sign Up
+            </Link>
           </Button>
           <Grid container justifyContent="flex-end">
             <Grid item>
