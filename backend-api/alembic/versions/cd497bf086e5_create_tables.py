@@ -1,8 +1,8 @@
 """Create tables
 
-Revision ID: 158758bb5783
+Revision ID: cd497bf086e5
 Revises: 
-Create Date: 2023-07-26 18:50:25.902303
+Create Date: 2023-07-26 21:40:28.887217
 
 """
 import fastapi_users_db_sqlalchemy
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 from alembic import op
 
 # revision identifiers, used by Alembic.
-revision = "158758bb5783"
+revision = "cd497bf086e5"
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -36,7 +36,7 @@ def upgrade() -> None:
     op.create_index(op.f("ix_Locations_id"), "Locations", ["id"], unique=False)
     op.create_table(
         "Users",
-        sa.Column("eth_address", sa.String(), nullable=False),
+        sa.Column("eth_address", sa.String(), nullable=True),
         sa.Column("id", fastapi_users_db_sqlalchemy.generics.GUID(), nullable=False),
         sa.Column("email", sa.String(length=320), nullable=False),
         sa.Column("hashed_password", sa.String(length=1024), nullable=False),
@@ -60,9 +60,7 @@ def upgrade() -> None:
         sa.PrimaryKeyConstraint("id"),
     )
     op.create_index(op.f("ix_Consumers_id"), "Consumers", ["id"], unique=False)
-    op.create_index(
-        op.f("ix_Consumers_user_id"), "Consumers", ["user_id"], unique=False
-    )
+    op.create_index(op.f("ix_Consumers_user_id"), "Consumers", ["user_id"], unique=True)
     op.create_table(
         "Producers",
         sa.Column("id", sa.Integer(), nullable=False),
@@ -70,17 +68,13 @@ def upgrade() -> None:
             "user_id", fastapi_users_db_sqlalchemy.generics.GUID(), nullable=False
         ),
         sa.Column("name", sa.String(), nullable=False),
-        sa.Column("location_id", sa.Integer(), nullable=False),
-        sa.Column("date_of_birth", sa.Date(), nullable=False),
-        sa.Column("gender", sa.CHAR(), nullable=False),
-        sa.Column("ethnicity", sa.CHAR(), nullable=False),
-        sa.Column("income", sa.Integer(), nullable=False),
-        sa.Column("marital_status", sa.CHAR(), nullable=False),
-        sa.Column("parental_status", sa.CHAR(), nullable=False),
-        sa.ForeignKeyConstraint(
-            ["location_id"],
-            ["Locations.id"],
-        ),
+        sa.Column("country", sa.String(), nullable=True),
+        sa.Column("date_of_birth", sa.Date(), nullable=True),
+        sa.Column("gender", sa.CHAR(), nullable=True),
+        sa.Column("ethnicity", sa.CHAR(), nullable=True),
+        sa.Column("income", sa.Integer(), nullable=True),
+        sa.Column("marital_status", sa.CHAR(), nullable=True),
+        sa.Column("parental_status", sa.CHAR(), nullable=True),
         sa.ForeignKeyConstraint(
             ["user_id"],
             ["Users.id"],
@@ -88,9 +82,7 @@ def upgrade() -> None:
         sa.PrimaryKeyConstraint("id"),
     )
     op.create_index(op.f("ix_Producers_id"), "Producers", ["id"], unique=False)
-    op.create_index(
-        op.f("ix_Producers_user_id"), "Producers", ["user_id"], unique=False
-    )
+    op.create_index(op.f("ix_Producers_user_id"), "Producers", ["user_id"], unique=True)
     op.create_table(
         "Consumer_Categories",
         sa.Column("id", sa.Integer(), nullable=False),

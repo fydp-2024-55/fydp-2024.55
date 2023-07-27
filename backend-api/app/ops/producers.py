@@ -2,8 +2,8 @@ import sqlalchemy as sa
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from ..models.producers import Producer
-from ..schemas.producers import ProducerCreate, ProducerUpdate, ProducerRead
 from ..models.users import User
+from ..schemas.producers import ProducerCreate, ProducerRead, ProducerUpdate
 
 
 async def get_producer(db: AsyncSession, user: User):
@@ -29,6 +29,7 @@ async def update_producer(db: AsyncSession, producer: ProducerUpdate, user: User
     )
     await db.execute(statement)
     await db.commit()
+
 
 async def delete_producer(db: AsyncSession, user: User):
     statement = sa.delete(Producer).where(Producer.user_id == user.id)

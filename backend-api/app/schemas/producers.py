@@ -1,4 +1,5 @@
 from datetime import date
+from uuid import UUID
 
 from pydantic import BaseModel
 
@@ -20,7 +21,7 @@ class ProducerCreate(ProducerBase):
 
 class ProducerRead(ProducerBase):
     id: int
-    user_id: int
+    user_id: UUID
 
 
 class ProducerUpdate(ProducerBase):
