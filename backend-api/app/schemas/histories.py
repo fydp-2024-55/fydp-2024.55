@@ -7,7 +7,7 @@ class HistoryBase(BaseModel):
     url: str
     title: str
     visit_time: datetime
-    time_spent: timedelta
+    time_spent: int  # number of seconds
 
 
 class HistoryRead(HistoryBase):

@@ -20,7 +20,7 @@ export interface Producer {
 }
 
 export interface Wallet {
-  ethAddress: string;
+  // ethAddress: string;
   balance: number;
 }
 

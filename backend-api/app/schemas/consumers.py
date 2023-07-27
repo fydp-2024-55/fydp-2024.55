@@ -1,9 +1,10 @@
 from datetime import date
+from uuid import UUID
 from pydantic import BaseModel
 
 
 class ConsumerBase(BaseModel):
-    pass
+    name: str
 
 
 class ConsumerCreate(ConsumerBase):
@@ -12,7 +13,7 @@ class ConsumerCreate(ConsumerBase):
 
 class ConsumerRead(ConsumerBase):
     id: int
-    user_id: int
+    user_id: UUID
 
 
 class ConsumerUpdate(ConsumerBase):
@@ -25,6 +26,7 @@ class ConsumerSubscriptionsAvailable(BaseModel):
 
 class ConsumerSubscriptionsCreate(BaseModel):
     eth_addresses: list[str]
+    expiration_date: date
 
 
 class ConsumerSubscriptionItem(BaseModel):

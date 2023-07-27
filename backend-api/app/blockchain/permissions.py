@@ -17,7 +17,6 @@ async def producer_subscriptions(
     tx_hash = token_contract.functions.removeProducerExpiredSubscriptions(
         producer
     ).transact({"from": producer})
-
     web3.eth.wait_for_transaction_receipt(tx_hash)
 
     result = []
@@ -59,7 +58,7 @@ async def consumer_subscriptions(
         eth_address = subscription[0]
 
         db_producer = await session.execute(
-            select(Producer).where(eth_address=eth_address)
+            select(Producer).where(Producer.eth_address == eth_address)
         )
         if db_producer is None:
             continue

@@ -1,16 +1,14 @@
-import random
-
 from datetime import datetime
-from fastapi import APIRouter, status, Request, HTTPException, Depends, Query
+from fastapi import APIRouter, status, Request, HTTPException, Query
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
+from fastapi.params import Depends
 
 from ..dependencies import get_current_active_user, get_async_session
 from ..models.users import User
 from ..models.producers import Producer
 from ..schemas.consumers import (
     ConsumerCreate,
-    ConsumerRead,
     ConsumerUpdate,
     ConsumerSubscriptionsAvailable,
     ConsumerSubscriptionsCreate,
@@ -19,38 +17,46 @@ from ..schemas.consumers import (
 from ..utils.date import date_to_epoch
 from ..blockchain.subscription import consumer_purchase_tokens
 from ..blockchain.permissions import consumer_subscriptions
+from ..ops import consumers as ops
+
 
 router = APIRouter()
 
-consumer_dict = {"eth_address": "somewhareOnTheBlockchain"}
-
 
 @router.post("/", status_code=status.HTTP_201_CREATED)
-async def create_consumer(body: ConsumerCreate):
-    # Create database instance, retrieve ID
-
-    return ConsumerRead(id=random.randint(1, 1000), **consumer_dict)
+async def create_consumer(
+    consumer: ConsumerCreate,
+    db: AsyncSession = Depends(get_async_session),
+    user: User = Depends(get_current_active_user),
+):
+    await ops.create_consumer(db, consumer, user)
+    return await ops.get_consumer(db, user)
 
 
 @router.get("/me", status_code=status.HTTP_200_OK)
-async def read_consumer():
-    # Query database instance
-
-    return ConsumerRead(id=random.randint(1, 1000), **consumer_dict)
+async def read_consumer(
+    db: AsyncSession = Depends(get_async_session),
+    user: User = Depends(get_current_active_user),
+):
+    return await ops.get_consumer(db, user)
 
 
 @router.patch("/me", status_code=status.HTTP_200_OK)
-async def update_consumer(body: ConsumerUpdate):
-    # Update database instance
-
-    return ConsumerRead(id=random.randint(1, 1000), **consumer_dict)
+async def update_consumer(
+    consumer: ConsumerUpdate,
+    db: AsyncSession = Depends(get_async_session),
+    user: User = Depends(get_current_active_user),
+):
+    await ops.update_consumer(db, consumer, user)
+    return await ops.get_consumer(db, user)
 
 
 @router.delete("/me", status_code=status.HTTP_204_NO_CONTENT)
-async def delete_consumer():
-    # Delete database instance
-
-    return
+async def delete_consumer(
+    db: AsyncSession = Depends(get_async_session),
+    user: User = Depends(get_current_active_user),
+):
+    await ops.delete_consumer(db, user)
 
 
 @router.get("/subscriptions/available")
@@ -90,12 +96,12 @@ async def read_subscriptions_available(
 async def create_consumer_subscriptions(
     body: ConsumerSubscriptionsCreate,
     request: Request,
-    consumer: User = Depends(get_current_active_user),
+    user: User = Depends(get_current_active_user),
     session: AsyncSession = Depends(get_async_session),
 ):
     # Check for a valid expiration date
     current_date = datetime.now().date()
-    expiration_date = subscriptions.expiration_date
+    expiration_date = body.expiration_date
     if expiration_date <= current_date:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST, detail="Invalid expiration date"
@@ -104,14 +110,14 @@ async def create_consumer_subscriptions(
     # Perform the token purchases through the smart contract
     consumer_purchase_tokens(
         request.app.state.token_contract,
-        consumer.eth_address,
+        user.eth_address,
         body.eth_addresses,
         date_to_epoch(current_date),
         date_to_epoch(expiration_date),
     )
 
-    subscriptions = consumer_subscriptions(
-        request.app.state.token_contract, consumer.eth_address, session
+    subscriptions = await consumer_subscriptions(
+        request.app.state.token_contract, user.eth_address, session
     )
 
     return ConsumerSubscriptionsRead(subscriptions=subscriptions)
@@ -120,11 +126,11 @@ async def create_consumer_subscriptions(
 @router.get("/me/subscriptions", status_code=status.HTTP_200_OK)
 async def read_consumer_subscriptions(
     request: Request,
-    consumer: User = Depends(get_current_active_user),
+    user: User = Depends(get_current_active_user),
     session: AsyncSession = Depends(get_async_session),
 ):
-    subscriptions = consumer_subscriptions(
-        request.app.state.token_contract, consumer.eth_address, session
+    subscriptions = await consumer_subscriptions(
+        request.app.state.token_contract, user.eth_address, session
     )
 
     return ConsumerSubscriptionsRead(subscriptions=subscriptions)
@@ -133,13 +139,13 @@ async def read_consumer_subscriptions(
 @router.patch("/me/subscriptions", status_code=status.HTTP_200_OK)
 async def update_consumer_subscriptions(
     request: Request,
-    consumer: User = Depends(get_current_active_user),
+    user: User = Depends(get_current_active_user),
     session: AsyncSession = Depends(get_async_session),
 ):
     # TODO: Implement later
 
     subscriptions = consumer_subscriptions(
-        request.app.state.token_contract, consumer.eth_address, session
+        request.app.state.token_contract, user.eth_address, session
     )
 
     return ConsumerSubscriptionsRead(subscriptions=subscriptions)
@@ -147,7 +153,7 @@ async def update_consumer_subscriptions(
 
 @router.delete("/me/subscriptions", status_code=status.HTTP_204_NO_CONTENT)
 async def delete_consumer_subscriptions(
-    request: Request, consumer: User = Depends(get_current_active_user)
+    request: Request, user: User = Depends(get_current_active_user)
 ):
     # TODO: Implement later
 

@@ -1,11 +1,11 @@
-from fastapi import APIRouter, status, Request, Depends
+from fastapi import APIRouter, status, Request
+from fastapi.params import Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from ..models.users import User
 from ..dependencies import get_current_active_user, get_async_session
 from ..schemas.producers import (
     ProducerCreate,
-    ProducerRead,
     ProducerUpdate,
     ProducerSubscriptionsRead,
     ProducerWalletBalanceRead,
@@ -13,66 +13,60 @@ from ..schemas.producers import (
 from ..blockchain.mint_burn import mint_token, burn_token
 from ..blockchain.permissions import producer_subscriptions
 from ..blockchain.wallet import get_balance
+from fastapi.params import Depends
+
+from ..ops import producers as ops
 
 router = APIRouter()
-
-producer_dict = {
-    "id": 100,
-    "eth_address": "0x1234567890123456789012345678901234567890",
-    "name": "Dre",
-    "gender": "M",
-    "ethnicity": "B",
-    "date_of_birth": "2023-07-20",
-    "city": "Santa Clara",
-    "state": "CA",
-    "country": "US",
-    "income": 450000,
-    "marital_status": "not single anymore",
-    "parental_status": "parents and step parents",
-}
 
 
 @router.post("/", status_code=status.HTTP_201_CREATED)
 async def create_producer(
     body: ProducerCreate,
     request: Request,
-    producer: User = Depends(get_current_active_user),
+    db: AsyncSession = Depends(get_async_session),
+    user: User = Depends(get_current_active_user),
 ):
     # Mint token for the producer
     mint_token(
-        request.app.state.token_contract, request.app.state.minter, producer.eth_address
+        request.app.state.token_contract, request.app.state.minter, user.eth_address
     )
 
-    # Create database instance, retrieve ID
-
-    return ProducerRead(**producer_dict)
+    await ops.create_producer(db, body, user)
+    return await ops.get_producer(db, user)
 
 
 @router.get("/me", status_code=status.HTTP_200_OK)
-async def read_producer():
-    # Query database instance
-
-    return ProducerRead(**producer_dict)
+async def read_producer(
+    db: AsyncSession = Depends(get_async_session),
+    user: User = Depends(get_current_active_user),
+):
+    return await ops.get_producer(db, user)
 
 
 @router.patch("/me", status_code=status.HTTP_200_OK)
-async def update_producer(body: ProducerUpdate):
-    # Update database instance
-
-    return ProducerRead(**producer_dict)
+async def update_producer(
+    producer: ProducerUpdate,
+    db: AsyncSession = Depends(get_async_session),
+    user: User = Depends(get_current_active_user),
+):
+    await ops.update_producer(db, producer, user)
+    return await ops.get_producer(db, user)
 
 
 @router.delete("/me", status_code=status.HTTP_204_NO_CONTENT)
-async def delete_producer(request: Request):
-    # Retrieve eth_address associated with the producer
-    eth_address = "0x1234567890123456789012345678901234567890"
+async def delete_producer(
+    # request: Request,
+    db: AsyncSession = Depends(get_async_session),
+    user: User = Depends(get_current_active_user),
+):
+    # eth_address = user.eth_address
 
-    # Burn the producer's token
-    burn_token(request.app.state.token_contract, eth_address)
+    # burn_token(request.app.state.token_contract, eth_address)
 
     # Delete database instance
 
-    return
+    await ops.delete_producer(db, user)
 
 
 @router.get("/me/subscriptions", status_code=status.HTTP_200_OK)
@@ -81,7 +75,7 @@ async def read_producer_subscriptions(
     producer: User = Depends(get_current_active_user),
     session: AsyncSession = Depends(get_async_session),
 ):
-    subscriptions = producer_subscriptions(
+    subscriptions = await producer_subscriptions(
         request.app.state.token_contract, producer.eth_address, session
     )
 

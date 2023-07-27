@@ -1,5 +1,4 @@
 import sqlalchemy as sa
-from sqlalchemy.orm import relationship
 
 from ..database import Base
 
@@ -11,5 +10,3 @@ class Location(Base):
     city = sa.Column(sa.String, nullable=False)
     state = sa.Column(sa.String, nullable=False)
     country = sa.Column(sa.String, nullable=False)
-
-    producers = relationship("Producer", back_populates="location")

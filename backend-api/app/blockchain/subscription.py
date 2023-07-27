@@ -13,10 +13,12 @@ def consumer_purchase_tokens(
 ):
     web3 = connect_to_eth_network()
 
+    # Check if balance is sufficient for the transaction
+
     tx_hash = token_contract.functions.consumerPurchaseMultipleTokens(
         consumer, producers, creation_date, expiration_date
     ).transact(
-        {"from": consumer, "value": SUBSCRIPTION_PRICE},
+        {"from": consumer, "value": SUBSCRIPTION_PRICE * len(producers)},
     )
     tx_receipt = web3.eth.wait_for_transaction_receipt(tx_hash)
 
