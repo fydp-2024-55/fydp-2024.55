@@ -105,7 +105,7 @@ const CRITERIA: Row[] = [
 const mockResults: Result = {
   ethAddresses: ["0x123", "0x456", "0x789", "0xabc", "0xdef", "0xghi"],
   gender: {
-    M: 1,
+    M: 4,
     F: 2,
   },
   ethnicities: {
@@ -118,18 +118,18 @@ const mockResults: Result = {
   },
   countries: {
     Canada: 1,
-    "United States of America": 1,
+    "United States of America": 4,
     Mexico: 1,
   },
   maritalStatuses: {
     M: 1,
-    S: 1,
+    S: 3,
     D: 1,
     W: 1,
   },
   parentalStatuses: {
     Y: 1,
-    N: 3,
+    N: 5,
   },
 };
 
@@ -270,41 +270,49 @@ const Purchase: React.FC = () => {
                     <Box fontWeight="fontWeightMedium" display="inline">
                       10-20:{" "}
                     </Box>{" "}
+                    0
                     <br />
                     <br />
                     <Box fontWeight="fontWeightMedium" display="inline">
                       20-30:{" "}
                     </Box>{" "}
+                    2
                     <br />
                     <br />
                     <Box fontWeight="fontWeightMedium" display="inline">
                       30-40:{" "}
                     </Box>{" "}
+                    1
                     <br />
                     <br />
                     <Box fontWeight="fontWeightMedium" display="inline">
                       40-50:{" "}
                     </Box>{" "}
+                    0
                     <br />
                     <br />
                     <Box fontWeight="fontWeightMedium" display="inline">
                       50-60:{" "}
                     </Box>{" "}
+                    0
                     <br />
                     <br />
                     <Box fontWeight="fontWeightMedium" display="inline">
                       60-70:{" "}
                     </Box>{" "}
+                    0
                     <br />
                     <br />
                     <Box fontWeight="fontWeightMedium" display="inline">
                       70-80:{" "}
                     </Box>{" "}
+                    0
                     <br />
                     <br />
                     <Box fontWeight="fontWeightMedium" display="inline">
                       80-90:{" "}
                     </Box>{" "}
+                    0
                   </TableCell>
                   <TableCell>
                     <Box fontWeight="fontWeightMedium" display="inline">
@@ -328,36 +336,43 @@ const Purchase: React.FC = () => {
                     <Box fontWeight="fontWeightMedium" display="inline">
                       $0-50,000:{" "}
                     </Box>{" "}
+                    2
                     <br />
                     <br />
                     <Box fontWeight="fontWeightMedium" display="inline">
                       $50,000-100,000:{" "}
                     </Box>{" "}
+                    3
                     <br />
                     <br />
                     <Box fontWeight="fontWeightMedium" display="inline">
                       $100,000-150,000:{" "}
                     </Box>{" "}
+                    2
                     <br />
                     <br />
                     <Box fontWeight="fontWeightMedium" display="inline">
                       $150,000-200,000:{" "}
                     </Box>{" "}
+                    1
                     <br />
                     <br />
                     <Box fontWeight="fontWeightMedium" display="inline">
                       $200,000-250,000:{" "}
                     </Box>{" "}
+                    0
                     <br />
                     <br />
                     <Box fontWeight="fontWeightMedium" display="inline">
                       $250,000-300,000:{" "}
                     </Box>{" "}
+                    0
                     <br />
                     <br />
                     <Box fontWeight="fontWeightMedium" display="inline">
                       $300,000-350,000:{" "}
                     </Box>{" "}
+                    0
                   </TableCell>
                   <TableCell>
                     <Box fontWeight="fontWeightMedium" display="inline">

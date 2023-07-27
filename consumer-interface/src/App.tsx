@@ -42,7 +42,7 @@ const bottomDrawerItems: DrawerItem[] = [
 const mockAccount: Consumer = {
   name: "William Park",
   email: "william@gmail.com",
-  ethAddress: "0x1234567890",
+  ethAddress: "0xdHn3ds35nfds3ndde3fnn",
 };
 
 interface GlobalContextInterface {
