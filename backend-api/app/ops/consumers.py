@@ -23,10 +23,11 @@ async def create_consumer(db: AsyncSession, consumer: ConsumerCreate, user: User
             .where(User.id == user.id)
         )
         await db.execute(statement)
+
     statement = sa.insert(Consumer).values(
         user_id=user.id,
-        name=consumer.name, 
-        )
+        name=consumer.name,
+    )
     await db.execute(statement)
     await db.commit()
 
@@ -39,13 +40,14 @@ async def update_consumer(db: AsyncSession, consumer: ConsumerUpdate, user: User
             .where(User.id == user.id)
         )
         await db.execute(statement)
+
     statement = (
         sa.update(Consumer)
         .values(
-            name = consumer.name,
-            )
-        .where(Consumer.user_id == user.id)
+            name=consumer.name,
         )
+        .where(Consumer.user_id == user.id)
+    )
     await db.execute(statement)
     await db.commit()
 
