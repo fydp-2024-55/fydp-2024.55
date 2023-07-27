@@ -20,7 +20,9 @@ async def create_producer(
 ):
     if producer.eth_address:
         mint_token(
-            request.app.state.token_contract, request.app.state.minter, user.eth_address
+            request.app.state.token_contract,
+            request.app.state.minter,
+            producer.eth_address,
         )
 
     elif user.eth_address:
