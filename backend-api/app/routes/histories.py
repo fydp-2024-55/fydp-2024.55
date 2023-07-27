@@ -1,27 +1,35 @@
-import random
-
 from fastapi import APIRouter, status
+from fastapi.params import Depends
+from sqlalchemy.ext.asyncio import AsyncSession
 
+from ..ops import histories as ops
+from ..ops.producers import get_producer
+
+from ..dependencies import (
+    get_async_session,
+    get_current_producer,
+    get_current_active_user,
+)
 from ..schemas.histories import HistoryCreate, HistoryRead
+from ..models.producers import Producer
+from ..models.users import User
 
 router = APIRouter()
 
-history_dict = {
-    "url": "https://facebook.com",
-    "title": "Facebook",
-    "visit_time": "2023-07-20T07:01:56.876Z",
-    "time_spent": 100,
-}
-
 
 @router.post("/", status_code=status.HTTP_201_CREATED)
-async def create_histories(histories: list[HistoryCreate]):
-    return [
-        HistoryRead(id=random.randint(1, 1000), **history.model_dump())
-        for history in histories
-    ]
+async def create_histories(
+    histories: list[HistoryCreate],
+    db: AsyncSession = Depends(get_async_session),
+    producer: Producer = Depends(get_current_producer),
+):
+    await ops.create_histories(db, histories, producer)
+    return await ops.get_histories(db, producer)
 
 
 @router.get("/")
-async def read_histories():
-    return [HistoryRead(id=random.randint(1, 1000), **history_dict) for _ in range(5)]
+async def read_histories(
+    db: AsyncSession = Depends(get_async_session),
+    producer: Producer = Depends(get_current_producer),
+):
+    return await ops.get_histories(db, producer)

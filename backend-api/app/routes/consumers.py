@@ -5,7 +5,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from ..dependencies import get_async_session, get_current_active_user
 from ..models.users import User
 from ..ops import consumers as ops
-from ..schemas.consumers import ConsumerCreate, ConsumerRead, ConsumerUpdate
+from ..schemas.consumers import ConsumerCreate, ConsumerUpdate
 
 router = APIRouter()
 
