@@ -26,6 +26,13 @@ async def create_producer(
             request.app.state.token_contract, request.app.state.minter, user.eth_address
         )
 
+    elif user.eth_address:
+        mint_token(
+            request.app.state.token_contract,
+            request.app.state.minter,
+            user.eth_address,
+        )
+
     await ops.create_producer(db, producer, user)
     return await ops.get_producer(db, user)
 
