@@ -9,6 +9,7 @@ class Consumer(Base):
     __tablename__ = "Consumers"
 
     id = sa.Column(sa.Integer, primary_key=True, index=True, nullable=False)
+    name = sa.Column(sa.String, nullable=False)
     user_id = sa.Column(GUID, sa.ForeignKey("Users.id"), index=True, nullable=False)
 
     user = relationship(User, back_populates="consumer")

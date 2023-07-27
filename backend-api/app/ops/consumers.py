@@ -1,40 +1,37 @@
-from sqlalchemy import select, update
+import sqlalchemy as sa
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from ..models.consumers import Consumer
 from ..models.users import User
-from ..schemas.consumers import ConsumerCreate, ConsumerUpdate
+from ..schemas.consumers import ConsumerCreate, ConsumerRead, ConsumerUpdate
 
 
 async def get_consumer(db: AsyncSession, user: User):
-    statement = select(Consumer).where(Consumer.user_id == user.id).limit(1)
+    statement = sa.select(Consumer).where(Consumer.user_id == user.id)
     result = await db.execute(statement)
-    return result.scalar_one()
+    consumer = result.scalar_one_or_none()
+    if consumer is None:
+        return None
+    return ConsumerRead(**consumer.__dict__)
 
 
 async def create_consumer(db: AsyncSession, consumer: ConsumerCreate, user: User):
-    db_consumer = Consumer(**consumer.model_dump(), user_id=user.id)
-    db.add(db_consumer)
+    statement = sa.insert(Consumer).values(**consumer.model_dump(), user_id=user.id)
+    await db.execute(statement)
     await db.commit()
-    await db.refresh(db_consumer)
-    return db_consumer
 
 
 async def update_consumer(db: AsyncSession, consumer: ConsumerUpdate, user: User):
-    db_consumer = await get_consumer(db, user)
     statement = (
-        update(Consumer)
+        sa.update(Consumer)
         .values(**consumer.model_dump())
         .where(Consumer.user_id == user.id)
     )
     await db.execute(statement)
     await db.commit()
-    await db.refresh(db_consumer)
-    return db_consumer
 
 
 async def delete_consumer(db: AsyncSession, user: User):
-    db_consumer = await get_consumer(db, user)
-    await db.delete(db_consumer)
+    statement = sa.delete(Consumer).where(Consumer.user_id == user.id)
+    await db.execute(statement)
     await db.commit()
-    await db.refresh(db_consumer)

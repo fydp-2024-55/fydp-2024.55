@@ -16,7 +16,8 @@ async def create_consumer(
     db: AsyncSession = Depends(get_async_session),
     user: User = Depends(get_current_active_user),
 ):
-    return await ops.create_consumer(db, consumer, user)
+    await ops.create_consumer(db, consumer, user)
+    return await ops.get_consumer(db, user)
 
 
 @router.get("/me", status_code=status.HTTP_200_OK)
@@ -33,7 +34,8 @@ async def update_consumer(
     db: AsyncSession = Depends(get_async_session),
     user: User = Depends(get_current_active_user),
 ):
-    return await ops.update_consumer(db, consumer, user)
+    await ops.update_consumer(db, consumer, user)
+    return await ops.get_consumer(db, user)
 
 
 @router.delete("/me", status_code=status.HTTP_204_NO_CONTENT)
@@ -41,5 +43,4 @@ async def delete_consumer(
     db: AsyncSession = Depends(get_async_session),
     user: User = Depends(get_current_active_user),
 ):
-    # Delete database instance
     await ops.delete_consumer(db, user)
