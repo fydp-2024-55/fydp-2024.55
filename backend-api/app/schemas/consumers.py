@@ -33,6 +33,13 @@ class ConsumerSubscriptionItem(BaseModel):
     eth_address: str
     name: str
     email: str
+    gender: str
+    ethnicity: str
+    date_of_birth: date
+    country: str
+    income: int
+    marital_status: str
+    parental_status: str
     creation_date: date
     expiration_date: date
 

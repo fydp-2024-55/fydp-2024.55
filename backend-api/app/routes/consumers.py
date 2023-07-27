@@ -72,7 +72,7 @@ async def read_subscriptions_available(
     parental_status: list[str] = Query(None),
     session: AsyncSession = Depends(get_async_session),
 ):
-    query = select(Producer.eth_address)
+    query = select(User.eth_address)
     query = query.where(Producer.age >= min_age) if min_age else query
     query = query.where(Producer.age <= max_age) if min_age else query
     query = query.where(Producer.gender.in_(gender)) if min_age else query
@@ -129,11 +129,15 @@ async def read_consumer_subscriptions(
     user: User = Depends(get_current_active_user),
     session: AsyncSession = Depends(get_async_session),
 ):
-    subscriptions = await consumer_subscriptions(
+    producer_eth_addresses = await consumer_subscriptions(
         request.app.state.token_contract, user.eth_address, session
     )
 
-    return ConsumerSubscriptionsRead(subscriptions=subscriptions)
+    subscriptions = []
+    for eth_address in producer_eth_addresses:
+        statement = select(User).where(User.eth_address == eth_address)
+
+    return ConsumerSubscriptionsRead(subscriptions=producer_eth_addresses)
 
 
 @router.patch("/me/subscriptions", status_code=status.HTTP_200_OK)

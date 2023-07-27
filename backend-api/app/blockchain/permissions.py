@@ -1,9 +1,9 @@
+import sqlalchemy as sa
+
 from web3 import contract
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select
 
-from ..models.consumers import Consumer
-from ..models.producers import Producer
+from ..models.users import User
 from .config import connect_to_eth_network
 from ..utils.date import epoch_to_date
 
@@ -22,17 +22,18 @@ async def producer_subscriptions(
     result = []
     consumers = token_contract.functions.producerConsumers(producer).call()
     for eth_address in consumers:
-        db_consumer = await session.execute(
-            select(Consumer).where(eth_address=eth_address)
+        res = await session.execute(
+            sa.select(User).where(User.eth_address == eth_address)
         )
-        if db_consumer is None:
+        user = res.scalar_one_or_none()
+        if user is None:
             continue
 
         result.append(
             {
                 "eth_address": eth_address,
-                "name": db_consumer.name,
-                "email": db_consumer.email,
+                "name": user.consumer.name,
+                "email": user.email,
             }
         )
 
@@ -57,17 +58,18 @@ async def consumer_subscriptions(
     for subscription in subscriptions:
         eth_address = subscription[0]
 
-        db_producer = await session.execute(
-            select(Producer).where(Producer.eth_address == eth_address)
+        res = await session.execute(
+            sa.select(User).where(User.eth_address == eth_address)
         )
-        if db_producer is None:
+        user = res.scalar_one_or_none()
+        if user is None:
             continue
 
         result.append(
             {
                 "eth_address": eth_address,
-                "name": db_producer.name,
-                "email": db_producer.email,
+                "name": user.producer.name,
+                "email": user.email,
                 "creation_date": epoch_to_date(subscription[1]),
                 "expiration_date": epoch_to_date(subscription[2]),
             }
