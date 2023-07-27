@@ -24,8 +24,6 @@ const mockSubscriptions: Subscription[] = [
     gender: "Male",
     ethnicity: "White/Caucasian",
     dateOfBirth: "September 3 2001",
-    city: "San Francisco",
-    state: "California",
     country: "United States",
     income: 100000,
     maritalStatus: "Single",
@@ -51,8 +49,6 @@ const mockSubscriptions: Subscription[] = [
     gender: "Male",
     ethnicity: "White/Caucasian",
     dateOfBirth: "September 3 2001",
-    city: "San Francisco",
-    state: "California",
     country: "United States",
     income: 100000,
     maritalStatus: "Single",
@@ -78,8 +74,6 @@ const mockSubscriptions: Subscription[] = [
     gender: "Male",
     ethnicity: "White/Caucasian",
     dateOfBirth: "September 3 2001",
-    city: "San Francisco",
-    state: "California",
     country: "United States",
     income: 100000,
     maritalStatus: "Single",
@@ -105,8 +99,6 @@ const mockSubscriptions: Subscription[] = [
     gender: "Male",
     ethnicity: "White/Caucasian",
     dateOfBirth: "September 3 2001",
-    city: "San Francisco",
-    state: "California",
     country: "United States",
     income: 100000,
     maritalStatus: "Single",
@@ -132,8 +124,6 @@ const mockSubscriptions: Subscription[] = [
     gender: "Male",
     ethnicity: "White/Caucasian",
     dateOfBirth: "September 3 2001",
-    city: "San Francisco",
-    state: "California",
     country: "United States",
     income: 100000,
     maritalStatus: "Single",
@@ -159,8 +149,6 @@ const mockSubscriptions: Subscription[] = [
     gender: "Male",
     ethnicity: "White/Caucasian",
     dateOfBirth: "September 3 2001",
-    city: "San Francisco",
-    state: "California",
     country: "United States",
     income: 100000,
     maritalStatus: "Single",
@@ -216,7 +204,7 @@ const Subscriptions: React.FC = () => {
           component={Paper}
           sx={{ my: 2, height: "60vh", maxWidth: "70vw" }}
         >
-          <Table sx={{ width: "50vw" }}>
+          <Table>
             <TableHead>
               <TableRow>
                 <TableCell />
@@ -225,8 +213,6 @@ const Subscriptions: React.FC = () => {
                 <TableCell>Gender</TableCell>
                 <TableCell>Ethnicity</TableCell>
                 <TableCell>Date of Birth</TableCell>
-                <TableCell>City</TableCell>
-                <TableCell>State</TableCell>
                 <TableCell>Country</TableCell>
                 <TableCell>Income</TableCell>
                 <TableCell>Marital Status</TableCell>

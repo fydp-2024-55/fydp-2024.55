@@ -10,8 +10,6 @@ export interface Producer {
   gender: string;
   ethnicity: string;
   dateOfBirth: string;
-  city: string;
-  state: string;
   country: string;
   income: number;
   maritalStatus: string;

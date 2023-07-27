@@ -40,8 +40,6 @@ const SubscriptionRow: React.FC<SubscriptionRowProps> = ({ subscription }) => {
         <TableCell>{subscription.gender}</TableCell>
         <TableCell>{subscription.ethnicity}</TableCell>
         <TableCell>{subscription.dateOfBirth}</TableCell>
-        <TableCell>{subscription.city}</TableCell>
-        <TableCell>{subscription.state}</TableCell>
         <TableCell>{subscription.country}</TableCell>
         <TableCell>{subscription.income}</TableCell>
         <TableCell>{subscription.maritalStatus}</TableCell>

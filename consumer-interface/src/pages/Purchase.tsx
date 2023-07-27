@@ -1,8 +1,9 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Box,
   TableContainer,
   Table,
+  TableHead,
   TableRow,
   TableCell,
   TableBody,
@@ -16,13 +17,13 @@ import {
 
 import { Gender, Ethnicity, MaritalStatus, ParentalStatus } from "../types";
 import PageTemplate from "../components/PageTemplate";
-import Results from "../components/Results";
 
 interface Criteria {
   minAge: string;
   maxAge: string;
   genders: string[];
   ethnicities: string[];
+  countries: string[];
   minIncome: string;
   maxIncome: string;
   maritalStatuses: string[];
@@ -39,7 +40,16 @@ export interface Row {
   key?: string;
 }
 
-const CRITERIA = [
+interface Result {
+  ethAddresses: string[];
+  gender: { [key: string]: number };
+  ethnicities: { [key: string]: number };
+  countries: { [key: string]: number };
+  maritalStatuses: { [key: string]: number };
+  parentalStatuses: { [key: string]: number };
+}
+
+const CRITERIA: Row[] = [
   { name: "Age", type: "range", minKey: "minAge", maxKey: "maxAge" },
   {
     name: "Gender",
@@ -59,6 +69,12 @@ const CRITERIA = [
       Ethnicity.O,
     ],
     key: "ethnicities",
+  },
+  {
+    name: "Country",
+    type: "select",
+    options: ["Canada", "United States of America", "Mexico"],
+    key: "countries",
   },
   {
     name: "Income",
@@ -86,18 +102,50 @@ const CRITERIA = [
   },
 ];
 
+const mockResults: Result = {
+  ethAddresses: ["0x123", "0x456", "0x789", "0xabc", "0xdef", "0xghi"],
+  gender: {
+    M: 1,
+    F: 2,
+  },
+  ethnicities: {
+    N: 1,
+    A: 1,
+    B: 1,
+    H: 1,
+    W: 1,
+    O: 1,
+  },
+  countries: {
+    Canada: 1,
+    "United States of America": 1,
+    Mexico: 1,
+  },
+  maritalStatuses: {
+    M: 1,
+    S: 1,
+    D: 1,
+    W: 1,
+  },
+  parentalStatuses: {
+    Y: 1,
+    N: 3,
+  },
+};
+
 const Purchase: React.FC = () => {
   const [criteria, setCriteria] = useState<Criteria>({
     minAge: "",
     maxAge: "",
     genders: [],
     ethnicities: [],
+    countries: [],
     minIncome: "",
     maxIncome: "",
     maritalStatuses: [],
     parentalStatuses: [],
   });
-  const [displayResults, setDisplayResults] = useState<boolean>(false);
+  const [results, setResults] = useState<Result | undefined>([]);
 
   const handleCheck = (
     event: React.ChangeEvent<HTMLInputElement>,
@@ -122,13 +170,222 @@ const Purchase: React.FC = () => {
 
   const handleSearch = (event: React.FormEvent) => {
     event.preventDefault();
-    setDisplayResults(true);
+    // Fetch matching results from the database
+    setResults(mockResults);
   };
+
+  useEffect(() => {
+    console.log(criteria);
+  }, [criteria]);
 
   return (
     <PageTemplate>
-      {displayResults ? (
-        <Results />
+      {results ? (
+        <Box
+          sx={{
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+          }}
+        >
+          <TableContainer
+            component={Paper}
+            sx={{ my: 2, height: "60vh", maxWidth: "70vw" }}
+          >
+            <Table>
+              <colgroup>
+                <col style={{ width: "800px" }} />
+                <col style={{ width: "800px" }} />
+                <col style={{ width: "800px" }} />
+                <col style={{ width: "800px" }} />
+                <col style={{ width: "800px" }} />
+                <col style={{ width: "800px" }} />
+                <col style={{ width: "800px" }} />
+                <col style={{ width: "800px" }} />
+              </colgroup>
+              <TableHead>
+                <TableRow>
+                  <TableCell>Total Results</TableCell>
+                  <TableCell>Gender</TableCell>
+                  <TableCell>Ethnicity</TableCell>
+                  <TableCell>Age</TableCell>
+                  <TableCell>Country</TableCell>
+                  <TableCell>Income</TableCell>
+                  <TableCell>Marital Status</TableCell>
+                  <TableCell>Parental Status</TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                <TableRow>
+                  <TableCell>{results.ethAddresses.length}</TableCell>
+                  <TableCell>
+                    <Box fontWeight="fontWeightMedium" display="inline">
+                      {Gender.M}: {results.gender}
+                    </Box>
+                    <br />
+                    <br />
+                    <Box fontWeight="fontWeightMedium" display="inline">
+                      {Gender.F}:{" "}
+                    </Box>
+                  </TableCell>
+                  <TableCell>
+                    <Box fontWeight="fontWeightMedium" display="inline">
+                      {Ethnicity.N}:{" "}
+                    </Box>
+                    <br />
+                    <br />
+                    <Box fontWeight="fontWeightMedium" display="inline">
+                      {Ethnicity.A}:{" "}
+                    </Box>
+                    <br />
+                    <br />
+                    <Box fontWeight="fontWeightMedium" display="inline">
+                      {Ethnicity.B}:{" "}
+                    </Box>
+                    <br />
+                    <br />
+                    <Box fontWeight="fontWeightMedium" display="inline">
+                      {Ethnicity.H}:{" "}
+                    </Box>
+                    <br />
+                    <br />
+                    <Box fontWeight="fontWeightMedium" display="inline">
+                      {Ethnicity.W}:{" "}
+                    </Box>
+                    <br />
+                    <br />
+                    <Box fontWeight="fontWeightMedium" display="inline">
+                      {Ethnicity.O}:{" "}
+                    </Box>
+                  </TableCell>
+                  <TableCell>
+                    <Box fontWeight="fontWeightMedium" display="inline">
+                      10-20:{" "}
+                    </Box>
+                    <br />
+                    <br />
+                    <Box fontWeight="fontWeightMedium" display="inline">
+                      20-30:{" "}
+                    </Box>
+                    <br />
+                    <br />
+                    <Box fontWeight="fontWeightMedium" display="inline">
+                      30-40:{" "}
+                    </Box>
+                    <br />
+                    <br />
+                    <Box fontWeight="fontWeightMedium" display="inline">
+                      40-50:{" "}
+                    </Box>
+                    <br />
+                    <br />
+                    <Box fontWeight="fontWeightMedium" display="inline">
+                      50-60:{" "}
+                    </Box>
+                    <br />
+                    <br />
+                    <Box fontWeight="fontWeightMedium" display="inline">
+                      60-70:{" "}
+                    </Box>
+                    <br />
+                    <br />
+                    <Box fontWeight="fontWeightMedium" display="inline">
+                      70-80:{" "}
+                    </Box>
+                    <br />
+                    <br />
+                    <Box fontWeight="fontWeightMedium" display="inline">
+                      80-90:{" "}
+                    </Box>
+                  </TableCell>
+                  <TableCell>
+                    <Box fontWeight="fontWeightMedium" display="inline">
+                      Canada:{" "}
+                    </Box>
+                    <br />
+                    <br />
+                    <Box fontWeight="fontWeightMedium" display="inline">
+                      United States of America:{" "}
+                    </Box>
+                    <br />
+                    <br />
+                    <Box fontWeight="fontWeightMedium" display="inline">
+                      Mexico:{" "}
+                    </Box>
+                  </TableCell>
+                  <TableCell>
+                    <Box fontWeight="fontWeightMedium" display="inline">
+                      $0-50,000:{" "}
+                    </Box>
+                    <br />
+                    <br />
+                    <Box fontWeight="fontWeightMedium" display="inline">
+                      $50,000-100,000:{" "}
+                    </Box>
+                    <br />
+                    <br />
+                    <Box fontWeight="fontWeightMedium" display="inline">
+                      $100,000-150,000:{" "}
+                    </Box>
+                    <br />
+                    <br />
+                    <Box fontWeight="fontWeightMedium" display="inline">
+                      $150,000-200,000:{" "}
+                    </Box>
+                    <br />
+                    <br />
+                    <Box fontWeight="fontWeightMedium" display="inline">
+                      $200,000-250,000:{" "}
+                    </Box>
+                    <br />
+                    <br />
+                    <Box fontWeight="fontWeightMedium" display="inline">
+                      $250,000-300,000:{" "}
+                    </Box>
+                    <br />
+                    <br />
+                    <Box fontWeight="fontWeightMedium" display="inline">
+                      $300,000-350,000:{" "}
+                    </Box>
+                  </TableCell>
+                  <TableCell>
+                    <Box fontWeight="fontWeightMedium" display="inline">
+                      {MaritalStatus.M}:{" "}
+                    </Box>
+                    <br />
+                    <br />
+                    <Box fontWeight="fontWeightMedium" display="inline">
+                      {MaritalStatus.S}:{" "}
+                    </Box>
+                    <br />
+                    <br />
+                    <Box fontWeight="fontWeightMedium" display="inline">
+                      {MaritalStatus.D}:{" "}
+                    </Box>
+                    <br />
+                    <br />
+                    <Box fontWeight="fontWeightMedium" display="inline">
+                      {MaritalStatus.W}:{" "}
+                    </Box>
+                  </TableCell>
+                  <TableCell>
+                    <Box fontWeight="fontWeightMedium" display="inline">
+                      {ParentalStatus.Y}:{" "}
+                    </Box>
+                    <br />
+                    <br />
+                    <Box fontWeight="fontWeightMedium" display="inline">
+                      {ParentalStatus.N}:{" "}
+                    </Box>
+                  </TableCell>
+                </TableRow>
+              </TableBody>
+            </Table>
+          </TableContainer>
+          <Button variant="contained" sx={{ width: 200 }}>
+            Purchase
+          </Button>
+        </Box>
       ) : (
         <Box
           sx={{
