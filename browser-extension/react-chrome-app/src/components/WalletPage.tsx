@@ -1,16 +1,33 @@
 import { CircularProgress, Typography } from "@material-ui/core";
 import { FC, useEffect, useState } from "react";
-import { Wallet } from "../types";
-import client from "../api/client";
 import axios, { AxiosError } from "axios";
 
+import { Producer, Wallet } from "../types";
+import client from "../api/client";
+import { truncate_address, wei_to_eth } from "../utils";
+
 const WalletPage: FC = () => {
+  const [address, setAddress] = useState<string>("");
   const [wallet, setWallet] = useState<Wallet>();
+
+  const loadAddress = async () => {
+    try {
+      const producer: Producer = await client.getProducer();
+      setAddress(producer.eth_address);
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        const axiosError = error as AxiosError;
+        alert(`${axiosError.status}:  ${axiosError.message}`);
+      } else {
+        alert(`Error ${error}`);
+      }
+    }
+  };
 
   const loadWallet = async () => {
     try {
       const wallet: Wallet = await client.getWallet();
-      console.log(wallet);
+      console.log(wallet.balance);
       setWallet(wallet);
     } catch (error) {
       if (axios.isAxiosError(error)) {
@@ -22,18 +39,13 @@ const WalletPage: FC = () => {
     }
   };
 
-  // useEffect(() => {
-  //   const interval = setInterval(() => {
-  //     loadWallet();
-  //   }, 600000); // 10 minutes
-
-  //   return () => {
-  //     clearInterval(interval);
-  //   };
-  // }, []);
-
   useEffect(() => {
-    loadWallet();
+    loadAddress();
+
+    const interval = setInterval(() => {
+      loadWallet();
+    }, 1000);
+    return () => clearInterval(interval);
   }, []);
 
   return (
@@ -63,9 +75,11 @@ const WalletPage: FC = () => {
           }}
         >
           <Typography variant="h5">Address:</Typography>
-          <Typography variant="body1">0x123...4567</Typography>
+          <Typography variant="body1">{truncate_address(address)}</Typography>
           <Typography variant="h5">Current balance:</Typography>
-          <Typography variant="body1">{wallet.balance} ETH</Typography>
+          <Typography variant="body1">
+            {wei_to_eth(wallet.balance)} ETH
+          </Typography>
         </div>
       )}
       <div />

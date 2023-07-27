@@ -1,8 +1,10 @@
 import { CircularProgress, Typography } from "@material-ui/core";
 import { FC, useEffect, useState } from "react";
+import axios, { AxiosError } from "axios";
+
 import { Subscriber } from "../types";
 import client from "../api/client";
-import axios, { AxiosError } from "axios";
+import { truncate_address } from "../utils";
 
 const SubscribersPage: FC = () => {
   const [subscribers, setSubscribers] = useState<Subscriber[]>();
@@ -50,11 +52,10 @@ const SubscribersPage: FC = () => {
             key={subscriber.eth_address}
           >
             <Typography variant="h6">
-              {subscriber.eth_address}: {subscriber.name}
+              {truncate_address(subscriber.eth_address)}
             </Typography>
-            <Typography variant="body1">
-              Subscriber email: {subscriber.email}
-            </Typography>
+            <Typography variant="body1">Name: {subscriber.name}</Typography>
+            <Typography variant="body1">Email: {subscriber.email}</Typography>
           </div>
         ))
       ) : (

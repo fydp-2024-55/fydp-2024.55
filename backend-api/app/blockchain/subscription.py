@@ -13,7 +13,7 @@ def consumer_purchase_tokens(
 ):
     web3 = connect_to_eth_network()
 
-    # Check if balance is sufficient for the transaction
+    # TODO: Check if balance is sufficient for the transaction
 
     tx_hash = token_contract.functions.consumerPurchaseMultipleTokens(
         consumer, producers, creation_date, expiration_date
