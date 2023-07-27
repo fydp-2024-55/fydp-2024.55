@@ -14,7 +14,7 @@ import {
   ListItemText,
 } from "@mui/material";
 
-const drawerWidth = 240;
+const drawerWidth = 200;
 
 export interface DrawerItem {
   text: string;
@@ -87,12 +87,12 @@ const PermanentDrawer: React.FC<PermanentDrawerProps> = ({
           }}
         >
           <Box>
-            <Toolbar sx={{ m: 1 }}>
+            <Toolbar sx={{ display: "flex", justifyContent: "center", m: 1 }}>
               <Link
                 to="/"
                 style={{ color: "inherit", textDecoration: "inherit" }}
               >
-                <Typography variant="h5" align="center" sx={{ my: 2 }}>
+                <Typography variant="h5" align="center">
                   {title}
                 </Typography>
               </Link>

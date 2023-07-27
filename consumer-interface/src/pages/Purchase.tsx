@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import {
   Box,
   TableContainer,
@@ -14,6 +14,7 @@ import {
   InputAdornment,
 } from "@mui/material";
 
+import { Gender, Ethnicity, MaritalStatus, ParentalStatus } from "../types";
 import PageTemplate from "../components/PageTemplate";
 import Results from "../components/Results";
 
@@ -43,19 +44,19 @@ const CRITERIA = [
   {
     name: "Gender",
     type: "select",
-    options: ["Male", "Female"],
+    options: [Gender.M, Gender.F],
     key: "genders",
   },
   {
     name: "Ethnicity",
     type: "select",
     options: [
-      "American Indian or Alaskan Native",
-      "Asian/Pacific Islander",
-      "Black or African American",
-      "Hispanic",
-      "White/Caucasian",
-      "Other",
+      Ethnicity.N,
+      Ethnicity.A,
+      Ethnicity.B,
+      Ethnicity.H,
+      Ethnicity.W,
+      Ethnicity.O,
     ],
     key: "ethnicities",
   },
@@ -69,13 +70,18 @@ const CRITERIA = [
   {
     name: "Marital Status",
     type: "select",
-    options: ["Married", "Single", "Divorced", "Widowed"],
+    options: [
+      MaritalStatus.M,
+      MaritalStatus.S,
+      MaritalStatus.D,
+      MaritalStatus.W,
+    ],
     key: "maritalStatuses",
   },
   {
     name: "Parental Status",
     type: "select",
-    options: ["Parent", "Not a parent"],
+    options: [ParentalStatus.Y, ParentalStatus.N],
     key: "parentalStatuses",
   },
 ];

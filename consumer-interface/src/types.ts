@@ -6,15 +6,16 @@ export enum Page {
 
 export interface Producer {
   name: string;
+  email: string;
   gender: string;
   ethnicity: string;
-  date_of_birth: string;
+  dateOfBirth: string;
   city: string;
   state: string;
   country: string;
   income: number;
-  marital_status: string;
-  parental_status: string;
+  maritalStatus: string;
+  parentalStatus: string;
 }
 
 export interface Wallet {
@@ -37,4 +38,34 @@ export interface Consumer {
   name: string;
   email: string;
   ethAddress: string;
+}
+
+export interface Subscription extends Producer {
+  history: History[];
+}
+
+export enum Gender {
+  M = "Male",
+  F = "Female",
+}
+
+export enum Ethnicity {
+  N = "American Indian or Alaskan Native",
+  A = "Asian/Pacific Islander",
+  B = "Black or African American",
+  H = "Hispanic",
+  W = "White/Caucasian",
+  O = "Other",
+}
+
+export enum MaritalStatus {
+  M = "Married",
+  S = "Single",
+  D = "Divorced",
+  W = "Widowed",
+}
+
+export enum ParentalStatus {
+  Y = "Parent",
+  N = "Not a Parent",
 }

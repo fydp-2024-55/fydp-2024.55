@@ -64,7 +64,7 @@ const App: React.FC = () => {
           <Route
             element={
               <Layout
-                title="Data Subscriptions"
+                title="FYDP"
                 topDrawerItems={topDrawerItems}
                 bottomDrawerItems={bottomDrawerItems}
               />
