@@ -8,12 +8,14 @@ import {
   TableHead,
   TableRow,
   Paper,
+  Button,
 } from "@mui/material";
 
 import { GlobalContext } from "../App";
 import SubscriptionRow from "../components/SubscriptionRow";
 import { Subscription } from "../types";
 import PageTemplate from "../components/PageTemplate";
+import { exportDataToCSV, exportDataToJSON } from "../utils/export";
 
 const mockSubscriptions: Subscription[] = [
   {
@@ -21,7 +23,7 @@ const mockSubscriptions: Subscription[] = [
     email: "johndoe@example.com",
     gender: "Male",
     ethnicity: "White/Caucasian",
-    dateOfBirth: "September 3, 2001",
+    dateOfBirth: "September 3 2001",
     city: "San Francisco",
     state: "California",
     country: "United States",
@@ -48,7 +50,7 @@ const mockSubscriptions: Subscription[] = [
     email: "johndoe@example.com",
     gender: "Male",
     ethnicity: "White/Caucasian",
-    dateOfBirth: "September 3, 2001",
+    dateOfBirth: "September 3 2001",
     city: "San Francisco",
     state: "California",
     country: "United States",
@@ -75,7 +77,7 @@ const mockSubscriptions: Subscription[] = [
     email: "johndoe@example.com",
     gender: "Male",
     ethnicity: "White/Caucasian",
-    dateOfBirth: "September 3, 2001",
+    dateOfBirth: "September 3 2001",
     city: "San Francisco",
     state: "California",
     country: "United States",
@@ -102,7 +104,7 @@ const mockSubscriptions: Subscription[] = [
     email: "johndoe@example.com",
     gender: "Male",
     ethnicity: "White/Caucasian",
-    dateOfBirth: "September 3, 2001",
+    dateOfBirth: "September 3 2001",
     city: "San Francisco",
     state: "California",
     country: "United States",
@@ -129,7 +131,7 @@ const mockSubscriptions: Subscription[] = [
     email: "johndoe@example.com",
     gender: "Male",
     ethnicity: "White/Caucasian",
-    dateOfBirth: "September 3, 2001",
+    dateOfBirth: "September 3 2001",
     city: "San Francisco",
     state: "California",
     country: "United States",
@@ -156,7 +158,7 @@ const mockSubscriptions: Subscription[] = [
     email: "johndoe@example.com",
     gender: "Male",
     ethnicity: "White/Caucasian",
-    dateOfBirth: "September 3, 2001",
+    dateOfBirth: "September 3 2001",
     city: "San Francisco",
     state: "California",
     country: "United States",
@@ -183,7 +185,8 @@ const mockSubscriptions: Subscription[] = [
 const Subscriptions: React.FC = () => {
   const { account } = useContext(GlobalContext);
 
-  const [subscriptions, setSubscriptions] = useState(mockSubscriptions);
+  const [subscriptions, setSubscriptions] =
+    useState<Subscription[]>(mockSubscriptions);
 
   useEffect(() => {
     // Get the user's subscriptions
@@ -192,7 +195,23 @@ const Subscriptions: React.FC = () => {
 
   return (
     <PageTemplate>
-      <Box>
+      <Box sx={{ display: "flex", flexDirection: "column" }}>
+        <Box sx={{ alignSelf: "flex-end" }}>
+          <Button
+            variant="contained"
+            sx={{ m: 1 }}
+            onClick={() => exportDataToCSV(subscriptions)}
+          >
+            Export to CSV
+          </Button>
+          <Button
+            variant="contained"
+            sx={{ m: 1 }}
+            onClick={() => exportDataToJSON(subscriptions)}
+          >
+            Export to JSON
+          </Button>
+        </Box>
         <TableContainer
           component={Paper}
           sx={{ my: 2, height: "60vh", maxWidth: "70vw" }}
