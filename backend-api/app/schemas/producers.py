@@ -5,6 +5,7 @@ from pydantic import BaseModel
 
 
 class ProducerBase(BaseModel):
+    eth_address: str | None
     name: str
     gender: str | None
     ethnicity: str | None

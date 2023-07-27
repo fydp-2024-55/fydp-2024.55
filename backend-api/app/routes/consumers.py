@@ -19,7 +19,6 @@ from ..blockchain.subscription import consumer_purchase_tokens
 from ..blockchain.permissions import consumer_subscriptions
 from ..ops import consumers as ops
 
-
 router = APIRouter()
 
 

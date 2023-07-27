@@ -1,4 +1,4 @@
-from datetime import datetime, timedelta
+from datetime import datetime
 
 from pydantic import BaseModel
 
@@ -12,6 +12,7 @@ class HistoryBase(BaseModel):
 
 class HistoryRead(HistoryBase):
     id: int
+    producer_id: int
 
 
 class HistoryCreate(HistoryBase):

@@ -2,7 +2,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from .blockchain.config import deploy_contract, get_minter
-from .routes import auth, consumers, histories, producers, users
+from .routes import auth, consumers, producers, users
 
 app = FastAPI()
 
@@ -42,10 +42,4 @@ app.include_router(
     consumers.router,
     prefix="/consumer",
     tags=["consumer"],
-)
-
-app.include_router(
-    histories.router,
-    prefix="/histories",
-    tags=["histories"],
 )
