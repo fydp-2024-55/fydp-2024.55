@@ -18,7 +18,9 @@ Or in Docker:
 
 1. Build the Docker image: `docker build -t fydp-backend-api .`
 2. Start a container: `docker run -p 8000:8000 --name fydp-backend-api fydp-backend-api`
-3. Stop the container when finished running: `docker stop fydp-backend-api`
+3. Go to [127.0.0.1:8000/docs]() for the Swagger UI page.
+4. Make API calls within the page.
+5. Stop the container when finished running: `docker stop fydp-backend-api`
 
 ## How to manage migrations
 
