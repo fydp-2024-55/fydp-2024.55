@@ -6,4 +6,3 @@ networks:
   default: development
   sepolia:
     host: ${SEPOLIA_INFURA_API_KEY}
-dotenv: .env

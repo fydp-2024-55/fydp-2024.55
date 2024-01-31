@@ -1,2 +1,2 @@
-brownie
+eth-brownie
 vyper
