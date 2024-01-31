@@ -24,9 +24,9 @@ COPY . .
 RUN pip install --upgrade pip \
     && pip install -r requirements.txt
 
-# RUN ["alembic", "upgrade", "head"]
-
 RUN ["ganache", "--detach"]
+
+# RUN ["alembic", "upgrade", "head"]
 
 # Run the server
 EXPOSE 8000
