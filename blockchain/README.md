@@ -3,8 +3,7 @@
 ## Environment Setup
 
 1. Build the Docker image: `docker build -t fydp-blockchain .`
-2. Run the Docker image as a container: `docker run -it fydp-blockchain /bin/bash`
-3. From the Docker shell, deploy the smart contract: `brownie run deploy`
+2. Run the Docker image as a container: `docker run fydp-blockchain`
 
 ## Automated Tests
 

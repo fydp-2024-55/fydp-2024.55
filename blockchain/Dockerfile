@@ -23,8 +23,8 @@ COPY . .
 RUN pip install --upgrade pip \
     && pip install -r requirements.txt
 
-# Environment variables
-ENV CONNECTION_URL=http://127.0.0.1:8545
-
 # Start ganache
-CMD ["ganache"]
+RUN ["ganache", "--detach"]
+
+# Deploy the smart contract
+RUN ["brownie", "run", "deploy"]
