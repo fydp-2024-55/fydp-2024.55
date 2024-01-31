@@ -24,6 +24,7 @@ COPY . .
 RUN pip install --upgrade pip \
     && pip install -r requirements.txt
 
+# Start ganache 
 RUN ["ganache", "--detach"]
 
 # RUN ["alembic", "upgrade", "head"]
