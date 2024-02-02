@@ -1,10 +1,14 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from .blockchain.config import deploy_contract, get_minter
+from .blockchain.client import ETHClient
 from .routes import auth, consumers, producers, subscriptions, users
 
 app = FastAPI()
+
+# Store the ETH client in the app state
+app.state.eth_client = ETHClient()
+
 
 app.add_middleware(
     CORSMiddleware,
@@ -13,12 +17,6 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-
-# Store smart contract state on the app instance
-minter = get_minter()
-token_contract = deploy_contract(minter)
-app.state.minter = minter
-app.state.token_contract = token_contract
 
 app.include_router(
     auth.router,
