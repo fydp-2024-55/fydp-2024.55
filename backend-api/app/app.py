@@ -2,7 +2,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from .blockchain.client import ETHClient
-from .routes import auth, consumers, producers, subscriptions, users
+from .routes import auth, consumers, producers, subscriptions, users, wallet
 
 app = FastAPI()
 
@@ -46,4 +46,10 @@ app.include_router(
     subscriptions.router,
     prefix="/subscriptions",
     tags=["subscriptions"],
+)
+
+app.include_router(
+    wallet.router,
+    prefix="/wallet",
+    tags=["wallet"],
 )
