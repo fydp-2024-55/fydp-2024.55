@@ -5,8 +5,8 @@ from .client import ETHClient
 from .constants import WALLET_ENTROPY
 
 
-def generate_account(eth_client: ETHClient) -> Account:
-    return eth_client.w3.eth.account.create(WALLET_ENTROPY)
+def generate_account(eth_client: ETHClient, entropy: str = WALLET_ENTROPY) -> Account:
+    return eth_client.w3.eth.account.create(entropy)
 
 
 def get_balance(eth_client: ETHClient, address: str) -> types.Wei:
