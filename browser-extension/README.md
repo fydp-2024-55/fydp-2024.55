@@ -12,7 +12,7 @@ Run `yarn` to install dependencies.
 Run `yarn start` to start development server on [http://localhost:3000](http://localhost:3000). Any changes to the code will cause the webpage to automatically reload.
 
 ## Load extension
-Go to [chrome://extensions/](chrome://extensions/) and click "Load unpacked". Select the `/build/` directory to load the extension. The extension does not automatically reload when code changes.
+Run `yarn build` to build and store the static files for the extension in the `build/` directory. Go to [chrome://extensions/](chrome://extensions/) and click "Load unpacked". Select the `build/` directory to load the extension. The extension does not automatically reload when code changes.
 
 ## Open extension
 Click extensions (puzzle icon) along the Chrome menu bar and click the "brownie" extension to open it.
