@@ -10,7 +10,7 @@ const WalletPage: FC = () => {
     setTimeout(
       () =>
         setWallet({
-          ethAddress: "0x123...4567",
+          eth_address: "0x123...4567",
           balance: 200,
         }),
       1000

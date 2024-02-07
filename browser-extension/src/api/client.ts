@@ -1,6 +1,6 @@
 import axios from "axios";
 
-import { Producer, History } from "../types";
+import { Producer, History, Wallet } from "../types";
 
 const api = axios.create({
   baseURL: "http://localhost:8000",
@@ -51,10 +51,17 @@ const getHistory = async () => {
 
 const getUser = () => api.get<{ email: string }>(`/users/me`);
 
-const createWallet = () => api.post(`/wallet/`);
+const createWallet = async () => {
+  const response = await api.post<Wallet>(`/wallet/`);
+  const wallet: Wallet = response.data;
+  return wallet;
+};
 
-const updateWallet = () =>
-  api.patch<{ ethAddress?: string; privateKey: string }>(`/wallet/`);
+const updateWallet = async (data: Wallet) => {
+  const response = await api.patch(`/users/me/wallet/`, data); // TODO: Set explicit type response
+  const user = response.data;
+  return user;
+};
 
 const client = {
   register,
