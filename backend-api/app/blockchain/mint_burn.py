@@ -4,10 +4,7 @@ from .client import ETHClient
 
 
 # Mint a token for a producer
-def mint_token(
-    eth_client: ETHClient,
-    producer: str,
-) -> types.TxReceipt:
+def mint_token(eth_client: ETHClient, producer: str) -> types.TxReceipt:
     tx_hash = eth_client.token_contract.functions.mint(producer).transact(
         {"from": eth_client.minter}
     )

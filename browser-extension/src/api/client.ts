@@ -1,12 +1,16 @@
 import axios from "axios";
+
 import { Producer, History } from "../types";
 
 const api = axios.create({
   baseURL: "http://localhost:8000",
 });
 
-const register = async (data: { email: string; password: string, eth_address: string }) =>
-  api.post(`/auth/register`, data);
+const register = async (data: {
+  email: string;
+  password: string;
+  eth_address: string;
+}) => api.post(`/auth/register`, data);
 
 const logIn = async (data: { email: string; password: string }) => {
   const formData = new FormData();
@@ -29,24 +33,28 @@ const logOut = async () => {
   // delete api.defaults.headers.common["Authorization"];
 };
 
-
 const getProducer = async () => {
-  const response = await api.get<Producer>(`/producer/me`)
-  return response.data
-}
+  const response = await api.get<Producer>(`/producer/me`);
+  return response.data;
+};
 
 const updateProducer = async (data: Producer) => {
-  const response = await api.patch(`producer/me`, data)
-  console.log(response)
-}
+  const response = await api.patch(`producer/me`, data);
+  console.log(response);
+};
 
 const getHistory = async () => {
-  const response = await api.get<History[]>(`/histories/`)
-  const histories: History[] = response.data
-  return histories
-}
+  const response = await api.get<History[]>(`/histories/`);
+  const histories: History[] = response.data;
+  return histories;
+};
 
 const getUser = () => api.get<{ email: string }>(`/users/me`);
+
+const createWallet = () => api.post(`/wallet/`);
+
+const updateWallet = () =>
+  api.patch<{ ethAddress?: string; privateKey: string }>(`/wallet/`);
 
 const client = {
   register,
@@ -56,6 +64,8 @@ const client = {
   getProducer,
   updateProducer,
   getHistory,
+  createWallet,
+  updateWallet,
 };
 
 export default client;
