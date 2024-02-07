@@ -2,6 +2,8 @@ from typing import Dict, List
 from fastapi import APIRouter, Body, Request, status, HTTPException, Query
 from fastapi.params import Depends
 from sqlalchemy.ext.asyncio import AsyncSession
+import datetime
+
 
 from ..blockchain.mint_burn import burn_token, mint_token
 from ..dependencies import (
@@ -10,6 +12,7 @@ from ..dependencies import (
     get_user_manager,
 )
 from ..managers import UserManager
+from ..models.producers import Producer
 from ..models.users import User
 from ..ops import producers as ops
 from ..schemas.producers import (
@@ -191,8 +194,27 @@ async def delete_producer(
 async def upload_interests(
     visited_sites: List[VisitedSite],
 ):
-    # TODO: Implement interest categorization logic
-    return visited_sites
+    return []
+    # TESTING
+    # TODO: Remove test_histories
+    # from ..extension.sample_websites import WEBSITES
+
+    # test_histories = [
+    #     HistoryCreate(
+    #         url=WEBSITES[2][0],
+    #         title=WEBSITES[2][1],
+    #         visit_time=datetime.datetime.now(),
+    #         time_spent=15,
+    #     ),
+    #     HistoryCreate(
+    #         url=WEBSITES[3][0],
+    #         title=WEBSITES[3][1],
+    #         visit_time=datetime.datetime.now(),
+    #         time_spent=10,
+    #     ),
+    # ]
+    # await ops.create_histories(db, test_histories, producer)
+    # return await ops.get_histories(db, producer)
 
 
 @router.get(
