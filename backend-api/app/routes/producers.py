@@ -3,8 +3,11 @@ from fastapi.params import Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from ..blockchain.mint_burn import burn_token, mint_token
-from ..dependencies import (get_async_session, get_current_active_user,
-                            get_current_producer)
+from ..dependencies import (
+    get_async_session,
+    get_current_active_user,
+    get_current_producer,
+)
 from ..models.producers import Producer
 from ..models.users import User
 from ..ops import producers as ops
@@ -23,15 +26,13 @@ async def create_producer(
 ):
     if producer.eth_address:
         mint_token(
-            request.app.state.token_contract,
-            request.app.state.minter,
+            request.app.state.eth_client,
             producer.eth_address,
         )
 
     elif user.eth_address:
         mint_token(
-            request.app.state.token_contract,
-            request.app.state.minter,
+            request.app.state.eth_client,
             user.eth_address,
         )
 
@@ -56,11 +57,10 @@ async def update_producer(
 ):
     if producer.eth_address:
         if user.eth_address:
-            burn_token(request.app.state.token_contract, user.eth_address)
+            burn_token(request.app.state.eth_client, user.eth_address)
 
         mint_token(
-            request.app.state.token_contract,
-            request.app.state.minter,
+            request.app.state.eth_client,
             producer.eth_address,
         )
 
@@ -75,7 +75,7 @@ async def delete_producer(
     user: User = Depends(get_current_active_user),
 ):
     if user.eth_address:
-        burn_token(request.app.state.token_contract, user.eth_address)
+        burn_token(request.app.state.eth_client, user.eth_address)
 
     await ops.delete_producer(db, user)
 

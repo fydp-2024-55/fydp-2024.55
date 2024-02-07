@@ -1,12 +1,16 @@
 import axios from "axios";
-import { Producer, History } from "../types";
+
+import { Producer, History, Wallet } from "../types";
 
 const api = axios.create({
   baseURL: "http://localhost:8000",
 });
 
-const register = async (data: { email: string; password: string, eth_address: string }) =>
-  api.post(`/auth/register`, data);
+const register = async (data: {
+  email: string;
+  password: string;
+  eth_address: string;
+}) => api.post(`/auth/register`, data);
 
 const logIn = async (data: { email: string; password: string }) => {
   const formData = new FormData();
@@ -29,24 +33,35 @@ const logOut = async () => {
   // delete api.defaults.headers.common["Authorization"];
 };
 
-
 const getProducer = async () => {
-  const response = await api.get<Producer>(`/producer/me`)
-  return response.data
-}
+  const response = await api.get<Producer>(`/producer/me`);
+  return response.data;
+};
 
 const updateProducer = async (data: Producer) => {
-  const response = await api.patch(`producer/me`, data)
-  console.log(response)
-}
+  const response = await api.patch(`producer/me`, data);
+  console.log(response);
+};
 
 const getHistory = async () => {
-  const response = await api.get<History[]>(`/histories/`)
-  const histories: History[] = response.data
-  return histories
-}
+  const response = await api.get<History[]>(`/histories/`);
+  const histories: History[] = response.data;
+  return histories;
+};
 
 const getUser = () => api.get<{ email: string }>(`/users/me`);
+
+const createWallet = async () => {
+  const response = await api.post<Wallet>(`/wallet/`);
+  const wallet: Wallet = response.data;
+  return wallet;
+};
+
+const updateWallet = async (data: Wallet) => {
+  const response = await api.patch(`/users/me/wallet/`, data); // TODO: Set explicit type response
+  const user = response.data;
+  return user;
+};
 
 const client = {
   register,
@@ -56,6 +71,8 @@ const client = {
   getProducer,
   updateProducer,
   getHistory,
+  createWallet,
+  updateWallet,
 };
 
 export default client;

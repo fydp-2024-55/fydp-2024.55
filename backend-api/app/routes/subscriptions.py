@@ -26,7 +26,7 @@ async def create_subscriptions(subscriptions: SubscriptionCreate, request: Reque
 
     # Perform the token purchases through the smart contract
     consumer_purchase_tokens(
-        request.app.state.token_contract,
+        request.app.state.eth_client,
         subscriptions.consumer_eth_address,
         subscriptions.producer_eth_addresses,
         date_to_epoch(current_date),
@@ -34,7 +34,7 @@ async def create_subscriptions(subscriptions: SubscriptionCreate, request: Reque
     )
 
     subscriptions = consumer_subscriptions(
-        request.app.state.token_contract, subscriptions.consumer_eth_address
+        request.app.state.eth_client, subscriptions.consumer_eth_address
     )
 
     return SubscriptionRead(subscriptions=subscriptions)
@@ -43,7 +43,7 @@ async def create_subscriptions(subscriptions: SubscriptionCreate, request: Reque
 @router.get("/{consumer_eth_address}", status_code=status.HTTP_200_OK)
 async def read_subscriptions(consumer_eth_address: str, request: Request):
     subscriptions = consumer_subscriptions(
-        request.app.state.token_contract, consumer_eth_address
+        request.app.state.eth_client, consumer_eth_address
     )
 
     return SubscriptionRead(subscriptions=subscriptions)
@@ -54,7 +54,7 @@ async def update_subscriptions(consumer_eth_address: str, request: Request):
     # TODO: Implement later
 
     subscriptions = consumer_subscriptions(
-        request.app.state.token_contract, consumer_eth_address
+        request.app.state.eth_client, consumer_eth_address
     )
 
     return SubscriptionRead(subscriptions=subscriptions)
