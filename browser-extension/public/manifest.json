@@ -23,6 +23,7 @@
     "scripting",
     "webRequest",
     "webNavigation",
-    "privacy"
+    "privacy",
+    "notifications"
     ]
 }

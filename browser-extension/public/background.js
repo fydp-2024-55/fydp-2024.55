@@ -35,8 +35,14 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
   }
 });
 
+let notify = false;
+
 function checkDNTSetting() {
   chrome.privacy.websites.doNotTrackEnabled.get({}, function (details) {
+    if (notify) {
+      return;
+    }
+
     if (chrome.runtime.lastError) {
       console.error(
         "Error retrieving doNotTrackEnabled:",
@@ -52,6 +58,26 @@ function checkDNTSetting() {
       console.log(
         `Do Not Track setting is ${details.value ? "enabled" : "disabled"}.`
       );
+
+
+      if (details.value == true) {
+        notify = false;
+      }
+
+      if (details.value == false && notify == false) {
+        chrome.notifications.create("", {
+          type: "basic",
+          iconUrl: "favicon.ico",
+          title: "Do Not Track",
+          message:
+            "Do Not Track is disabled. Please enable it in your Chrome settings for enhanced privacy.",
+          priority: 2,
+        });
+
+        setTimeout(() => {
+          notificationCooldown = true;
+        }, 30000); // im giving them 30 seconds to turn it on
+      }
     } else {
       console.log(
         "Do Not Track setting cannot be controlled by this extension."
