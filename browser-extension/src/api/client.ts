@@ -63,6 +63,11 @@ const updateWallet = async (data: Wallet) => {
   return user;
 };
 
+// Don't think i need this since we can't use axois in background script
+const createHistory = async (data: History) => {
+  await api.post(`/users/me/histories`, data);
+}
+
 const client = {
   register,
   logIn,
@@ -73,6 +78,7 @@ const client = {
   getHistory,
   createWallet,
   updateWallet,
+  createHistory,
 };
 
 export default client;
