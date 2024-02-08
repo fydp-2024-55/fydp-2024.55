@@ -34,3 +34,33 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
     openTabs[tabId] = { url: changeInfo.url, openedAt: Date.now() };
   }
 });
+
+function checkDNTSetting() {
+  chrome.privacy.websites.doNotTrackEnabled.get({}, function (details) {
+    if (chrome.runtime.lastError) {
+      console.error(
+        "Error retrieving doNotTrackEnabled:",
+        chrome.runtime.lastError
+      );
+      return;
+    }
+
+    if (
+      details.levelOfControl === "controlled_by_this_extension" ||
+      details.levelOfControl === "controllable_by_this_extension"
+    ) {
+      console.log(
+        `Do Not Track setting is ${details.value ? "enabled" : "disabled"}.`
+      );
+    } else {
+      console.log(
+        "Do Not Track setting cannot be controlled by this extension."
+      );
+    }
+  });
+}
+
+// check every 10 seconds and onInstallation
+setInterval(checkDNTSetting, 10000);
+
+chrome.runtime.onInstalled.addListener(checkDNTSetting);
