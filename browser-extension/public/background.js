@@ -16,14 +16,14 @@ chrome.tabs.onRemoved.addListener(async (tabId) => {
   if (openTabs[tabId]) {
     const tabInfo = openTabs[tabId];
 
-    fetch("http://localhost:8000/users/me/histories", {
+    fetch("http://localhost:8000/producer/me/histories", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         url: tabInfo.url,
         title: "placeholder",
-        visitTime: tabInfo.openedAt.toString(),
-        timeSpend: (Date.now() - tabInfo.openedAt).toString(),
+        visit_time: tabInfo.openedAt.toString(),
+        time_spend: (Date.now() - tabInfo.openedAt).toString(),
       }),
     }).then((response) => {
       if (!response.ok) {
