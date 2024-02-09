@@ -12,14 +12,27 @@ chrome.tabs.onCreated.addListener((tab) => {
 });
 
 // Track closed tabs
-chrome.tabs.onRemoved.addListener((tabId) => {
+chrome.tabs.onRemoved.addListener(async (tabId) => {
   if (openTabs[tabId]) {
-    let tabInfo = openTabs[tabId];
-    console.log(
-      `URL: ${tabInfo.url}, opened at: ${new Date(
-        tabInfo.openedAt
-      )}, time spent: ${Date.now() - tabInfo.openedAt}`
-    );
+    const tabInfo = openTabs[tabId];
+
+    fetch("http://localhost:8000/producer/me/histories", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        url: tabInfo.url,
+        title: "placeholder",
+        visit_time: tabInfo.openedAt.toString(),
+        time_spend: (Date.now() - tabInfo.openedAt).toString(),
+      }),
+    }).then((response) => {
+      if (!response.ok) {
+        throw new Error(
+          `Network response was not ok, status: ${response.status}`
+        );
+      }
+    });
+
     delete openTabs[tabId];
   }
 });
