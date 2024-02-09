@@ -4,19 +4,20 @@ export enum Page {
   Wallet = "Wallet",
   History = "History",
   Subscribers = "Subscribers",
+  Registration = "Registration",
+  Login = "Login",
 }
 
 export interface Producer {
+  eth_address: string;
   name: string;
-  gender: string;
-  ethnicity: string;
-  date_of_birth: string;
-  city: string;
-  state: string;
-  country: string;
-  income: number;
-  marital_status: string;
-  parental_status: string;
+  gender: string | null;
+  ethnicity: string | null;
+  date_of_birth: string | null;
+  country: string | null;
+  income: number | null;
+  marital_status: string | null;
+  parental_status: string | null;
 }
 
 export interface Wallet {
@@ -31,12 +32,17 @@ export interface Permissions {
 export interface History {
   url: string;
   title: string;
-  visitTime: string;
-  timeSpent: string;
+  visit_time: string;
+  time_spent: string;
 }
 
 export interface Subscriber {
   name: string;
   ethAddress: string;
   email: string;
+}
+
+export interface BearerToken {
+  access_token: string;
+  token_type: string;
 }
