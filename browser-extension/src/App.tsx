@@ -1,14 +1,7 @@
-import { useState } from "react";
-import BottomNav from "./components/BottomNav";
-import LoginPage from "./components/LoginPage";
-import PageContent from "./components/PageContent";
-import { Page } from "./types";
-import LogoutButton from "./components/LogOutButton";
+import AppRouter from "./components/AppRouter";
+import { AppContextProvider } from "./components/AppContext";
 
 const App = () => {
-  const [page, setPage] = useState(Page.Profile);
-  const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
-
   return (
     <div
       style={{
@@ -23,26 +16,9 @@ const App = () => {
         alignItems: "center",
       }}
     >
-      {!isLoggedIn ? (
-        <LoginPage onLogIn={() => setIsLoggedIn(true)} />
-      ) : (
-        <div
-          style={{
-            height: "100%",
-            width: "100%",
-            paddingTop: 20,
-            display: "flex",
-            flexDirection: "column",
-            justifyContent: "space-between",
-            overflowY: "hidden",
-            position: "relative",
-          }}
-        >
-          <LogoutButton onLogout={() => setIsLoggedIn(false)} />
-          <PageContent page={page} />
-          <BottomNav page={page} setPage={setPage} />
-        </div>
-      )}
+      <AppContextProvider>
+        <AppRouter />
+      </AppContextProvider>
     </div>
   );
 };
