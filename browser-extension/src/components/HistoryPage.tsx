@@ -9,7 +9,7 @@ const HistoryPage: FC = () => {
 
   const loadHistories = async () => {
     try {
-      const historyArr: History[] = await client.getHistory();
+      const historyArr: History[] = await client.getProducerHistory();
       setHistories(historyArr);
     } catch (error) {
       if (axios.isAxiosError(error)) {
