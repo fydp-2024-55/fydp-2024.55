@@ -1,3 +1,4 @@
+from typing import List
 from fastapi import APIRouter, Request, status
 from fastapi.params import Depends
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -11,8 +12,8 @@ from ..dependencies import (
 from ..models.producers import Producer
 from ..models.users import User
 from ..ops import producers as ops
-from ..schemas.histories import HistoryCreate
-from ..schemas.producers import ProducerCreate, ProducerUpdate
+from ..schemas.histories import HistoryCreate, HistoryRead
+from ..schemas.producers import ProducerCreate, ProducerRead, ProducerUpdate
 
 router = APIRouter()
 

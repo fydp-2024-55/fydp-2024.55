@@ -3,8 +3,8 @@ import { Page } from "../types";
 import AppContext from "./AppContext";
 import BottomNav from "./BottomNav";
 import HistoryPage from "./HistoryPage";
-import LogOutButton from "./LogOutButton";
 import LoginPage from "./LoginPage";
+import LogoutButton from "./LogoutButton";
 import PermissionsPage from "./PermissionsPage";
 import ProfilePage from "./ProfilePage";
 import RegistrationPage from "./RegistrationPage";
@@ -55,7 +55,7 @@ const AppRouter: FC = () => {
           position: "relative",
         }}
       >
-        <LogOutButton />
+        <LogoutButton />
         {pageContent}
         <BottomNav />
       </div>
