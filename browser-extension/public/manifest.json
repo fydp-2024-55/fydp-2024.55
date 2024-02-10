@@ -22,6 +22,8 @@
     "activeTab",
     "scripting",
     "webRequest",
-    "webNavigation"
-    ]
+    "webNavigation",
+    "privacy",
+    "notifications"
+  ]
 }
