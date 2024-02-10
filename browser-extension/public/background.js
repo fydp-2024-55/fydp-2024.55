@@ -73,7 +73,9 @@ function checkDNTSetting() {
             "Do Not Track is disabled. Please enable it in your Chrome settings for enhanced privacy.",
           priority: 2,
         });
-        setTimeout(() => {}, 30000); // im giving them 30 seconds to turn it on
+        setTimeout(() => {
+          notify = false;
+        }, 600000); // im giving them 60 seconds to turn it on
       }
     } else {
       console.log(
