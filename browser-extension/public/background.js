@@ -25,7 +25,7 @@ chrome.tabs.onRemoved.addListener((tabId) => {
 });
 
 // Update tab information when the URL changes
-chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
+chrome.tabs.onUpdated.addListener((tabId, changeInfo) => {
   if (
     changeInfo.url &&
     changeInfo.url !== "about:blank" &&
@@ -39,7 +39,7 @@ let notify = false;
 
 function checkDNTSetting() {
   chrome.privacy.websites.doNotTrackEnabled.get({}, function (details) {
-    if (notify) {
+    if (notify === true) {
       return;
     }
 
@@ -59,24 +59,21 @@ function checkDNTSetting() {
         `Do Not Track setting is ${details.value ? "enabled" : "disabled"}.`
       );
 
-
-      if (details.value == true) {
+      if (details.value === true) {
         notify = false;
       }
 
-      if (details.value == false && notify == false) {
+      if (details.value === false && notify === false) {
+        notify = true;
         chrome.notifications.create("", {
           type: "basic",
-          iconUrl: "favicon.ico",
+          iconUrl: "bytebucks48.ico",
           title: "Do Not Track",
           message:
             "Do Not Track is disabled. Please enable it in your Chrome settings for enhanced privacy.",
           priority: 2,
         });
-
-        setTimeout(() => {
-          notificationCooldown = true;
-        }, 30000); // im giving them 30 seconds to turn it on
+        setTimeout(() => {}, 30000); // im giving them 30 seconds to turn it on
       }
     } else {
       console.log(
