@@ -22,7 +22,7 @@ router.include_router(
 )
 
 
-@router.patch("/me/wallet", status_code=status.HTTP_200_OK)
+@router.patch("/me/wallet", status_code=status.HTTP_200_OK, response_model=UserRead)
 async def update_user_wallet(
     wallet: WalletBase,
     db: AsyncSession = Depends(get_async_session),

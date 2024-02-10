@@ -10,7 +10,7 @@ from ..schemas.wallet import WalletBase
 router = APIRouter()
 
 
-@router.post("/", status_code=status.HTTP_200_OK)
+@router.post("/", status_code=status.HTTP_200_OK, response_model=WalletBase)
 async def create_wallet(
     request: Request,
     user: User = Depends(get_current_active_user),

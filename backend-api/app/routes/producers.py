@@ -1,3 +1,4 @@
+from typing import List
 from fastapi import APIRouter, Request, status
 from fastapi.params import Depends
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -11,13 +12,13 @@ from ..dependencies import (
 from ..models.producers import Producer
 from ..models.users import User
 from ..ops import producers as ops
-from ..schemas.histories import HistoryCreate
-from ..schemas.producers import ProducerCreate, ProducerUpdate
+from ..schemas.histories import HistoryCreate, HistoryRead
+from ..schemas.producers import ProducerCreate, ProducerRead, ProducerUpdate
 
 router = APIRouter()
 
 
-@router.post("/", status_code=status.HTTP_201_CREATED)
+@router.post("/me", status_code=status.HTTP_201_CREATED, response_model=ProducerRead)
 async def create_producer(
     producer: ProducerCreate,
     request: Request,
@@ -40,7 +41,7 @@ async def create_producer(
     return await ops.get_producer(db, user)
 
 
-@router.get("/me", status_code=status.HTTP_200_OK)
+@router.get("/me", status_code=status.HTTP_200_OK, response_model=ProducerRead)
 async def read_producer(
     db: AsyncSession = Depends(get_async_session),
     user: User = Depends(get_current_active_user),
@@ -48,7 +49,7 @@ async def read_producer(
     return await ops.get_producer(db, user)
 
 
-@router.patch("/me", status_code=status.HTTP_200_OK)
+@router.patch("/me", status_code=status.HTTP_200_OK, response_model=ProducerRead)
 async def update_producer(
     producer: ProducerUpdate,
     request: Request,
@@ -80,7 +81,11 @@ async def delete_producer(
     await ops.delete_producer(db, user)
 
 
-@router.post("/me/histories", status_code=status.HTTP_201_CREATED)
+@router.post(
+    "/me/histories",
+    status_code=status.HTTP_201_CREATED,
+    response_model=List[HistoryRead],
+)
 async def create_histories(
     histories: list[HistoryCreate],
     db: AsyncSession = Depends(get_async_session),
@@ -90,7 +95,9 @@ async def create_histories(
     return await ops.get_histories(db, producer)
 
 
-@router.get("/me/histories", status_code=status.HTTP_200_OK)
+@router.get(
+    "/me/histories", status_code=status.HTTP_200_OK, response_model=List[HistoryRead]
+)
 async def read_histories(
     db: AsyncSession = Depends(get_async_session),
     producer: Producer = Depends(get_current_producer),
