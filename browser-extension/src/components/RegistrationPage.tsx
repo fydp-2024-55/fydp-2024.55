@@ -4,15 +4,30 @@ import client from "../api/client";
 import { Page } from "../types";
 import AuthContext from "./AppContext";
 
-const LoginPage: FC = () => {
+const RegistrationPage: FC = () => {
   const { setToken, setPage } = useContext(AuthContext)!;
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [ethAddress, setEthAddress] = useState("");
+  const [privateKey, setPrivateKey] = useState("");
+  const [name, setName] = useState("");
 
-  const logIn = async () => {
+  const register = async () => {
     try {
+      await client.register(email, password, ethAddress);
       const bearerToken = await client.logIn(email, password);
+      await client.createProducer({
+        name,
+        eth_address: ethAddress,
+        gender: null,
+        ethnicity: null,
+        date_of_birth: null,
+        country: null,
+        income: null,
+        marital_status: null,
+        parental_status: null,
+      });
       setPage(Page.Profile);
       setToken(bearerToken.access_token);
     } catch (error) {
@@ -27,10 +42,9 @@ const LoginPage: FC = () => {
         display: "flex",
         flexDirection: "column",
         justifyContent: "space-evenly",
-        alignItems: "center",
       }}
     >
-      <Typography variant="h1">Sign In</Typography>
+      <Typography variant="h1">Sign Up</Typography>
       <div
         style={{
           display: "flex",
@@ -38,6 +52,12 @@ const LoginPage: FC = () => {
           gap: 10,
         }}
       >
+        <TextField
+          label="Name"
+          type="test"
+          variant="filled"
+          onChange={(event) => setName(event.target.value)}
+        />
         <TextField
           label="Email"
           type="email"
@@ -50,6 +70,18 @@ const LoginPage: FC = () => {
           variant="filled"
           onChange={(event) => setPassword(event.target.value)}
         />
+        <TextField
+          label="ETH Address"
+          type="text"
+          variant="filled"
+          onChange={(event) => setEthAddress(event.target.value)}
+        />
+        <TextField
+          label="Private Key"
+          type="password"
+          variant="filled"
+          onChange={(event) => setPrivateKey(event.target.value)}
+        />
       </div>
       <div
         style={{
@@ -58,8 +90,8 @@ const LoginPage: FC = () => {
           gap: 10,
         }}
       >
-        <Button color="primary" variant="contained" onClick={logIn}>
-          Sign in
+        <Button color="primary" variant="contained" onClick={register}>
+          Sign up
         </Button>
         <div
           style={{
@@ -68,13 +100,13 @@ const LoginPage: FC = () => {
             alignItems: "center",
           }}
         >
-          <Typography variant="body1">Don't have an account?</Typography>
+          <Typography variant="body1">Already have an account?</Typography>
           <Button
             variant="text"
             color="primary"
-            onClick={() => setPage(Page.Registration)}
+            onClick={() => setPage(Page.Login)}
           >
-            <Typography variant="body1">Sign up!</Typography>
+            <Typography variant="body1">Sign in!</Typography>
           </Button>
         </div>
       </div>
@@ -82,4 +114,4 @@ const LoginPage: FC = () => {
   );
 };
 
-export default LoginPage;
+export default RegistrationPage;

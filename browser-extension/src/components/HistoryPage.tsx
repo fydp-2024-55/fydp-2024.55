@@ -2,22 +2,16 @@ import { CircularProgress, Typography } from "@material-ui/core";
 import { FC, useEffect, useState } from "react";
 import client from "../api/client";
 import { History } from "../types";
-import axios, { AxiosError } from "axios";
 
 const HistoryPage: FC = () => {
   const [histories, setHistories] = useState<History[]>([]);
 
   const loadHistories = async () => {
     try {
-      const historyArr: History[] = await client.getHistory();
+      const historyArr: History[] = await client.getProducerHistory();
       setHistories(historyArr);
     } catch (error) {
-      if (axios.isAxiosError(error)) {
-        const axiosError = error as AxiosError;
-        alert(`${axiosError.status}:  ${axiosError.message}`);
-      } else {
-        alert(`Error ${error}`);
-      }
+      client.displayError(error);
     }
   };
 

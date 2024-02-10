@@ -7,7 +7,6 @@ import {
 import { FC, useEffect, useState } from "react";
 import client from "../api/client";
 import { Producer } from "../types";
-import axios, { AxiosError } from "axios";
 
 const ProfilePage: FC = () => {
   const [profile, setProfile] = useState<Producer>();
@@ -19,30 +18,19 @@ const ProfilePage: FC = () => {
       setProfile(producer);
       setUpdateProfile(producer);
     } catch (error) {
-      if (axios.isAxiosError(error)) {
-        const axiosError = error as AxiosError;
-        alert(`${axiosError.status}:  ${axiosError.message}`);
-      } else {
-        alert(`Error ${error}`);
-      }
+      client.displayError(error);
     }
   };
 
   const updateProducer = async () => {
     try {
       if (updateProfile) {
-        await client.updateProducer(updateProfile);
-        // const producer: Producer = await client.getProducer(); // put back later
-        setProfile(updateProfile);
-        console.log("saved");
+        const updatedProfile = await client.updateProducer(updateProfile);
+        setProfile(updatedProfile);
+        alert("Saved");
       }
     } catch (error) {
-      if (axios.isAxiosError(error)) {
-        const axiosError = error as AxiosError;
-        alert(`${axiosError.status}:  ${axiosError.message}`);
-      } else {
-        alert(`Error ${error}`);
-      }
+      client.displayError(error);
     }
   };
 
@@ -81,18 +69,20 @@ const ProfilePage: FC = () => {
               gridTemplateColumns: "1fr 1fr",
             }}
           >
-            {Object.keys(profile).map((key) => (
-              <TextField
-                key={key}
-                style={{ margin: 10 }}
-                label={key}
-                defaultValue={profile[key as keyof Producer]}
-                variant="standard"
-                onChange={(event) =>
-                  onEdit(key as keyof Producer, event?.target.value)
-                }
-              />
-            ))}
+            {Object.keys(profile)
+              .filter((key) => !["user_id"].includes(key))
+              .map((key) => (
+                <TextField
+                  key={key}
+                  style={{ margin: 10 }}
+                  label={key}
+                  defaultValue={profile[key as keyof Producer]}
+                  variant="standard"
+                  onChange={(event) =>
+                    onEdit(key as keyof Producer, event?.target.value)
+                  }
+                />
+              ))}
           </div>
           <Button variant="contained" onClick={updateProducer}>
             Save

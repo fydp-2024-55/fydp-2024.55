@@ -1,24 +1,19 @@
 import { Button } from "@material-ui/core";
-import axios, { AxiosError } from "axios";
-import { FC } from "react";
+import { FC, useContext } from "react";
 import client from "../api/client";
+import { Page } from "../types";
+import AppContext from "./AppContext";
 
-interface Props {
-  onLogout: () => void;
-}
+const LogoutButton: FC = () => {
+  const { setToken, setPage } = useContext(AppContext)!;
 
-const LogoutButton: FC<Props> = ({ onLogout }) => {
   const logOut = async () => {
     try {
-      await client.logOut(); // TODO: find out why
-      onLogout();
+      await client.logOut();
+      setPage(Page.Login);
+      setToken(null);
     } catch (error) {
-      if (axios.isAxiosError(error)) {
-        const axiosError = error as AxiosError;
-        alert(`${axiosError.status}:  ${axiosError.message}`);
-      } else {
-        alert(`Error ${error}`);
-      }
+      client.displayError(error);
     }
   };
 
@@ -29,7 +24,7 @@ const LogoutButton: FC<Props> = ({ onLogout }) => {
       style={{ position: "absolute", left: 0, top: 0, margin: 6 }}
       onClick={logOut}
     >
-      LOGOUT
+      Sign out
     </Button>
   );
 };

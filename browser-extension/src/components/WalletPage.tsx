@@ -7,17 +7,14 @@ const WalletPage: FC = () => {
 
   const loadWallet = async () => {
     // Todo: Replace timeout with api call
-    setTimeout(
-      () =>
-        setWallet({
-          eth_address: "0x123...4567",
-          balance: 200,
-        }),
-      1000
-    );
+    setWallet({
+      eth_address: "0x123...4567",
+      balance: 200,
+    });
   };
 
   useEffect(() => {
+    loadWallet();
     const interval = setInterval(() => {
       loadWallet();
     }, 600000); // 10 minutes

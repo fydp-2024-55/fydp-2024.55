@@ -6,15 +6,13 @@ import {
   Visibility,
   Wallet,
 } from "@mui/icons-material";
-import { FC } from "react";
+import { FC, useContext } from "react";
 import { Page } from "../types";
+import AppContext from "./AppContext";
 
-interface Props {
-  page: Page;
-  setPage: (page: Page) => void;
-}
+const BottomNav: FC = () => {
+  const { page, setPage } = useContext(AppContext)!;
 
-const BottomNav: FC<Props> = ({ page, setPage }) => {
   return (
     <BottomNavigation
       style={{ marginBottom: 0 }}
