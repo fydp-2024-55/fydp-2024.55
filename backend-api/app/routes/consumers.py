@@ -5,12 +5,12 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from ..dependencies import get_async_session, get_current_active_user
 from ..models.users import User
 from ..ops import consumers as ops
-from ..schemas.consumers import ConsumerCreate, ConsumerUpdate
+from ..schemas.consumers import ConsumerCreate, ConsumerRead, ConsumerUpdate
 
 router = APIRouter()
 
 
-@router.post("/", status_code=status.HTTP_201_CREATED)
+@router.post("/me", status_code=status.HTTP_201_CREATED, response_model=ConsumerRead)
 async def create_consumer(
     consumer: ConsumerCreate,
     db: AsyncSession = Depends(get_async_session),
@@ -20,7 +20,7 @@ async def create_consumer(
     return await ops.get_consumer(db, user)
 
 
-@router.get("/me", status_code=status.HTTP_200_OK)
+@router.get("/me", status_code=status.HTTP_200_OK, response_model=ConsumerRead)
 async def read_consumer(
     db: AsyncSession = Depends(get_async_session),
     user: User = Depends(get_current_active_user),
@@ -28,7 +28,7 @@ async def read_consumer(
     return await ops.get_consumer(db, user)
 
 
-@router.patch("/me", status_code=status.HTTP_200_OK)
+@router.patch("/me", status_code=status.HTTP_200_OK, response_model=ConsumerRead)
 async def update_consumer(
     consumer: ConsumerUpdate,
     db: AsyncSession = Depends(get_async_session),
