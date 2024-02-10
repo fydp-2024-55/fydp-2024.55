@@ -1,5 +1,4 @@
 import { CircularProgress, Typography } from "@material-ui/core";
-import axios, { AxiosError } from "axios";
 import { FC, useEffect, useState } from "react";
 import client from "../api/client";
 import { History } from "../types";

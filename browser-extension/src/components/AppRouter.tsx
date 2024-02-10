@@ -1,15 +1,15 @@
 import { FC, ReactElement, useContext } from "react";
 import { Page } from "../types";
+import AppContext from "./AppContext";
+import BottomNav from "./BottomNav";
 import HistoryPage from "./HistoryPage";
+import LogOutButton from "./LogOutButton";
+import LoginPage from "./LoginPage";
 import PermissionsPage from "./PermissionsPage";
 import ProfilePage from "./ProfilePage";
+import RegistrationPage from "./RegistrationPage";
 import SubscribersPage from "./SubscribersPage";
 import WalletPage from "./WalletPage";
-import AppContext from "./AppContext";
-import LoginPage from "./LoginPage";
-import RegistrationPage from "./RegistrationPage";
-import LogOutButton from "./LogOutButton";
-import BottomNav from "./BottomNav";
 
 const AppRouter: FC = () => {
   const { token, page } = useContext(AppContext)!;
