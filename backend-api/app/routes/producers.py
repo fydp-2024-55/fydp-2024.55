@@ -1,4 +1,3 @@
-from typing import List
 from fastapi import APIRouter, Request, status
 from fastapi.params import Depends
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -12,8 +11,8 @@ from ..dependencies import (
 from ..models.producers import Producer
 from ..models.users import User
 from ..ops import producers as ops
-from ..schemas.histories import HistoryCreate, HistoryRead
-from ..schemas.producers import ProducerCreate, ProducerRead, ProducerUpdate
+from ..schemas.histories import HistoryCreate
+from ..schemas.producers import ProducerCreate, ProducerUpdate
 
 router = APIRouter()
 
@@ -24,7 +23,7 @@ async def create_producer(
     request: Request,
     db: AsyncSession = Depends(get_async_session),
     user: User = Depends(get_current_active_user),
-) -> ProducerRead:
+):
     if producer.eth_address:
         mint_token(
             request.app.state.eth_client,
@@ -45,7 +44,7 @@ async def create_producer(
 async def read_producer(
     db: AsyncSession = Depends(get_async_session),
     user: User = Depends(get_current_active_user),
-) -> ProducerRead:
+):
     return await ops.get_producer(db, user)
 
 
@@ -55,7 +54,7 @@ async def update_producer(
     request: Request,
     db: AsyncSession = Depends(get_async_session),
     user: User = Depends(get_current_active_user),
-) -> ProducerRead:
+):
     if producer.eth_address:
         if user.eth_address:
             burn_token(request.app.state.eth_client, user.eth_address)
@@ -74,7 +73,7 @@ async def delete_producer(
     request: Request,
     db: AsyncSession = Depends(get_async_session),
     user: User = Depends(get_current_active_user),
-) -> None:
+):
     if user.eth_address:
         burn_token(request.app.state.eth_client, user.eth_address)
 
@@ -90,7 +89,7 @@ async def create_histories(
     histories: list[HistoryCreate],
     db: AsyncSession = Depends(get_async_session),
     producer: Producer = Depends(get_current_producer),
-) -> List[HistoryRead]:
+):
     await ops.create_histories(db, histories, producer)
     return await ops.get_histories(db, producer)
 
@@ -101,5 +100,5 @@ async def create_histories(
 async def read_histories(
     db: AsyncSession = Depends(get_async_session),
     producer: Producer = Depends(get_current_producer),
-) -> List[HistoryRead]:
+):
     return await ops.get_histories(db, producer)
