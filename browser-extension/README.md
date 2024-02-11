@@ -3,7 +3,7 @@
 All commands and folders referenced in this README are relative to the `browser-extension/` directory of the repo.
 
 ## Requirements
-[NodeJS](https://nodejs.org/en/download) version 16 or higher.
+[NodeJS v21](https://nodejs.org/en/download).
 
 ## Install dependencies
 Run `yarn` to install dependencies.
