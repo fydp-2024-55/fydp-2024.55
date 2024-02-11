@@ -1,3 +1,11 @@
+export const AuthTokenKey = "AuthTokenKey";
+
+export enum AuthState {
+  Authenticated = "Authenticated",
+  Unauthenticated = "Unauthenticated",
+  Unknown = "Unknown",
+}
+
 export enum Page {
   Profile = "Profile",
   Permissions = "Permissions",

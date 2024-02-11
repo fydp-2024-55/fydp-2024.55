@@ -1,9 +1,12 @@
 import { CircularProgress, Typography } from "@material-ui/core";
-import { FC, useEffect, useState } from "react";
+import { FC, useContext, useEffect, useState } from "react";
 import client from "../api/client";
 import { History } from "../types";
+import AppContext from "./AppContext";
 
 const HistoryPage: FC = () => {
+  const { setAuthState } = useContext(AppContext)!;
+
   const [histories, setHistories] = useState<History[]>([]);
 
   const loadHistories = async () => {
@@ -11,7 +14,7 @@ const HistoryPage: FC = () => {
       const historyArr: History[] = await client.getProducerHistory();
       setHistories(historyArr);
     } catch (error) {
-      client.displayError(error);
+      client.handleError(error, setAuthState);
     }
   };
 

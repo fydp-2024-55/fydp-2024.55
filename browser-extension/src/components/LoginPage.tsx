@@ -1,22 +1,21 @@
 import { Button, TextField, Typography } from "@material-ui/core";
 import { FC, useContext, useState } from "react";
 import client from "../api/client";
-import { Page } from "../types";
+import { AuthState, Page } from "../types";
 import AuthContext from "./AppContext";
 
 const LoginPage: FC = () => {
-  const { setToken, setPage } = useContext(AuthContext)!;
+  const { setAuthState, setPage } = useContext(AuthContext)!;
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
   const logIn = async () => {
     try {
-      const bearerToken = await client.logIn(email, password);
-      setPage(Page.Profile);
-      setToken(bearerToken.access_token);
+      await client.logIn(email, password);
+      setAuthState(AuthState.Authenticated);
     } catch (error) {
-      client.displayError(error);
+      client.handleError(error, setAuthState);
     }
   };
 

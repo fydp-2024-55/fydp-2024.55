@@ -1,11 +1,11 @@
 import { Button, TextField, Typography } from "@material-ui/core";
 import { FC, useContext, useState } from "react";
 import client from "../api/client";
-import { Page } from "../types";
+import { AuthState, Page } from "../types";
 import AuthContext from "./AppContext";
 
 const RegistrationPage: FC = () => {
-  const { setToken, setPage } = useContext(AuthContext)!;
+  const { setAuthState, setPage } = useContext(AuthContext)!;
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -16,7 +16,7 @@ const RegistrationPage: FC = () => {
   const register = async () => {
     try {
       await client.register(email, password, ethAddress);
-      const bearerToken = await client.logIn(email, password);
+      await client.logIn(email, password);
       await client.createProducer({
         name,
         eth_address: ethAddress,
@@ -28,10 +28,9 @@ const RegistrationPage: FC = () => {
         marital_status: null,
         parental_status: null,
       });
-      setPage(Page.Profile);
-      setToken(bearerToken.access_token);
+      setAuthState(AuthState.Authenticated);
     } catch (error) {
-      client.displayError(error);
+      client.handleError(error, setAuthState);
     }
   };
 

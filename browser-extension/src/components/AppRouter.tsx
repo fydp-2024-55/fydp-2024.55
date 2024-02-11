@@ -1,5 +1,6 @@
-import { FC, ReactElement, useContext } from "react";
-import { Page } from "../types";
+import { CircularProgress } from "@mui/material";
+import { FC, useContext, useEffect } from "react";
+import { AuthState, Page } from "../types";
 import AppContext from "./AppContext";
 import BottomNav from "./BottomNav";
 import HistoryPage from "./HistoryPage";
@@ -11,56 +12,54 @@ import RegistrationPage from "./RegistrationPage";
 import SubscribersPage from "./SubscribersPage";
 import WalletPage from "./WalletPage";
 
-const AppRouter: FC = () => {
-  const { token, page } = useContext(AppContext)!;
+const AuthenticatedPages = [
+  Page.Profile,
+  Page.Wallet,
+  Page.Permissions,
+  Page.History,
+  Page.Subscribers,
+];
 
-  let pageContent: ReactElement;
+const AuthenticatedRouter: FC = () => {
+  const { page, setPage } = useContext(AppContext)!;
 
-  if (token) {
-    switch (page) {
-      case Page.Profile:
-        pageContent = <ProfilePage />;
-        break;
-
-      case Page.Wallet:
-        pageContent = <WalletPage />;
-        break;
-
-      case Page.Permissions:
-        pageContent = <PermissionsPage />;
-        break;
-
-      case Page.History:
-        pageContent = <HistoryPage />;
-        break;
-
-      case Page.Subscribers:
-        pageContent = <SubscribersPage />;
-        break;
-
-      default:
-        throw new Error(`Invalid page: ${page}`);
+  useEffect(() => {
+    if (!AuthenticatedPages.includes(page)) {
+      setPage(AuthenticatedPages[0]);
     }
+  }, [page, setPage]);
 
-    return (
-      <div
-        style={{
-          height: "100%",
-          width: "100%",
-          paddingTop: 20,
-          display: "flex",
-          flexDirection: "column",
-          justifyContent: "space-between",
-          overflowY: "hidden",
-          position: "relative",
-        }}
-      >
-        <LogoutButton />
-        {pageContent}
-        <BottomNav />
-      </div>
-    );
+  switch (page) {
+    case Page.Profile:
+      return <ProfilePage />;
+
+    case Page.Wallet:
+      return <WalletPage />;
+
+    case Page.Permissions:
+      return <PermissionsPage />;
+
+    case Page.History:
+      return <HistoryPage />;
+
+    case Page.Subscribers:
+      return <SubscribersPage />;
+
+    default:
+      return <ProfilePage />;
   }
+};
+
+const UnauthenticatedPages = [Page.Login, Page.Registration];
+
+const UnauthenticatedRouter: FC = () => {
+  const { page, setPage } = useContext(AppContext)!;
+
+  useEffect(() => {
+    if (!UnauthenticatedPages.includes(page)) {
+      setPage(UnauthenticatedPages[0]);
+    }
+  }, [page, setPage]);
 
   switch (page) {
     case Page.Login:
@@ -70,7 +69,39 @@ const AppRouter: FC = () => {
       return <RegistrationPage />;
 
     default:
-      throw new Error(`Invalid page: ${page}`);
+      return <LoginPage />;
+  }
+};
+
+const AppRouter: FC = () => {
+  const { authState } = useContext(AppContext)!;
+
+  switch (authState) {
+    case AuthState.Authenticated:
+      return (
+        <div
+          style={{
+            height: "100%",
+            width: "100%",
+            paddingTop: 20,
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "space-between",
+            overflowY: "hidden",
+            position: "relative",
+          }}
+        >
+          <LogoutButton />
+          <AuthenticatedRouter />
+          <BottomNav />
+        </div>
+      );
+
+    case AuthState.Unauthenticated:
+      return <UnauthenticatedRouter />;
+
+    default:
+      return <CircularProgress />;
   }
 };
 
