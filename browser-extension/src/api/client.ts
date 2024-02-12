@@ -8,6 +8,7 @@ import {
   Producer,
   Wallet,
 } from "../types";
+import persistentStorage from "./persistentStorage";
 
 const api = axios.create({
   baseURL: "http://localhost:8000",
@@ -20,7 +21,7 @@ const handleError = (
   if (axios.isAxiosError(error)) {
     if (error.response?.status === 401) {
       api.defaults.headers.common["Authorization"] = null;
-      localStorage.removeItem(AuthTokenKey);
+      persistentStorage.removeItem(AuthTokenKey);
       setAuthState(AuthState.Unauthenticated);
     } else {
       alert(
@@ -53,7 +54,7 @@ const logIn = async (email: string, password: string) => {
   const token = response.data.access_token;
 
   api.defaults.headers.common["Authorization"] = `Bearer ${token}`;
-  localStorage.setItem(AuthTokenKey, token);
+  persistentStorage.setItem(AuthTokenKey, token);
 
   return response.data;
 };
@@ -62,7 +63,7 @@ const logOut = async () => {
   await api.post(`/auth/jwt/logout`);
 
   api.defaults.headers.common["Authorization"] = null;
-  localStorage.removeItem(AuthTokenKey);
+  persistentStorage.removeItem(AuthTokenKey);
 };
 
 const createProducer = async (data: Producer) => {
