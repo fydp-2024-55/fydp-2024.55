@@ -1,14 +1,34 @@
 import axios from "axios";
 
-import { BearerToken, History, Producer, Wallet } from "../types";
+import {
+  AuthState,
+  AuthTokenKey,
+  BearerToken,
+  History,
+  Producer,
+  Wallet,
+} from "../types";
+import persistentStorage from "./persistentStorage";
 
 const api = axios.create({
   baseURL: "http://localhost:8000",
 });
 
-const displayError = (error: any) => {
+const handleError = (
+  error: any,
+  setAuthState: (authState: AuthState) => void
+) => {
   if (axios.isAxiosError(error)) {
-    alert(`[${error.status}] ${error.name}: ${error.message}`);
+    if (error.response?.status === 401) {
+      api.defaults.headers.common["Authorization"] = null;
+      persistentStorage.removeItem(AuthTokenKey);
+      setAuthState(AuthState.Unauthenticated);
+    } else {
+      alert(
+        `${error.name} [${error.code}]: ${error.message}
+        ${JSON.stringify(error.response?.data)}`
+      );
+    }
   } else if (error instanceof Error) {
     alert(`${error.name}: ${error.message}`);
   }
@@ -31,17 +51,19 @@ const logIn = async (email: string, password: string) => {
   const response = await api.post<BearerToken>(`/auth/jwt/login`, formData, {
     headers: { "Content-Type": "multipart/form-data" },
   });
+  const token = response.data.access_token;
 
-  api.defaults.headers.common[
-    "Authorization"
-  ] = `Bearer ${response.data.access_token}`;
+  api.defaults.headers.common["Authorization"] = `Bearer ${token}`;
+  persistentStorage.setItem(AuthTokenKey, token);
 
   return response.data;
 };
 
-const logOut = () => {
-  api.post(`/auth/jwt/logout`);
+const logOut = async () => {
+  await api.post(`/auth/jwt/logout`);
+
   api.defaults.headers.common["Authorization"] = null;
+  persistentStorage.removeItem(AuthTokenKey);
 };
 
 const createProducer = async (data: Producer) => {
@@ -82,7 +104,8 @@ const updateWallet = async (data: Wallet) => {
 };
 
 const client = {
-  displayError,
+  api,
+  handleError,
   register,
   logIn,
   logOut,

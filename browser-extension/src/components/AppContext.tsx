@@ -1,9 +1,11 @@
-import { createContext, FC, ReactNode, useState } from "react";
-import { Page } from "../types";
+import { createContext, FC, ReactNode, useEffect, useState } from "react";
+import persistentStorage from "../api/persistentStorage";
+import client from "../api/client";
+import { AuthState, AuthTokenKey, Page } from "../types";
 
 interface AppContextType {
-  token: string | null;
-  setToken: (token: string | null) => void;
+  authState: AuthState;
+  setAuthState: (authState: AuthState) => void;
   page: Page;
   setPage: (page: Page) => void;
 }
@@ -15,11 +17,21 @@ interface Props {
 }
 
 export const AppContextProvider: FC<Props> = ({ children }) => {
-  const [token, setToken] = useState<string | null>(null);
   const [page, setPage] = useState(Page.Login);
+  const [authState, setAuthState] = useState(AuthState.Unknown);
+
+  useEffect(() => {
+    const token = persistentStorage.getItem(AuthTokenKey);
+    if (token) {
+      client.api.defaults.headers.common["Authorization"] = `Bearer ${token}`;
+      setAuthState(AuthState.Authenticated);
+    } else {
+      setAuthState(AuthState.Unauthenticated);
+    }
+  }, []);
 
   return (
-    <AppContext.Provider value={{ token, setToken, page, setPage }}>
+    <AppContext.Provider value={{ authState, setAuthState, page, setPage }}>
       {children}
     </AppContext.Provider>
   );

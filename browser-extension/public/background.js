@@ -1,4 +1,16 @@
-let openTabs = {};
+const AuthTokenKey = "AuthTokenKey";
+
+const openTabs = {};
+
+// Basic function to send chrome notifications. Useful for debugging
+const displayNotification = (title, message) => {
+  chrome.notifications.create("", {
+    type: "basic",
+    iconUrl: "bytebucks48.ico",
+    title,
+    message,
+  });
+};
 
 // Track opened tabs
 chrome.tabs.onCreated.addListener((tab) => {
@@ -16,22 +28,35 @@ chrome.tabs.onRemoved.addListener(async (tabId) => {
   if (openTabs[tabId]) {
     const tabInfo = openTabs[tabId];
 
-    fetch("http://localhost:8000/producer/me/histories", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        url: tabInfo.url,
-        title: "placeholder",
-        visit_time: tabInfo.openedAt.toString(),
-        time_spend: (Date.now() - tabInfo.openedAt).toString(),
-      }),
-    }).then((response) => {
+    const results = await chrome.storage.local.get(AuthTokenKey);
+    const token = results[AuthTokenKey];
+
+    if (token) {
+      const response = await fetch(
+        "http://localhost:8000/producer/me/histories",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify([
+            {
+              url: tabInfo.url,
+              title: "placeholder",
+              visit_time: tabInfo.openedAt.toString(),
+              time_spent: (Date.now() - tabInfo.openedAt).toString(),
+            },
+          ]),
+        }
+      );
+
       if (!response.ok) {
         throw new Error(
           `Network response was not ok, status: ${response.status}`
         );
       }
-    });
+    }
 
     delete openTabs[tabId];
   }

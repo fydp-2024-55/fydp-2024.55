@@ -4,11 +4,14 @@ import {
   TextField,
   Typography,
 } from "@material-ui/core";
-import { FC, useEffect, useState } from "react";
+import { FC, useContext, useEffect, useState } from "react";
 import client from "../api/client";
 import { Producer } from "../types";
+import AppContext from "./AppContext";
 
 const ProfilePage: FC = () => {
+  const { setAuthState } = useContext(AppContext)!;
+
   const [profile, setProfile] = useState<Producer>();
   const [updateProfile, setUpdateProfile] = useState<Producer>();
 
@@ -18,7 +21,7 @@ const ProfilePage: FC = () => {
       setProfile(producer);
       setUpdateProfile(producer);
     } catch (error) {
-      client.displayError(error);
+      client.handleError(error, setAuthState);
     }
   };
 
@@ -30,7 +33,7 @@ const ProfilePage: FC = () => {
         alert("Saved");
       }
     } catch (error) {
-      client.displayError(error);
+      client.handleError(error, setAuthState);
     }
   };
 
