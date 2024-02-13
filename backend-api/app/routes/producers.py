@@ -1,5 +1,5 @@
 from typing import List
-from fastapi import APIRouter, Request, status
+from fastapi import APIRouter, Request, status, HTTPException
 from fastapi.params import Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -12,6 +12,7 @@ from ..dependencies import (
 from ..models.producers import Producer
 from ..models.users import User
 from ..ops import producers as ops
+from ..ops import users as user_ops
 from ..schemas.histories import HistoryCreate, HistoryRead
 from ..schemas.producers import ProducerCreate, ProducerRead, ProducerUpdate
 
@@ -25,17 +26,17 @@ async def create_producer(
     db: AsyncSession = Depends(get_async_session),
     user: User = Depends(get_current_active_user),
 ):
-    if producer.eth_address:
-        mint_token(
-            request.app.state.eth_client,
-            producer.eth_address,
+    if not user.eth_address:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="User does not have a wallet",
         )
 
-    elif user.eth_address:
-        mint_token(
-            request.app.state.eth_client,
-            user.eth_address,
-        )
+    # Mint token for the producer
+    mint_token(
+        request.app.state.eth_client,
+        user.eth_address,
+    )
 
     await ops.create_producer(db, producer, user)
     return await ops.get_producer(db, user)
@@ -52,19 +53,9 @@ async def read_producer(
 @router.patch("/me", status_code=status.HTTP_200_OK, response_model=ProducerRead)
 async def update_producer(
     producer: ProducerUpdate,
-    request: Request,
     db: AsyncSession = Depends(get_async_session),
     user: User = Depends(get_current_active_user),
 ):
-    if producer.eth_address:
-        if user.eth_address:
-            burn_token(request.app.state.eth_client, user.eth_address)
-
-        mint_token(
-            request.app.state.eth_client,
-            producer.eth_address,
-        )
-
     await ops.update_producer(db, producer, user)
     return await ops.get_producer(db, user)
 
@@ -76,9 +67,11 @@ async def delete_producer(
     user: User = Depends(get_current_active_user),
 ):
     if user.eth_address:
+        # Burn the producer's token
         burn_token(request.app.state.eth_client, user.eth_address)
 
     await ops.delete_producer(db, user)
+    await user_ops.delete_user(db, user)
 
 
 @router.post(

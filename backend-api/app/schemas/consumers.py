@@ -5,7 +5,6 @@ from pydantic import BaseModel
 
 class ConsumerBase(BaseModel):
     name: str
-    eth_address: str | None
 
 
 class ConsumerCreate(ConsumerBase):

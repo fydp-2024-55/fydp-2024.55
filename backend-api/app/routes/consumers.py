@@ -5,6 +5,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from ..dependencies import get_async_session, get_current_active_user
 from ..models.users import User
 from ..ops import consumers as ops
+from ..ops import users as user_ops
 from ..schemas.consumers import ConsumerCreate, ConsumerRead, ConsumerUpdate
 
 router = APIRouter()
@@ -44,3 +45,4 @@ async def delete_consumer(
     user: User = Depends(get_current_active_user),
 ):
     await ops.delete_consumer(db, user)
+    await user_ops.delete_user(db, user)
