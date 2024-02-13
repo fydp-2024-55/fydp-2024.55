@@ -6,6 +6,7 @@ from ..blockchain.mint_burn import burn_token, mint_token
 from ..blockchain.wallet import (
     get_account_from_private_key,
     generate_account,
+    get_balance,
 )
 from ..dependencies import (
     fastapi_users,
@@ -15,7 +16,7 @@ from ..dependencies import (
 from ..models.users import User
 from ..ops import users as ops
 from ..schemas.users import UserRead, UserUpdate
-from ..schemas.wallet import WalletBase
+from ..schemas.wallet import WalletRead, WalletUpdate
 
 router = APIRouter()
 
@@ -26,7 +27,22 @@ router.include_router(
 )
 
 
-@router.post("/me/wallet", status_code=status.HTTP_200_OK, response_model=UserRead)
+@router.get("/me/wallet", status_code=status.HTTP_200_OK, response_model=WalletRead)
+async def read_user_wallet(
+    request: Request,
+    user: User = Depends(get_current_active_user),
+):
+    if not user.eth_address:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="User does not have a wallet",
+        )
+
+    balance = get_balance(request.app.state.eth_client, user.eth_address)
+    return WalletRead(eth_address=user.eth_address, balance=balance)
+
+
+@router.post("/me/wallet", status_code=status.HTTP_200_OK, response_model=WalletRead)
 async def create_user_wallet(
     request: Request,
     db: AsyncSession = Depends(get_async_session),
@@ -40,12 +56,13 @@ async def create_user_wallet(
 
     account = generate_account(request.app.state.eth_client, user.email)
     await ops.update_user_eth_address(db, account.address, user)
-    return await ops.get_user(db, user)
+
+    return WalletRead(eth_address=account.address, balance=0)
 
 
-@router.patch("/me/wallet", status_code=status.HTTP_200_OK, response_model=UserRead)
+@router.patch("/me/wallet", status_code=status.HTTP_200_OK, response_model=WalletRead)
 async def update_user_wallet(
-    wallet: WalletBase,
+    wallet: WalletUpdate,
     request: Request,
     db: AsyncSession = Depends(get_async_session),
     user: User = Depends(get_current_active_user),
@@ -90,4 +107,6 @@ async def update_user_wallet(
         mint_token(request.app.state.eth_client, account.address)
 
     await ops.update_user_eth_address(db, account.address, user)
-    return await ops.get_user(db, user)
+
+    balance = get_balance(request.app.state.eth_client, account.address)
+    return WalletRead(eth_address=account.address, balance=balance)
