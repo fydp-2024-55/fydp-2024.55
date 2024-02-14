@@ -34,11 +34,17 @@ async def create_producer(
             detail="User does not have a wallet",
         )
 
-    # Mint token for the producer
-    mint_token(
-        request.app.state.eth_client,
-        user.eth_address,
-    )
+    try:
+        # Mint token for the producer
+        mint_token(
+            request.app.state.eth_client,
+            user.eth_address,
+        )
+    except Exception:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Failed to mint the token",
+        )
 
     await ops.create_producer(db, producer, user)
     return await ops.get_producer(db, user)
@@ -70,8 +76,14 @@ async def delete_producer(
     user_manager: UserManager = Depends(get_user_manager),
 ):
     if user.eth_address:
-        # Burn the producer's token
-        burn_token(request.app.state.eth_client, user.eth_address)
+        try:
+            # Burn the producer's token
+            burn_token(request.app.state.eth_client, user.eth_address)
+        except Exception:
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail="Failed to burn the token",
+            )
 
     await ops.delete_producer(db, user)
     await user_manager.delete(user)

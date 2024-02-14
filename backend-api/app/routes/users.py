@@ -38,8 +38,14 @@ async def read_user_wallet(
             detail="User does not have a wallet",
         )
 
-    balance = get_balance(request.app.state.eth_client, user.eth_address)
-    return WalletRead(eth_address=user.eth_address, balance=balance)
+    try:
+        balance = get_balance(request.app.state.eth_client, user.eth_address)
+        return WalletRead(eth_address=user.eth_address, balance=balance)
+    except Exception:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Failed to retrieve the wallet balance",
+        )
 
 
 @router.post("/me/wallet", status_code=status.HTTP_200_OK, response_model=WalletRead)
@@ -54,10 +60,15 @@ async def create_user_wallet(
             detail="User already has a wallet",
         )
 
-    account = generate_account(request.app.state.eth_client, user.email)
-    await ops.update_user_eth_address(db, account.address, user)
-
-    return WalletRead(eth_address=account.address, balance=0)
+    try:
+        account = generate_account(request.app.state.eth_client, user.email)
+        await ops.update_user_eth_address(db, account.address, user)
+        return WalletRead(eth_address=account.address, balance=0)
+    except Exception:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Failed to create a wallet",
+        )
 
 
 @router.patch("/me/wallet", status_code=status.HTTP_200_OK, response_model=WalletRead)
@@ -103,10 +114,22 @@ async def update_user_wallet(
 
     # If the user is a producer, burn their old token and mint a new token
     if user.producer:
-        burn_token(request.app.state.eth_client, user.eth_address)
-        mint_token(request.app.state.eth_client, account.address)
+        try:
+            burn_token(request.app.state.eth_client, user.eth_address)
+            mint_token(request.app.state.eth_client, account.address)
+        except Exception:
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail="Failed to re-mint the token",
+            )
 
     await ops.update_user_eth_address(db, account.address, user)
 
-    balance = get_balance(request.app.state.eth_client, account.address)
-    return WalletRead(eth_address=account.address, balance=balance)
+    try:
+        balance = get_balance(request.app.state.eth_client, account.address)
+        return WalletRead(eth_address=account.address, balance=balance)
+    except Exception:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Failed to retrieve the wallet balance",
+        )
