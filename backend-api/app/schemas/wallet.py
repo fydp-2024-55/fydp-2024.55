@@ -3,4 +3,11 @@ from pydantic import BaseModel
 
 class WalletBase(BaseModel):
     eth_address: str | None
+
+
+class WalletRead(WalletBase):
+    balance: int
+
+
+class WalletUpdate(WalletBase):
     private_key: str

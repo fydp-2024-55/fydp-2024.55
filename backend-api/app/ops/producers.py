@@ -18,14 +18,6 @@ async def get_producer(db: AsyncSession, user: User):
 
 
 async def create_producer(db: AsyncSession, producer: ProducerCreate, user: User):
-    if producer.eth_address:
-        statement = (
-            sa.update(User)
-            .values(eth_address=producer.eth_address)
-            .where(User.id == user.id)
-        )
-        await db.execute(statement)
-
     statement = sa.insert(Producer).values(
         user_id=user.id,
         name=producer.name,

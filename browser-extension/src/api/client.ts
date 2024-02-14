@@ -91,14 +91,20 @@ const getProducerHistory = async () => {
   return response.data;
 };
 
+const getWallet = async () => {
+  const response = await api.get<Wallet>(`users/me/wallet`);
+  const wallet: Wallet = response.data;
+  return wallet;
+};
+
 const createWallet = async () => {
-  const response = await api.post<Wallet>(`/wallet/`);
+  const response = await api.post<Wallet>(`users/me/wallet`);
   const wallet: Wallet = response.data;
   return wallet;
 };
 
 const updateWallet = async (data: Wallet) => {
-  const response = await api.patch(`/users/me/wallet/`, data); // TODO: Set explicit type response
+  const response = await api.patch<Wallet>(`/users/me/wallet`, data);
   const user = response.data;
   return user;
 };
@@ -112,6 +118,7 @@ const client = {
   createProducer,
   getProducer,
   updateProducer,
+  getWallet,
   createWallet,
   updateWallet,
   createProducerHistory,

@@ -16,14 +16,6 @@ async def get_consumer(db: AsyncSession, user: User):
 
 
 async def create_consumer(db: AsyncSession, consumer: ConsumerCreate, user: User):
-    if consumer.eth_address:
-        statement = (
-            sa.update(User)
-            .values(eth_address=consumer.eth_address)
-            .where(User.id == user.id)
-        )
-        await db.execute(statement)
-
     statement = sa.insert(Consumer).values(
         user_id=user.id,
         name=consumer.name,
