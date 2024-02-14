@@ -8,7 +8,9 @@ from ..dependencies import (
     get_async_session,
     get_current_active_user,
     get_current_producer,
+    get_user_manager,
 )
+from ..managers import UserManager
 from ..models.producers import Producer
 from ..models.users import User
 from ..ops import producers as ops
@@ -65,13 +67,14 @@ async def delete_producer(
     request: Request,
     db: AsyncSession = Depends(get_async_session),
     user: User = Depends(get_current_active_user),
+    user_manager: UserManager = Depends(get_user_manager),
 ):
     if user.eth_address:
         # Burn the producer's token
         burn_token(request.app.state.eth_client, user.eth_address)
 
     await ops.delete_producer(db, user)
-    await user_ops.delete_user(db, user)
+    await user_manager.delete(user)
 
 
 @router.post(

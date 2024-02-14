@@ -2,7 +2,8 @@ from fastapi import APIRouter, status
 from fastapi.params import Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from ..dependencies import get_async_session, get_current_active_user
+from ..dependencies import get_async_session, get_current_active_user, get_user_manager
+from ..managers import UserManager
 from ..models.users import User
 from ..ops import consumers as ops
 from ..ops import users as user_ops
@@ -43,6 +44,7 @@ async def update_consumer(
 async def delete_consumer(
     db: AsyncSession = Depends(get_async_session),
     user: User = Depends(get_current_active_user),
+    user_manager: UserManager = Depends(get_user_manager),
 ):
     await ops.delete_consumer(db, user)
-    await user_ops.delete_user(db, user)
+    await user_manager.delete(user)
