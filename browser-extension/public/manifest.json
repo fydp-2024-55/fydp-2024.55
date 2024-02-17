@@ -1,0 +1,29 @@
+{
+  "short_name": "ByteBucks",
+  "name": "ByteBucks",
+  "version": "1.0.0",
+  "manifest_version": 3,
+  "commands": {
+    "_execute_action": {
+      "suggested_key": "Ctrl+Shift+Q",
+      "description": "Activate Extension"
+    }
+  },
+  "action": {
+    "default_popup": "index.html",
+    "default_title": "Open the popup"
+  },
+  "background": {
+    "service_worker": "background.js"
+  },
+  "permissions": [
+    "storage",
+    "tabs",
+    "activeTab",
+    "scripting",
+    "webRequest",
+    "webNavigation",
+    "privacy",
+    "notifications"
+  ]
+}

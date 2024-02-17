@@ -1,7 +1,9 @@
 import random
 
 from datetime import datetime
+from typing import List
 from fastapi import APIRouter, status, Request, HTTPException
+
 
 from ..schemas.subscriptions import (
     SubscriptionCreate,
@@ -14,7 +16,7 @@ from ..blockchain.permissions import consumer_subscriptions
 router = APIRouter()
 
 
-@router.post("/", status_code=status.HTTP_201_CREATED)
+@router.post("/", status_code=status.HTTP_201_CREATED, response_model=SubscriptionRead)
 async def create_subscriptions(subscriptions: SubscriptionCreate, request: Request):
     # Check for a valid expiration date
     current_date = datetime.now().date()
@@ -26,7 +28,7 @@ async def create_subscriptions(subscriptions: SubscriptionCreate, request: Reque
 
     # Perform the token purchases through the smart contract
     consumer_purchase_tokens(
-        request.app.state.token_contract,
+        request.app.state.eth_client,
         subscriptions.consumer_eth_address,
         subscriptions.producer_eth_addresses,
         date_to_epoch(current_date),
@@ -34,27 +36,35 @@ async def create_subscriptions(subscriptions: SubscriptionCreate, request: Reque
     )
 
     subscriptions = consumer_subscriptions(
-        request.app.state.token_contract, subscriptions.consumer_eth_address
+        request.app.state.eth_client, subscriptions.consumer_eth_address
     )
 
     return SubscriptionRead(subscriptions=subscriptions)
 
 
-@router.get("/{consumer_eth_address}", status_code=status.HTTP_200_OK)
+@router.get(
+    "/{consumer_eth_address}",
+    status_code=status.HTTP_200_OK,
+    response_model=SubscriptionRead,
+)
 async def read_subscriptions(consumer_eth_address: str, request: Request):
     subscriptions = consumer_subscriptions(
-        request.app.state.token_contract, consumer_eth_address
+        request.app.state.eth_client, consumer_eth_address
     )
 
     return SubscriptionRead(subscriptions=subscriptions)
 
 
-@router.patch("/{consumer_eth_address}", status_code=status.HTTP_200_OK)
+@router.patch(
+    "/{consumer_eth_address}",
+    status_code=status.HTTP_200_OK,
+    response_model=SubscriptionRead,
+)
 async def update_subscriptions(consumer_eth_address: str, request: Request):
     # TODO: Implement later
 
     subscriptions = consumer_subscriptions(
-        request.app.state.token_contract, consumer_eth_address
+        request.app.state.eth_client, consumer_eth_address
     )
 
     return SubscriptionRead(subscriptions=subscriptions)
@@ -67,7 +77,7 @@ async def delete_subscriptions(consumer_eth_address: str):
     return
 
 
-@router.get("/available")
+@router.get("/available", status_code=status.HTTP_200_OK, response_model=List[str])
 async def read_subscriptions_available():
     return [str(random.randint(1, 1000)) for _ in range(5)]
 

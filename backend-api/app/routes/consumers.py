@@ -1,41 +1,50 @@
-import random
-
 from fastapi import APIRouter, status
+from fastapi.params import Depends
+from sqlalchemy.ext.asyncio import AsyncSession
 
-from ..schemas.consumers import (
-    ConsumerCreate,
-    ConsumerRead,
-    ConsumerUpdate,
-)
+from ..dependencies import get_async_session, get_current_active_user, get_user_manager
+from ..managers import UserManager
+from ..models.users import User
+from ..ops import consumers as ops
+from ..ops import users as user_ops
+from ..schemas.consumers import ConsumerCreate, ConsumerRead, ConsumerUpdate
 
 router = APIRouter()
 
-consumer_dict = {"eth_address": "somewhareOnTheBlockchain"}
+
+@router.post("/me", status_code=status.HTTP_201_CREATED, response_model=ConsumerRead)
+async def create_consumer(
+    consumer: ConsumerCreate,
+    db: AsyncSession = Depends(get_async_session),
+    user: User = Depends(get_current_active_user),
+):
+    await ops.create_consumer(db, consumer, user)
+    return await ops.get_consumer(db, user)
 
 
-@router.post("/", status_code=status.HTTP_201_CREATED)
-async def create_consumer(consumer: ConsumerCreate):
-    # Create database instance, retrieve ID
-
-    return ConsumerRead(id=random.randint(1, 1000), **consumer_dict)
-
-
-@router.get("/me", status_code=status.HTTP_200_OK)
-async def read_consumer():
-    # Query database instance
-
-    return ConsumerRead(id=random.randint(1, 1000), **consumer_dict)
+@router.get("/me", status_code=status.HTTP_200_OK, response_model=ConsumerRead)
+async def read_consumer(
+    db: AsyncSession = Depends(get_async_session),
+    user: User = Depends(get_current_active_user),
+):
+    return await ops.get_consumer(db, user)
 
 
-@router.patch("/me", status_code=status.HTTP_200_OK)
-async def update_consumer(consumer: ConsumerUpdate):
-    # Update database instance
-
-    return ConsumerRead(id=random.randint(1, 1000), **consumer_dict)
+@router.patch("/me", status_code=status.HTTP_200_OK, response_model=ConsumerRead)
+async def update_consumer(
+    consumer: ConsumerUpdate,
+    db: AsyncSession = Depends(get_async_session),
+    user: User = Depends(get_current_active_user),
+):
+    await ops.update_consumer(db, consumer, user)
+    return await ops.get_consumer(db, user)
 
 
 @router.delete("/me", status_code=status.HTTP_204_NO_CONTENT)
-async def delete_consumer():
-    # Delete database instance
-
-    return
+async def delete_consumer(
+    db: AsyncSession = Depends(get_async_session),
+    user: User = Depends(get_current_active_user),
+    user_manager: UserManager = Depends(get_user_manager),
+):
+    await ops.delete_consumer(db, user)
+    await user_manager.delete(user)
