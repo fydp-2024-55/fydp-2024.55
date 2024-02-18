@@ -41,9 +41,3 @@ app.include_router(
     prefix="/consumer",
     tags=["consumer"],
 )
-
-app.include_router(
-    subscriptions.router,
-    prefix="/subscriptions",
-    tags=["subscriptions"],
-)

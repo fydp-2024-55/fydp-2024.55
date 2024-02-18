@@ -4,6 +4,7 @@ from fastapi.params import Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from ..blockchain.mint_burn import burn_token, mint_token
+from ..blockchain.permissions import producer_consumers
 from ..dependencies import (
     get_async_session,
     get_current_active_user,
@@ -111,3 +112,14 @@ async def read_histories(
     producer: Producer = Depends(get_current_producer),
 ):
     return await ops.get_histories(db, producer)
+
+
+@router.get("/me/subscriptions", status_code=status.HTTP_200_OK)
+async def read_subscriptions(
+    request: Request,
+    user: User = Depends(get_current_active_user),
+):
+    subscriptions: list[str] = producer_consumers(
+        request.app.state.eth_client, user.eth_address
+    )
+    return subscriptions
