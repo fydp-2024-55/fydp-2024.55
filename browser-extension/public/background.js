@@ -23,6 +23,50 @@ chrome.tabs.onCreated.addListener((tab) => {
   }
 });
 
+// Track tab URL changes
+chrome.tabs.onUpdated.addListener(async (tabId, changeInfo, tab) => {
+  // Check if the URL has changed
+  if (changeInfo.url && openTabs[tabId]) {
+      const tabInfo = openTabs[tabId];
+
+      const results = await chrome.storage.local.get(AuthTokenKey);
+      const token = results[AuthTokenKey];
+
+      if (token) {
+          const response = await fetch(
+              "http://localhost:8000/producer/me/histories",
+              {
+                  method: "POST",
+                  headers: {
+                      "Content-Type": "application/json",
+                      Authorization: `Bearer ${token}`,
+                  },
+                  body: JSON.stringify([
+                      {
+                          url: tabInfo.url,
+                          title: "placeholder",
+                          visit_time: tabInfo.openedAt.toString(),
+                          time_spent: (Date.now() - tabInfo.openedAt).toString(),
+                      },
+                  ]),
+              }
+          );
+
+          if (!response.ok) {
+              throw new Error(
+                  `Network response was not ok, status: ${response.status}`
+              );
+          }
+      }
+
+      // Update the tab info with the new URL
+      openTabs[tabId] = {
+          url: changeInfo.url,
+          openedAt: Date.now()
+      };
+  }
+});
+
 // Track closed tabs
 chrome.tabs.onRemoved.addListener(async (tabId) => {
   if (openTabs[tabId]) {
