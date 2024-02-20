@@ -8,7 +8,7 @@ import {
   Producer,
   Wallet,
 } from "../types";
-import persistentStorage from "./persistentStorage";
+import persistentStorage from "./persistent-storage";
 
 const api = axios.create({
   baseURL: "http://localhost:8000",
