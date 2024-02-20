@@ -37,6 +37,10 @@ const handleError = (
   }
 };
 
+const setToken = (token: string) => {
+  api.defaults.headers.common["Authorization"] = `Bearer ${token}`;
+};
+
 const register = async (email: string, password: string) => {
   await api.post(`/auth/register`, { email, password });
 };
@@ -108,8 +112,8 @@ const updateWallet = async (ethAddress: string, privateKey: string) => {
   return response.data;
 };
 
-const client = {
-  api,
+const apiClient = {
+  setToken,
   handleError,
   register,
   logIn,
@@ -124,4 +128,4 @@ const client = {
   getProducerHistory,
 };
 
-export default client;
+export default apiClient;

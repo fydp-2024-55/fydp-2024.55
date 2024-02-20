@@ -1,6 +1,6 @@
 import { Button, TextField, Typography } from "@material-ui/core";
 import { FC, useContext, useState } from "react";
-import client from "../utils/api-client";
+import apiClient from "../utils/api-client";
 import { AuthState, Page } from "../types";
 import AuthContext from "./AppContext";
 
@@ -15,10 +15,10 @@ const RegistrationPage: FC = () => {
 
   const register = async () => {
     try {
-      await client.register(email, password);
-      await client.logIn(email, password);
-      await client.createWallet();
-      await client.createProducer({
+      await apiClient.register(email, password);
+      await apiClient.logIn(email, password);
+      await apiClient.createWallet();
+      await apiClient.createProducer({
         name,
         gender: null,
         ethnicity: null,
@@ -30,7 +30,7 @@ const RegistrationPage: FC = () => {
       });
       setAuthState(AuthState.Authenticated);
     } catch (error) {
-      client.handleError(error, setAuthState);
+      apiClient.handleError(error, setAuthState);
     }
   };
 

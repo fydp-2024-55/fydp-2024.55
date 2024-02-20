@@ -1,6 +1,6 @@
 import { Button } from "@material-ui/core";
 import { FC, useContext } from "react";
-import client from "../utils/api-client";
+import apiClient from "../utils/api-client";
 import { AuthState } from "../types";
 import AppContext from "./AppContext";
 
@@ -9,10 +9,10 @@ const LogoutButton: FC = () => {
 
   const logOut = async () => {
     try {
-      await client.logOut();
+      await apiClient.logOut();
       setAuthState(AuthState.Unauthenticated);
     } catch (error) {
-      client.handleError(error, setAuthState);
+      apiClient.handleError(error, setAuthState);
     }
   };
 

@@ -1,6 +1,6 @@
 import { createContext, FC, ReactNode, useEffect, useState } from "react";
 import persistentStorage from "../utils/persistent-storage";
-import client from "../utils/api-client";
+import apiClient from "../utils/api-client";
 import { AuthState, AuthTokenKey, Page } from "../types";
 
 interface AppContextType {
@@ -23,7 +23,7 @@ export const AppContextProvider: FC<Props> = ({ children }) => {
   useEffect(() => {
     const token = persistentStorage.getItem(AuthTokenKey);
     if (token) {
-      client.api.defaults.headers.common["Authorization"] = `Bearer ${token}`;
+      apiClient.setToken(token);
       setAuthState(AuthState.Authenticated);
     } else {
       setAuthState(AuthState.Unauthenticated);
