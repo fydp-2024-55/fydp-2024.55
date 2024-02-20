@@ -1,6 +1,6 @@
 import { Button } from "@material-ui/core";
 import { FC, useContext } from "react";
-import client from "../api/client";
+import client from "../utils/client";
 import { AuthState } from "../types";
 import AppContext from "./AppContext";
 

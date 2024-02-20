@@ -1,6 +1,6 @@
 import { Button, TextField, Typography } from "@material-ui/core";
 import { FC, useContext, useState } from "react";
-import client from "../api/client";
+import client from "../utils/client";
 import { AuthState, Page } from "../types";
 import AuthContext from "./AppContext";
 
