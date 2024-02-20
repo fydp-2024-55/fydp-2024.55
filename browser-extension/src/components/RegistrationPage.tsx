@@ -15,18 +15,18 @@ const RegistrationPage: FC = () => {
 
   const register = async () => {
     try {
-      await client.register(email, password, ethAddress);
+      await client.register(email, password);
       await client.logIn(email, password);
+      await client.createWallet();
       await client.createProducer({
         name,
-        eth_address: ethAddress,
         gender: null,
         ethnicity: null,
-        date_of_birth: null,
+        dateOfBirth: null,
         country: null,
         income: null,
-        marital_status: null,
-        parental_status: null,
+        maritalStatus: null,
+        parentalStatus: null,
       });
       setAuthState(AuthState.Authenticated);
     } catch (error) {
