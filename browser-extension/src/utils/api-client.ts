@@ -9,10 +9,13 @@ import {
   Wallet,
 } from "../types";
 import persistentStorage from "./persistent-storage";
+import applyCaseMiddleware from "axios-case-converter";
 
-const api = axios.create({
-  baseURL: "http://localhost:8000",
-});
+const api = applyCaseMiddleware(
+  axios.create({
+    baseURL: "http://localhost:8000",
+  })
+);
 
 const handleError = (
   error: any,
@@ -34,12 +37,8 @@ const handleError = (
   }
 };
 
-const register = async (
-  email: string,
-  password: string,
-  eth_address: string
-) => {
-  await api.post(`/auth/register`, { email, password, eth_address });
+const register = async (email: string, password: string) => {
+  await api.post(`/auth/register`, { email, password });
 };
 
 const logIn = async (email: string, password: string) => {
@@ -51,7 +50,7 @@ const logIn = async (email: string, password: string) => {
   const response = await api.post<BearerToken>(`/auth/jwt/login`, formData, {
     headers: { "Content-Type": "multipart/form-data" },
   });
-  const token = response.data.access_token;
+  const token = response.data.accessToken;
 
   api.defaults.headers.common["Authorization"] = `Bearer ${token}`;
   persistentStorage.setItem(AuthTokenKey, token);
@@ -93,20 +92,20 @@ const getProducerHistory = async () => {
 
 const getWallet = async () => {
   const response = await api.get<Wallet>(`users/me/wallet`);
-  const wallet: Wallet = response.data;
-  return wallet;
+  return response.data;
 };
 
 const createWallet = async () => {
   const response = await api.post<Wallet>(`users/me/wallet`);
-  const wallet: Wallet = response.data;
-  return wallet;
+  return response.data;
 };
 
-const updateWallet = async (data: Wallet) => {
-  const response = await api.patch<Wallet>(`/users/me/wallet`, data);
-  const user = response.data;
-  return user;
+const updateWallet = async (ethAddress: string, privateKey: string) => {
+  const response = await api.patch<Wallet>(`/users/me/wallet`, {
+    ethAddress,
+    privateKey,
+  });
+  return response.data;
 };
 
 const client = {
