@@ -4,7 +4,7 @@ import backendService from "../../services/backend-service";
 import { Wallet } from "../../types";
 import AppContext from "../contexts/AppContext";
 
-const WalletPage: FC = () => {
+const WalletScreen: FC = () => {
   const { setAuthState } = useContext(AppContext)!;
 
   const [wallet, setWallet] = useState<Wallet>();
@@ -66,4 +66,4 @@ const WalletPage: FC = () => {
   );
 };
 
-export default WalletPage;
+export default WalletScreen;

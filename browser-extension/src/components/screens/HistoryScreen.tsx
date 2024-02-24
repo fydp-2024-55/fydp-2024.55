@@ -4,7 +4,7 @@ import backendService from "../../services/backend-service";
 import { History } from "../../types";
 import AppContext from "../contexts/AppContext";
 
-const HistoryPage: FC = () => {
+const HistoryScreen: FC = () => {
   const { setAuthState } = useContext(AppContext)!;
 
   const [histories, setHistories] = useState<History[]>([]);
@@ -51,4 +51,4 @@ const HistoryPage: FC = () => {
   );
 };
 
-export default HistoryPage;
+export default HistoryScreen;

@@ -1,7 +1,7 @@
 import { FC, useContext, useEffect } from "react";
 import AppContext from "../components/contexts/AppContext";
-import LoginPage from "../components/screens/LoginPage";
-import RegistrationPage from "../components/screens/RegistrationPage";
+import SignInScreen from "../components/screens/SignInScreen";
+import SignUpScreen from "../components/screens/SignUpScreen";
 import { Page } from "../types";
 
 const UnauthenticatedPages: Page[] = ["sign-in", "sign-up"];
@@ -17,12 +17,12 @@ export const UnauthenticatedRouter: FC = () => {
 
   switch (page) {
     case "sign-in":
-      return <LoginPage />;
+      return <SignInScreen />;
 
     case "sign-up":
-      return <RegistrationPage />;
+      return <SignUpScreen />;
 
     default:
-      return <LoginPage />;
+      return <SignInScreen />;
   }
 };

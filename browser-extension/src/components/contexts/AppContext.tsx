@@ -17,7 +17,7 @@ interface Props {
 }
 
 export const AppContextProvider: FC<Props> = ({ children }) => {
-  const [page, setPage] = useState<Page>("sign-up");
+  const [page, setPage] = useState<Page>("sign-in");
   const [authState, setAuthState] = useState<AuthState>("unknown");
 
   useEffect(() => {

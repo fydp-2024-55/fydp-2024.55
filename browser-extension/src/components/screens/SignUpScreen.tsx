@@ -3,15 +3,30 @@ import { FC, useContext, useState } from "react";
 import backendService from "../../services/backend-service";
 import AuthContext from "../contexts/AppContext";
 
-const LoginPage: FC = () => {
+const SignUpScreen: FC = () => {
   const { setAuthState, setPage } = useContext(AuthContext)!;
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [ethAddress, setEthAddress] = useState("");
+  const [privateKey, setPrivateKey] = useState("");
+  const [name, setName] = useState("");
 
-  const logIn = async () => {
+  const register = async () => {
     try {
+      await backendService.register(email, password);
       await backendService.logIn(email, password);
+      await backendService.createWallet();
+      await backendService.createProducer({
+        name,
+        gender: null,
+        ethnicity: null,
+        dateOfBirth: null,
+        country: null,
+        income: null,
+        maritalStatus: null,
+        parentalStatus: null,
+      });
       setAuthState("authenticated");
     } catch (error) {
       backendService.handleError(error, setAuthState);
@@ -25,10 +40,9 @@ const LoginPage: FC = () => {
         display: "flex",
         flexDirection: "column",
         justifyContent: "space-evenly",
-        alignItems: "center",
       }}
     >
-      <Typography variant="h1">Sign In</Typography>
+      <Typography variant="h1">Sign Up</Typography>
       <div
         style={{
           display: "flex",
@@ -36,6 +50,12 @@ const LoginPage: FC = () => {
           gap: 10,
         }}
       >
+        <TextField
+          label="Name"
+          type="test"
+          variant="filled"
+          onChange={(event) => setName(event.target.value)}
+        />
         <TextField
           label="Email"
           type="email"
@@ -48,6 +68,18 @@ const LoginPage: FC = () => {
           variant="filled"
           onChange={(event) => setPassword(event.target.value)}
         />
+        <TextField
+          label="ETH Address"
+          type="text"
+          variant="filled"
+          onChange={(event) => setEthAddress(event.target.value)}
+        />
+        <TextField
+          label="Private Key"
+          type="password"
+          variant="filled"
+          onChange={(event) => setPrivateKey(event.target.value)}
+        />
       </div>
       <div
         style={{
@@ -56,8 +88,8 @@ const LoginPage: FC = () => {
           gap: 10,
         }}
       >
-        <Button color="primary" variant="contained" onClick={logIn}>
-          Sign in
+        <Button color="primary" variant="contained" onClick={register}>
+          Sign up
         </Button>
         <div
           style={{
@@ -66,13 +98,13 @@ const LoginPage: FC = () => {
             alignItems: "center",
           }}
         >
-          <Typography variant="body1">Don't have an account?</Typography>
+          <Typography variant="body1">Already have an account?</Typography>
           <Button
             variant="text"
             color="primary"
-            onClick={() => setPage("sign-up")}
+            onClick={() => setPage("sign-in")}
           >
-            <Typography variant="body1">Sign up!</Typography>
+            <Typography variant="body1">Sign in!</Typography>
           </Button>
         </div>
       </div>
@@ -80,4 +112,4 @@ const LoginPage: FC = () => {
   );
 };
 
-export default LoginPage;
+export default SignUpScreen;

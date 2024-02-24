@@ -1,10 +1,10 @@
 import { FC, useContext, useEffect } from "react";
 import AppContext from "../components/contexts/AppContext";
-import HistoryPage from "../components/screens/HistoryPage";
-import PermissionsPage from "../components/screens/PermissionsPage";
-import ProfilePage from "../components/screens/ProfilePage";
-import SubscribersPage from "../components/screens/SubscribersPage";
-import WalletPage from "../components/screens/WalletPage";
+import HistoryScreen from "../components/screens/HistoryScreen";
+import PermissionsScreen from "../components/screens/PermissionsScreen";
+import ProfileScreen from "../components/screens/ProfileScreen";
+import SubscribersScreen from "../components/screens/SubscribersScreen";
+import WalletScreen from "../components/screens/WalletScreen";
 import { Page } from "../types";
 
 const AuthenticatedPages: Page[] = [
@@ -26,21 +26,21 @@ export const AuthenticatedRouter: FC = () => {
 
   switch (page) {
     case "profile":
-      return <ProfilePage />;
+      return <ProfileScreen />;
 
     case "wallet":
-      return <WalletPage />;
+      return <WalletScreen />;
 
     case "permissions":
-      return <PermissionsPage />;
+      return <PermissionsScreen />;
 
     case "history":
-      return <HistoryPage />;
+      return <HistoryScreen />;
 
     case "subscribers":
-      return <SubscribersPage />;
+      return <SubscribersScreen />;
 
     default:
-      return <ProfilePage />;
+      return <ProfileScreen />;
   }
 };
