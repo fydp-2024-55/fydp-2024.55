@@ -1,6 +1,6 @@
 import { Button, TextField, Typography } from "@material-ui/core";
 import { FC, useContext, useState } from "react";
-import apiClient from "../services/api-client";
+import backendService from "../services/backend-service";
 import { AuthState, Page } from "../types";
 import AuthContext from "./AppContext";
 
@@ -12,10 +12,10 @@ const LoginPage: FC = () => {
 
   const logIn = async () => {
     try {
-      await apiClient.logIn(email, password);
+      await backendService.logIn(email, password);
       setAuthState(AuthState.Authenticated);
     } catch (error) {
-      apiClient.handleError(error, setAuthState);
+      backendService.handleError(error, setAuthState);
     }
   };
 

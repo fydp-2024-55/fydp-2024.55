@@ -1,6 +1,6 @@
 import { createContext, FC, ReactNode, useEffect, useState } from "react";
-import persistentStorage from "../services/persistent-storage";
-import apiClient from "../services/api-client";
+import backendService from "../services/backend-service";
+import storageService from "../services/storage-service";
 import { AuthState, AuthTokenKey, Page } from "../types";
 
 interface AppContextType {
@@ -21,9 +21,9 @@ export const AppContextProvider: FC<Props> = ({ children }) => {
   const [authState, setAuthState] = useState(AuthState.Unknown);
 
   useEffect(() => {
-    const token = persistentStorage.getItem(AuthTokenKey);
+    const token = storageService.getItem(AuthTokenKey);
     if (token) {
-      apiClient.setToken(token);
+      backendService.setToken(token);
       setAuthState(AuthState.Authenticated);
     } else {
       setAuthState(AuthState.Unauthenticated);

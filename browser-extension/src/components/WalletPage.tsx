@@ -1,7 +1,7 @@
 import { CircularProgress, Typography } from "@material-ui/core";
 import { FC, useContext, useEffect, useState } from "react";
+import backendService from "../services/backend-service";
 import { Wallet } from "../types";
-import apiClient from "../services/api-client";
 import AppContext from "./AppContext";
 
 const WalletPage: FC = () => {
@@ -11,10 +11,10 @@ const WalletPage: FC = () => {
 
   const loadWallet = async () => {
     try {
-      const wallet = await apiClient.getWallet();
+      const wallet = await backendService.getWallet();
       setWallet(wallet);
     } catch (error) {
-      apiClient.handleError(error, setAuthState);
+      backendService.handleError(error, setAuthState);
     }
   };
 

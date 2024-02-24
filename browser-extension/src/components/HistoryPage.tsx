@@ -1,6 +1,6 @@
 import { CircularProgress, Typography } from "@material-ui/core";
 import { FC, useContext, useEffect, useState } from "react";
-import apiClient from "../services/api-client";
+import backendService from "../services/backend-service";
 import { History } from "../types";
 import AppContext from "./AppContext";
 
@@ -11,10 +11,10 @@ const HistoryPage: FC = () => {
 
   const loadHistories = async () => {
     try {
-      const historyArr: History[] = await apiClient.getProducerHistory();
+      const historyArr: History[] = await backendService.getProducerHistory();
       setHistories(historyArr);
     } catch (error) {
-      apiClient.handleError(error, setAuthState);
+      backendService.handleError(error, setAuthState);
     }
   };
 

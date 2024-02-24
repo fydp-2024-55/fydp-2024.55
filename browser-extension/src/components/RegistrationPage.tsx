@@ -1,6 +1,6 @@
 import { Button, TextField, Typography } from "@material-ui/core";
 import { FC, useContext, useState } from "react";
-import apiClient from "../services/api-client";
+import backendService from "../services/backend-service";
 import { AuthState, Page } from "../types";
 import AuthContext from "./AppContext";
 
@@ -15,10 +15,10 @@ const RegistrationPage: FC = () => {
 
   const register = async () => {
     try {
-      await apiClient.register(email, password);
-      await apiClient.logIn(email, password);
-      await apiClient.createWallet();
-      await apiClient.createProducer({
+      await backendService.register(email, password);
+      await backendService.logIn(email, password);
+      await backendService.createWallet();
+      await backendService.createProducer({
         name,
         gender: null,
         ethnicity: null,
@@ -30,7 +30,7 @@ const RegistrationPage: FC = () => {
       });
       setAuthState(AuthState.Authenticated);
     } catch (error) {
-      apiClient.handleError(error, setAuthState);
+      backendService.handleError(error, setAuthState);
     }
   };
 
