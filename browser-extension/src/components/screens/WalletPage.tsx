@@ -1,8 +1,8 @@
 import { CircularProgress, Typography } from "@material-ui/core";
 import { FC, useContext, useEffect, useState } from "react";
-import backendService from "../services/backend-service";
-import { Wallet } from "../types";
-import AppContext from "./AppContext";
+import backendService from "../../services/backend-service";
+import { Wallet } from "../../types";
+import AppContext from "../contexts/AppContext";
 
 const WalletPage: FC = () => {
   const { setAuthState } = useContext(AppContext)!;

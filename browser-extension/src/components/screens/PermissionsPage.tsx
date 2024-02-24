@@ -1,7 +1,7 @@
 import { CircularProgress, Typography } from "@material-ui/core";
 import { Switch } from "@mui/material";
 import { FC, useEffect, useState } from "react";
-import { Permissions } from "../types";
+import { Permissions } from "../../types";
 
 const PermissionsPage: FC = () => {
   const [permissions, setPermissions] = useState<Permissions>();

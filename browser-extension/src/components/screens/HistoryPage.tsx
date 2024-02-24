@@ -1,8 +1,8 @@
 import { CircularProgress, Typography } from "@material-ui/core";
 import { FC, useContext, useEffect, useState } from "react";
-import backendService from "../services/backend-service";
-import { History } from "../types";
-import AppContext from "./AppContext";
+import backendService from "../../services/backend-service";
+import { History } from "../../types";
+import AppContext from "../contexts/AppContext";
 
 const HistoryPage: FC = () => {
   const { setAuthState } = useContext(AppContext)!;
@@ -20,7 +20,7 @@ const HistoryPage: FC = () => {
 
   useEffect(() => {
     loadHistories();
-  }, []);
+  }, [loadHistories]);
 
   return (
     <div

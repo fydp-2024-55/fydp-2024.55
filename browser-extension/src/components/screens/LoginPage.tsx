@@ -1,8 +1,8 @@
 import { Button, TextField, Typography } from "@material-ui/core";
 import { FC, useContext, useState } from "react";
-import backendService from "../services/backend-service";
-import { AuthState, Page } from "../types";
-import AuthContext from "./AppContext";
+import backendService from "../../services/backend-service";
+import { AuthState, Page } from "../../types";
+import AuthContext from "../contexts/AppContext";
 
 const LoginPage: FC = () => {
   const { setAuthState, setPage } = useContext(AuthContext)!;

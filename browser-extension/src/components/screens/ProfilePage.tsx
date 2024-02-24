@@ -5,9 +5,9 @@ import {
   Typography,
 } from "@material-ui/core";
 import { FC, useContext, useEffect, useState } from "react";
-import backendService from "../services/backend-service";
-import { Producer } from "../types";
-import AppContext from "./AppContext";
+import backendService from "../../services/backend-service";
+import { Producer } from "../../types";
+import AppContext from "../contexts/AppContext";
 
 const ProfilePage: FC = () => {
   const { setAuthState } = useContext(AppContext)!;

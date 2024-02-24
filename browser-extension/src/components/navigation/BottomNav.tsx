@@ -7,8 +7,8 @@ import {
   Wallet,
 } from "@mui/icons-material";
 import { FC, useContext } from "react";
-import { Page } from "../types";
-import AppContext from "./AppContext";
+import { Page } from "../../types";
+import AppContext from "../contexts/AppContext";
 
 const BottomNav: FC = () => {
   const { page, setPage } = useContext(AppContext)!;

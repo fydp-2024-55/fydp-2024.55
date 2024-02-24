@@ -1,7 +1,7 @@
 import { createContext, FC, ReactNode, useEffect, useState } from "react";
-import backendService from "../services/backend-service";
-import storageService from "../services/storage-service";
-import { AuthState, AuthTokenKey, Page } from "../types";
+import backendService from "../../services/backend-service";
+import storageService from "../../services/storage-service";
+import { AuthState, AuthTokenKey, Page } from "../../types";
 
 interface AppContextType {
   authState: AuthState;

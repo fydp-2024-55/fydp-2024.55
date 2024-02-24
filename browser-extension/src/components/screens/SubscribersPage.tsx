@@ -1,6 +1,6 @@
 import { CircularProgress, Typography } from "@material-ui/core";
 import { FC, useEffect, useState } from "react";
-import { Subscriber } from "../types";
+import { Subscriber } from "../../types";
 
 const SubscribersPage: FC = () => {
   const [subscribers, setSubscribers] = useState<Subscriber[]>();
