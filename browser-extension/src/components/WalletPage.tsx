@@ -1,23 +1,28 @@
 import { CircularProgress, Typography } from "@material-ui/core";
-import { FC, useEffect, useState } from "react";
+import { FC, useContext, useEffect, useState } from "react";
+import backendService from "../services/backend-service";
 import { Wallet } from "../types";
+import AppContext from "./AppContext";
 
 const WalletPage: FC = () => {
+  const { setAuthState } = useContext(AppContext)!;
+
   const [wallet, setWallet] = useState<Wallet>();
 
   const loadWallet = async () => {
-    // Todo: Replace timeout with api call
-    setWallet({
-      eth_address: "0x123...4567",
-      balance: 200,
-    });
+    try {
+      const wallet = await backendService.getWallet();
+      setWallet(wallet);
+    } catch (error) {
+      backendService.handleError(error, setAuthState);
+    }
   };
 
   useEffect(() => {
     loadWallet();
     const interval = setInterval(() => {
       loadWallet();
-    }, 600000); // 10 minutes
+    }, 10 * 60 * 1000); // 10 minutes
 
     return () => {
       clearInterval(interval);
@@ -51,7 +56,7 @@ const WalletPage: FC = () => {
           }}
         >
           <Typography variant="h5">Address:</Typography>
-          <Typography variant="body1">0x123...4567</Typography>
+          <Typography variant="body1">{wallet.ethAddress}</Typography>
           <Typography variant="h5">Current balance:</Typography>
           <Typography variant="h3">{wallet.balance} ETH</Typography>
         </div>

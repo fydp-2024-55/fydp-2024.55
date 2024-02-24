@@ -14,7 +14,7 @@ async def get_producer(db: AsyncSession, user: User):
     producer = result.scalar_one_or_none()
     if producer is None:
         return None
-    return ProducerRead(**producer.__dict__, eth_address=user.eth_address)
+    return ProducerRead(**producer.__dict__)
 
 
 async def create_producer(db: AsyncSession, producer: ProducerCreate, user: User):
@@ -34,14 +34,6 @@ async def create_producer(db: AsyncSession, producer: ProducerCreate, user: User
 
 
 async def update_producer(db: AsyncSession, producer: ProducerUpdate, user: User):
-    if producer.eth_address:
-        statement = (
-            sa.update(User)
-            .values(eth_address=producer.eth_address)
-            .where(User.id == user.id)
-        )
-    await db.execute(statement)
-
     statement = (
         sa.update(Producer)
         .values(

@@ -5,7 +5,7 @@ import {
   Typography,
 } from "@material-ui/core";
 import { FC, useContext, useEffect, useState } from "react";
-import client from "../api/client";
+import backendService from "../services/backend-service";
 import { Producer } from "../types";
 import AppContext from "./AppContext";
 
@@ -17,23 +17,25 @@ const ProfilePage: FC = () => {
 
   const loadProfile = async () => {
     try {
-      const producer: Producer = await client.getProducer();
+      const producer: Producer = await backendService.getProducer();
       setProfile(producer);
       setUpdateProfile(producer);
     } catch (error) {
-      client.handleError(error, setAuthState);
+      backendService.handleError(error, setAuthState);
     }
   };
 
   const updateProducer = async () => {
     try {
       if (updateProfile) {
-        const updatedProfile = await client.updateProducer(updateProfile);
+        const updatedProfile = await backendService.updateProducer(
+          updateProfile
+        );
         setProfile(updatedProfile);
         alert("Saved");
       }
     } catch (error) {
-      client.handleError(error, setAuthState);
+      backendService.handleError(error, setAuthState);
     }
   };
 
