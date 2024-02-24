@@ -1,7 +1,7 @@
 import { createContext, FC, ReactNode, useEffect, useState } from "react";
-import backendService from "../services/backend-service";
-import storageService from "../services/storage-service";
-import { AuthState, AuthTokenKey, Page } from "../types";
+import backendService from "../../services/backend-service";
+import storageService from "../../services/storage-service";
+import { AuthState, AuthTokenKey, Page } from "../../types";
 
 interface AppContextType {
   authState: AuthState;
@@ -17,16 +17,16 @@ interface Props {
 }
 
 export const AppContextProvider: FC<Props> = ({ children }) => {
-  const [page, setPage] = useState(Page.Login);
-  const [authState, setAuthState] = useState(AuthState.Unknown);
+  const [page, setPage] = useState<Page>("sign-in");
+  const [authState, setAuthState] = useState<AuthState>("unknown");
 
   useEffect(() => {
     const token = storageService.getItem(AuthTokenKey);
     if (token) {
       backendService.setToken(token);
-      setAuthState(AuthState.Authenticated);
+      setAuthState("authenticated");
     } else {
-      setAuthState(AuthState.Unauthenticated);
+      setAuthState("unauthenticated");
     }
   }, []);
 

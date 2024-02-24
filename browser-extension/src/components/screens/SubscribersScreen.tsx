@@ -1,8 +1,8 @@
 import { CircularProgress, Typography } from "@material-ui/core";
 import { FC, useEffect, useState } from "react";
-import { Subscriber } from "../types";
+import { Subscriber } from "../../types";
 
-const SubscribersPage: FC = () => {
+const SubscribersScreen: FC = () => {
   const [subscribers, setSubscribers] = useState<Subscriber[]>();
 
   const loadSubscribers = async () => {
@@ -86,4 +86,4 @@ const SubscribersPage: FC = () => {
   );
 };
 
-export default SubscribersPage;
+export default SubscribersScreen;

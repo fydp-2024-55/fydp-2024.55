@@ -1,8 +1,7 @@
 import { Button } from "@material-ui/core";
 import { FC, useContext } from "react";
-import backendService from "../services/backend-service";
-import { AuthState } from "../types";
-import AppContext from "./AppContext";
+import backendService from "../../services/backend-service";
+import AppContext from "../contexts/AppContext";
 
 const LogoutButton: FC = () => {
   const { setAuthState } = useContext(AppContext)!;
@@ -10,7 +9,7 @@ const LogoutButton: FC = () => {
   const logOut = async () => {
     try {
       await backendService.logOut();
-      setAuthState(AuthState.Unauthenticated);
+      setAuthState("unauthenticated");
     } catch (error) {
       backendService.handleError(error, setAuthState);
     }

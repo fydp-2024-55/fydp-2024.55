@@ -1,10 +1,9 @@
 import { Button, TextField, Typography } from "@material-ui/core";
 import { FC, useContext, useState } from "react";
-import backendService from "../services/backend-service";
-import { AuthState, Page } from "../types";
-import AuthContext from "./AppContext";
+import backendService from "../../services/backend-service";
+import AuthContext from "../contexts/AppContext";
 
-const RegistrationPage: FC = () => {
+const SignUpScreen: FC = () => {
   const { setAuthState, setPage } = useContext(AuthContext)!;
 
   const [email, setEmail] = useState("");
@@ -28,7 +27,7 @@ const RegistrationPage: FC = () => {
         maritalStatus: null,
         parentalStatus: null,
       });
-      setAuthState(AuthState.Authenticated);
+      setAuthState("authenticated");
     } catch (error) {
       backendService.handleError(error, setAuthState);
     }
@@ -103,7 +102,7 @@ const RegistrationPage: FC = () => {
           <Button
             variant="text"
             color="primary"
-            onClick={() => setPage(Page.Login)}
+            onClick={() => setPage("sign-in")}
           >
             <Typography variant="body1">Sign in!</Typography>
           </Button>
@@ -113,4 +112,4 @@ const RegistrationPage: FC = () => {
   );
 };
 
-export default RegistrationPage;
+export default SignUpScreen;
