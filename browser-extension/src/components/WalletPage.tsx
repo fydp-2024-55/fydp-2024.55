@@ -1,7 +1,7 @@
 import { CircularProgress, Typography } from "@material-ui/core";
 import { FC, useContext, useEffect, useState } from "react";
 import { Wallet } from "../types";
-import apiClient from "../utils/api-client";
+import apiClient from "../services/api-client";
 import AppContext from "./AppContext";
 
 const WalletPage: FC = () => {

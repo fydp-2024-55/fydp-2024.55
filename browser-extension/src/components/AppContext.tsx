@@ -1,6 +1,6 @@
 import { createContext, FC, ReactNode, useEffect, useState } from "react";
-import persistentStorage from "../utils/persistent-storage";
-import apiClient from "../utils/api-client";
+import persistentStorage from "../services/persistent-storage";
+import apiClient from "../services/api-client";
 import { AuthState, AuthTokenKey, Page } from "../types";
 
 interface AppContextType {

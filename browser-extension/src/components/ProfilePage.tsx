@@ -5,7 +5,7 @@ import {
   Typography,
 } from "@material-ui/core";
 import { FC, useContext, useEffect, useState } from "react";
-import apiClient from "../utils/api-client";
+import apiClient from "../services/api-client";
 import { Producer } from "../types";
 import AppContext from "./AppContext";
 
