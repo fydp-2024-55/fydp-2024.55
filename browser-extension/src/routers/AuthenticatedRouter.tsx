@@ -7,12 +7,12 @@ import SubscribersPage from "../components/screens/SubscribersPage";
 import WalletPage from "../components/screens/WalletPage";
 import { Page } from "../types";
 
-const AuthenticatedPages = [
-  Page.Profile,
-  Page.Wallet,
-  Page.Permissions,
-  Page.History,
-  Page.Subscribers,
+const AuthenticatedPages: Page[] = [
+  "profile",
+  "wallet",
+  "permissions",
+  "history",
+  "subscribers",
 ];
 
 export const AuthenticatedRouter: FC = () => {
@@ -25,19 +25,19 @@ export const AuthenticatedRouter: FC = () => {
   }, [page, setPage]);
 
   switch (page) {
-    case Page.Profile:
+    case "profile":
       return <ProfilePage />;
 
-    case Page.Wallet:
+    case "wallet":
       return <WalletPage />;
 
-    case Page.Permissions:
+    case "permissions":
       return <PermissionsPage />;
 
-    case Page.History:
+    case "history":
       return <HistoryPage />;
 
-    case Page.Subscribers:
+    case "subscribers":
       return <SubscribersPage />;
 
     default:

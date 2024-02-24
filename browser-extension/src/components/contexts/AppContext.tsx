@@ -17,16 +17,16 @@ interface Props {
 }
 
 export const AppContextProvider: FC<Props> = ({ children }) => {
-  const [page, setPage] = useState(Page.Login);
-  const [authState, setAuthState] = useState(AuthState.Unknown);
+  const [page, setPage] = useState<Page>("sign-up");
+  const [authState, setAuthState] = useState<AuthState>("unknown");
 
   useEffect(() => {
     const token = storageService.getItem(AuthTokenKey);
     if (token) {
       backendService.setToken(token);
-      setAuthState(AuthState.Authenticated);
+      setAuthState("authenticated");
     } else {
-      setAuthState(AuthState.Unauthenticated);
+      setAuthState("unauthenticated");
     }
   }, []);
 

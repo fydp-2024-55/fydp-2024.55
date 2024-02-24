@@ -1,20 +1,15 @@
 export const AuthTokenKey = "AuthTokenKey";
 
-export enum AuthState {
-  Authenticated = "Authenticated",
-  Unauthenticated = "Unauthenticated",
-  Unknown = "Unknown",
-}
+export type AuthState = "authenticated" | "unauthenticated" | "unknown";
 
-export enum Page {
-  Profile = "Profile",
-  Permissions = "Permissions",
-  Wallet = "Wallet",
-  History = "History",
-  Subscribers = "Subscribers",
-  Registration = "Registration",
-  Login = "Login",
-}
+export type Page =
+  | "profile"
+  | "permissions"
+  | "wallet"
+  | "history"
+  | "subscribers"
+  | "sign-up"
+  | "sign-in";
 
 export interface Producer {
   name: string;

@@ -7,7 +7,6 @@ import {
   Wallet,
 } from "@mui/icons-material";
 import { FC, useContext } from "react";
-import { Page } from "../../types";
 import AppContext from "../contexts/AppContext";
 
 const BottomNav: FC = () => {
@@ -21,28 +20,28 @@ const BottomNav: FC = () => {
       onChange={(_, value) => setPage(value)}
     >
       <BottomNavigationAction
-        label={Page.Profile}
-        value={Page.Profile}
+        label="profile"
+        value="profile"
         icon={<Person fontSize="large" />}
       />
       <BottomNavigationAction
-        label={Page.Wallet}
-        value={Page.Wallet}
+        label="wallet"
+        value="wallet"
         icon={<Wallet fontSize="large" />}
       />
       <BottomNavigationAction
-        label={Page.Permissions}
-        value={Page.Permissions}
+        label="permissions"
+        value="permissions"
         icon={<ToggleOff fontSize="large" />}
       />
       <BottomNavigationAction
-        label={Page.History}
-        value={Page.History}
+        label="history"
+        value="history"
         icon={<History fontSize="large" />}
       />
       <BottomNavigationAction
-        label={Page.Subscribers}
-        value={Page.Subscribers}
+        label="subscribers"
+        value="subscribers"
         icon={<Visibility fontSize="large" />}
       />
     </BottomNavigation>

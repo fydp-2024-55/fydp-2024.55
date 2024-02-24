@@ -23,7 +23,7 @@ const backendService = {
       if (error.response?.status === 401) {
         api.defaults.headers.common["Authorization"] = null;
         storageService.removeItem(AuthTokenKey);
-        setAuthState(AuthState.Unauthenticated);
+        setAuthState("unauthenticated");
       } else {
         alert(
           `${error.name} [${error.code}]: ${error.message}

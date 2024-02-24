@@ -4,7 +4,7 @@ import LoginPage from "../components/screens/LoginPage";
 import RegistrationPage from "../components/screens/RegistrationPage";
 import { Page } from "../types";
 
-const UnauthenticatedPages = [Page.Login, Page.Registration];
+const UnauthenticatedPages: Page[] = ["sign-in", "sign-up"];
 
 export const UnauthenticatedRouter: FC = () => {
   const { page, setPage } = useContext(AppContext)!;
@@ -16,10 +16,10 @@ export const UnauthenticatedRouter: FC = () => {
   }, [page, setPage]);
 
   switch (page) {
-    case Page.Login:
+    case "sign-in":
       return <LoginPage />;
 
-    case Page.Registration:
+    case "sign-up":
       return <RegistrationPage />;
 
     default:

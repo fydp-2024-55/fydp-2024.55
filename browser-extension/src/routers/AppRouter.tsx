@@ -1,6 +1,5 @@
 import { CircularProgress } from "@mui/material";
 import { FC, useContext } from "react";
-import { AuthState } from "../types";
 import AppContext from "../components/contexts/AppContext";
 import BottomNav from "../components/navigation/BottomNav";
 
@@ -12,7 +11,7 @@ const AppRouter: FC = () => {
   const { authState } = useContext(AppContext)!;
 
   switch (authState) {
-    case AuthState.Authenticated:
+    case "authenticated":
       return (
         <div
           style={{
@@ -32,7 +31,7 @@ const AppRouter: FC = () => {
         </div>
       );
 
-    case AuthState.Unauthenticated:
+    case "unauthenticated":
       return <UnauthenticatedRouter />;
 
     default:
