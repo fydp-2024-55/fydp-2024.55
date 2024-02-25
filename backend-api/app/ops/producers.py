@@ -20,7 +20,6 @@ async def get_producer(db: AsyncSession, user: User):
 async def create_producer(db: AsyncSession, producer: ProducerCreate, user: User):
     statement = sa.insert(Producer).values(
         user_id=user.id,
-        name=producer.name,
         country=producer.country,
         date_of_birth=producer.date_of_birth,
         gender=producer.gender,
@@ -37,7 +36,6 @@ async def update_producer(db: AsyncSession, producer: ProducerUpdate, user: User
     statement = (
         sa.update(Producer)
         .values(
-            name=producer.name,
             country=producer.country,
             date_of_birth=producer.date_of_birth,
             gender=producer.gender,
