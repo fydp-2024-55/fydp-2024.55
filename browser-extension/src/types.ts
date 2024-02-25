@@ -2,12 +2,10 @@ export const AuthTokenKey = "AuthTokenKey";
 
 export type AuthState = "authenticated" | "unauthenticated" | "unknown";
 
-export type Page =
+export type Screen =
   | "profile"
   | "permissions"
   | "wallet"
-  | "history"
-  | "subscribers"
   | "sign-up"
   | "sign-in";
 

@@ -1,9 +1,4 @@
-import {
-  Button,
-  CircularProgress,
-  TextField,
-  Typography,
-} from "@material-ui/core";
+import { Button, CircularProgress, TextField } from "@material-ui/core";
 import { FC, useContext, useEffect, useState } from "react";
 import backendService from "../../services/backend-service";
 import { Producer } from "../../types";
@@ -13,13 +8,13 @@ const ProfileScreen: FC = () => {
   const { setAuthState } = useContext(AppContext)!;
 
   const [profile, setProfile] = useState<Producer>();
-  const [updateProfile, setUpdateProfile] = useState<Producer>();
+  const [editedProfile, setEditedProfile] = useState<Producer>();
 
   const loadProfile = async () => {
     try {
       const producer: Producer = await backendService.getProducer();
       setProfile(producer);
-      setUpdateProfile(producer);
+      setEditedProfile(producer);
     } catch (error) {
       backendService.handleError(error, setAuthState);
     }
@@ -27,11 +22,11 @@ const ProfileScreen: FC = () => {
 
   const updateProducer = async () => {
     try {
-      if (updateProfile) {
-        const updatedProfile = await backendService.updateProducer(
-          updateProfile
+      if (editedProfile) {
+        const fetchedProfile = await backendService.updateProducer(
+          editedProfile
         );
-        setProfile(updatedProfile);
+        setProfile(fetchedProfile);
         alert("Saved");
       }
     } catch (error) {
@@ -40,61 +35,72 @@ const ProfileScreen: FC = () => {
   };
 
   const onEdit = <T extends keyof Producer>(field: T, value: Producer[T]) => {
-    let temp: Producer | undefined = updateProfile;
+    let temp: Producer | undefined = editedProfile;
     if (temp) {
       temp[field] = value;
-      setUpdateProfile(temp);
+      setEditedProfile(temp);
     }
   };
 
   useEffect(() => {
     loadProfile();
-  }, []);
+  }, [loadProfile]);
+
+  useEffect(() => {}, [profile]);
+
+  if (editedProfile === undefined || profile === undefined) {
+    return <CircularProgress />;
+  }
 
   return (
     <div
       style={{
         height: "100%",
+        width: "90%",
         display: "flex",
         flexDirection: "column",
-        alignItems: "center",
-        justifyContent: "space-between",
+        overflow: "scroll",
       }}
     >
-      <Typography variant="h4">Profile</Typography>
-      {profile === undefined ? (
-        <CircularProgress />
-      ) : (
-        <>
-          <div
-            style={{
-              height: "100%",
-              width: "100%",
-              display: "grid",
-              gridTemplateColumns: "1fr 1fr",
-            }}
-          >
-            {Object.keys(profile)
-              .filter((key) => !["user_id"].includes(key))
-              .map((key) => (
-                <TextField
-                  key={key}
-                  style={{ margin: 10 }}
-                  label={key}
-                  defaultValue={profile[key as keyof Producer]}
-                  variant="standard"
-                  onChange={(event) =>
-                    onEdit(key as keyof Producer, event?.target.value)
-                  }
-                />
-              ))}
-          </div>
-          <Button variant="contained" onClick={updateProducer}>
-            Save
-          </Button>
-        </>
-      )}
-      <div />
+      {Object.keys(editedProfile)
+        .filter((key) => !["userId", "id", "name"].includes(key)) // TODO
+        .map((key) => (
+          <TextField
+            key={key}
+            style={{ margin: 20 }}
+            label={key}
+            defaultValue={editedProfile[key as keyof Producer]}
+            variant="outlined"
+            onChange={(event) =>
+              onEdit(key as keyof Producer, event?.target.value)
+            }
+          />
+        ))}
+
+      <div
+        style={{
+          width: "100%",
+          display: "flex",
+          justifyContent: "center",
+          margin: "20px 0",
+          gap: 20,
+        }}
+      >
+        <Button
+          variant="contained"
+          onClick={() => setEditedProfile(profile)}
+          color="default"
+        >
+          Undo
+        </Button>
+        <Button
+          variant="contained"
+          onClick={() => updateProducer()}
+          color="primary"
+        >
+          Save
+        </Button>
+      </div>
     </div>
   );
 };
