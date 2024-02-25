@@ -71,21 +71,21 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo) => {
     changeInfo.url !== "about:blank" &&
     !changeInfo.url.startsWith("chrome://")
   ) {
-    // if tab is new, initialize with array
     obj = { url: changeInfo.url, openedAt: Date.now() }
+    // if tab is new, initialize with array
     if(!openTabs.hasOwnProperty(tabId)) {
       openTabs[tabId] = [obj]
     }
     else {
       // access last object and we get the closing time
       const idx = openTabs[tabId].length - 1
-      var prev = openTabs[tabId].slice(idx)
-      const time_spent = Date.now() - prev.openedAt
+      const prev = openTabs[tabId][idx]
+      const time_spent = Date.now() - openTabs[tabId][idx].openedAt
       prev.time_spent = time_spent
       // insert into previous 
       openTabs[tabId][idx] = prev
       // add new object
-      openTabs[tabId] = openTabs[tabId].push(obj);
+      openTabs[tabId].push(obj);
     }
   }
 });
