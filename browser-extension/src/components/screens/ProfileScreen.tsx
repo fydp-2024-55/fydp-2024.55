@@ -62,8 +62,7 @@ const ProfileScreen: FC = () => {
         overflow: "scroll",
       }}
     >
-      {Object.keys(editedProfile)
-        .filter((key) => !["userId", "id", "name"].includes(key)) // TODO
+      {Object.keys(editedProfile) // TODO: Use appropriate input form
         .map((key) => (
           <TextField
             key={key}

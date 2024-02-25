@@ -10,7 +10,6 @@ export type Screen =
   | "sign-in";
 
 export interface Producer {
-  name: string;
   gender: string | null;
   ethnicity: string | null;
   dateOfBirth: string | null;
