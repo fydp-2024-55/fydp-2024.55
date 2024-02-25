@@ -3,7 +3,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from ..models.consumers import Consumer
 from ..models.users import User
-from ..schemas.consumers import ConsumerCreate, ConsumerRead, ConsumerUpdate
+from ..schemas.consumers import ConsumerCreate, ConsumerRead
 
 
 async def get_consumer(db: AsyncSession, user: User):
