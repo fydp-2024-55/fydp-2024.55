@@ -19,8 +19,7 @@ class ProducerCreate(ProducerBase):
 
 
 class ProducerRead(ProducerBase):
-    id: int
-    user_id: UUID
+    pass
 
 
 class ProducerUpdate(ProducerBase):

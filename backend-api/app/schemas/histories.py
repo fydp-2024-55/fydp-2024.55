@@ -11,7 +11,6 @@ class HistoryBase(BaseModel):
 
 
 class HistoryRead(HistoryBase):
-    id: int
     producer_id: int
 
 

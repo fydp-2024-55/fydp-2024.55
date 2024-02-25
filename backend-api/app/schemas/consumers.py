@@ -12,8 +12,7 @@ class ConsumerCreate(ConsumerBase):
 
 
 class ConsumerRead(ConsumerBase):
-    id: int
-    user_id: UUID
+    pass
 
 
 class ConsumerUpdate(ConsumerBase):
