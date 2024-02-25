@@ -13,7 +13,3 @@ class ConsumerCreate(ConsumerBase):
 
 class ConsumerRead(ConsumerBase):
     pass
-
-
-class ConsumerUpdate(ConsumerBase):
-    pass
