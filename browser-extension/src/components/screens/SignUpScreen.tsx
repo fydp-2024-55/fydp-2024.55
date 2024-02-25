@@ -1,24 +1,28 @@
 import { Button, TextField, Typography } from "@material-ui/core";
 import { FC, useContext, useState } from "react";
+import Logo from "../../images/logo.png";
 import backendService from "../../services/backend-service";
 import AuthContext from "../contexts/AppContext";
 
 const SignUpScreen: FC = () => {
-  const { setAuthState, setPage } = useContext(AuthContext)!;
+  const { setAuthState, setScreen } = useContext(AuthContext)!;
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [ethAddress, setEthAddress] = useState("");
-  const [privateKey, setPrivateKey] = useState("");
-  const [name, setName] = useState("");
+  const [confirmPassword, setConfirmedPassword] = useState("");
 
   const register = async () => {
+    if (password !== confirmPassword) {
+      alert("Passwords do not match");
+      return;
+    }
+
     try {
       await backendService.register(email, password);
       await backendService.logIn(email, password);
       await backendService.createWallet();
       await backendService.createProducer({
-        name,
+        name: "Test",
         gender: null,
         ethnicity: null,
         dateOfBirth: null,
@@ -40,47 +44,38 @@ const SignUpScreen: FC = () => {
         display: "flex",
         flexDirection: "column",
         justifyContent: "space-evenly",
+        alignItems: "center",
       }}
     >
-      <Typography variant="h1">Sign Up</Typography>
+      <img src={Logo} alt="Logo" height={100} width={100}></img>
+
       <div
         style={{
           display: "flex",
           flexDirection: "column",
-          gap: 10,
+          gap: 20,
         }}
       >
         <TextField
-          label="Name"
-          type="test"
-          variant="filled"
-          onChange={(event) => setName(event.target.value)}
-        />
-        <TextField
           label="Email"
           type="email"
-          variant="filled"
+          variant="outlined"
           onChange={(event) => setEmail(event.target.value)}
         />
         <TextField
           label="Password"
           type="password"
-          variant="filled"
+          variant="outlined"
           onChange={(event) => setPassword(event.target.value)}
         />
         <TextField
-          label="ETH Address"
-          type="text"
-          variant="filled"
-          onChange={(event) => setEthAddress(event.target.value)}
-        />
-        <TextField
-          label="Private Key"
+          label="Confirm Password"
           type="password"
-          variant="filled"
-          onChange={(event) => setPrivateKey(event.target.value)}
+          variant="outlined"
+          onChange={(event) => setConfirmedPassword(event.target.value)}
         />
       </div>
+
       <div
         style={{
           display: "flex",
@@ -102,7 +97,7 @@ const SignUpScreen: FC = () => {
           <Button
             variant="text"
             color="primary"
-            onClick={() => setPage("sign-in")}
+            onClick={() => setScreen("sign-in")}
           >
             <Typography variant="body1">Sign in!</Typography>
           </Button>

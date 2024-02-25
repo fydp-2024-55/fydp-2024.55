@@ -1,11 +1,11 @@
-import { CircularProgress } from "@mui/material";
 import { FC, useContext } from "react";
 import AppContext from "../components/contexts/AppContext";
-import BottomNav from "../components/navigation/BottomNav";
+import BottomBar from "../components/navigation/BottomBar";
 
-import LogoutButton from "../components/navigation/LogoutButton";
+import TopBar from "../components/navigation/TopBar";
 import { AuthenticatedRouter } from "./AuthenticatedRouter";
 import { UnauthenticatedRouter } from "./UnauthenticatedRouter";
+import { CircularProgress } from "@material-ui/core";
 
 const AppRouter: FC = () => {
   const { authState } = useContext(AppContext)!;
@@ -13,22 +13,32 @@ const AppRouter: FC = () => {
   switch (authState) {
     case "authenticated":
       return (
-        <div
-          style={{
-            height: "100%",
-            width: "100%",
-            paddingTop: 20,
-            display: "flex",
-            flexDirection: "column",
-            justifyContent: "space-between",
-            overflowY: "hidden",
-            position: "relative",
-          }}
-        >
-          <LogoutButton />
-          <AuthenticatedRouter />
-          <BottomNav />
-        </div>
+        <>
+          <div
+            style={{
+              height: 80,
+              background: "white",
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+            }}
+          >
+            <TopBar />
+          </div>
+          <div
+            style={{
+              height: 340,
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+            }}
+          >
+            <AuthenticatedRouter />
+          </div>
+          <div style={{ height: 80 }}>
+            <BottomBar />
+          </div>
+        </>
       );
 
     case "unauthenticated":

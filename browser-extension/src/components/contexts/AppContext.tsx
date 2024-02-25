@@ -1,13 +1,13 @@
 import { createContext, FC, ReactNode, useEffect, useState } from "react";
 import backendService from "../../services/backend-service";
 import storageService from "../../services/storage-service";
-import { AuthState, AuthTokenKey, Page } from "../../types";
+import { AuthState, AuthTokenKey, Screen } from "../../types";
 
 interface AppContextType {
   authState: AuthState;
   setAuthState: (authState: AuthState) => void;
-  page: Page;
-  setPage: (page: Page) => void;
+  screen: Screen;
+  setScreen: (screen: Screen) => void;
 }
 
 const AppContext = createContext<AppContextType | null>(null);
@@ -17,7 +17,7 @@ interface Props {
 }
 
 export const AppContextProvider: FC<Props> = ({ children }) => {
-  const [page, setPage] = useState<Page>("sign-in");
+  const [screen, setScreen] = useState<Screen>("sign-in");
   const [authState, setAuthState] = useState<AuthState>("unknown");
 
   useEffect(() => {
@@ -31,7 +31,7 @@ export const AppContextProvider: FC<Props> = ({ children }) => {
   }, []);
 
   return (
-    <AppContext.Provider value={{ authState, setAuthState, page, setPage }}>
+    <AppContext.Provider value={{ authState, setAuthState, screen, setScreen }}>
       {children}
     </AppContext.Provider>
   );
