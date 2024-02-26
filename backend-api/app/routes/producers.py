@@ -97,9 +97,9 @@ async def delete_producer(
     status_code=status.HTTP_201_CREATED,
     response_model=List[VisitedSite],
 )
-async def upload_search_history(
-    search_history: List[VisitedSite],
+async def upload_interests(
+    visited_sites: List[VisitedSite],
     producer: Producer = Depends(get_current_producer),
 ):
     # TODO: Implement interest categorization logic
-    return search_history
+    return visited_sites

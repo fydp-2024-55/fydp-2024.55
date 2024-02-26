@@ -21,7 +21,6 @@ class Producer(Base):
     parental_status = sa.Column(sa.CHAR, nullable=True)
 
     user = relationship(User, back_populates="producer")
-    histories = relationship("History", back_populates="producer")
     restricted_categories = relationship(
         "Category",
         "Producer_Restricted_Categories",
