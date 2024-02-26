@@ -44,7 +44,7 @@ const ProfileScreen: FC = () => {
 
   useEffect(() => {
     loadProfile();
-  }, [loadProfile]);
+  }, []);
 
   useEffect(() => {}, [profile]);
 
