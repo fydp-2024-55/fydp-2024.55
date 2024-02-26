@@ -28,13 +28,6 @@ export interface Permissions {
   [key: string]: boolean;
 }
 
-export interface History {
-  url: string;
-  title: string;
-  visitTime: string;
-  timeSpent: string;
-}
-
 export interface Subscriber {
   name: string;
   ethAddress: string;

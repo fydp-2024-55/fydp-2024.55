@@ -26,7 +26,6 @@ class ProducerUpdate(ProducerBase):
 
 
 class VisitedSite(BaseModel):
-    url: str
-    title: str
-    visited_time: datetime
-    time_spent: int  # in seconds
+    title: str  # The title of the visited site
+    visited_time: datetime  # The time the site was visited
+    duration: int  # How long the site was visited for (in seconds)

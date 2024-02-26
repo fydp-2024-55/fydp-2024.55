@@ -5,7 +5,6 @@ import {
   AuthState,
   AuthTokenKey,
   BearerToken,
-  History,
   Producer,
   Wallet,
 } from "../types";
@@ -83,19 +82,6 @@ const backendService = {
 
   updateProducer: async (data: Partial<Producer>) => {
     const response = await apiClient.patch<Producer>(`/producer/me`, data);
-    return response.data;
-  },
-
-  createProducerHistory: async (data: History[]) => {
-    const response = await apiClient.post<History[]>(
-      `/producer/me/histories/`,
-      data
-    );
-    return response.data;
-  },
-
-  getProducerHistory: async () => {
-    const response = await apiClient.get<History[]>(`/producer/me/histories/`);
     return response.data;
   },
 
