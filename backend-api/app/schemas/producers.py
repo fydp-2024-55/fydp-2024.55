@@ -1,5 +1,4 @@
-from datetime import date
-from uuid import UUID
+from datetime import date, datetime
 
 from pydantic import BaseModel
 
@@ -24,3 +23,10 @@ class ProducerRead(ProducerBase):
 
 class ProducerUpdate(ProducerBase):
     pass
+
+
+class VisitedSite(BaseModel):
+    url: str
+    title: str
+    visited_time: datetime
+    time_spent: int  # in seconds
