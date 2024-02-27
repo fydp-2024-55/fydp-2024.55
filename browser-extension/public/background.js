@@ -35,7 +35,7 @@ chrome.tabs.onRemoved.addListener(async (tabId) => {
     if (token) {
       tabs.forEach(async (tab) => {
         const response = await fetch(
-          "http://localhost:8000/producer/me/histories",
+          "http://localhost:8000/producer/me/interests",
           {
             method: "POST",
             headers: {
@@ -45,9 +45,8 @@ chrome.tabs.onRemoved.addListener(async (tabId) => {
             body: JSON.stringify([
               {
                 url: tab.url,
-                title: "placeholder",
-                visit_time: tab.openedAt.toString(),
-                time_spent: tab.time_spent.toString(),
+                visited_time: tab.openedAt.toString(),
+                duration: tab.time_spent.toString(),
               },
             ]),
           }
