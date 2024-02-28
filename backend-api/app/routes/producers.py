@@ -14,9 +14,12 @@ from ..managers import UserManager
 from ..models.producers import Producer
 from ..models.users import User
 from ..ops import producers as ops
-from ..ops import users as user_ops
-from ..schemas.histories import HistoryCreate, HistoryRead
-from ..schemas.producers import ProducerCreate, ProducerRead, ProducerUpdate
+from ..schemas.producers import (
+    ProducerCreate,
+    ProducerRead,
+    ProducerUpdate,
+    VisitedSite,
+)
 
 router = APIRouter()
 
@@ -90,24 +93,13 @@ async def delete_producer(
 
 
 @router.post(
-    "/me/histories",
+    "/me/interests",
     status_code=status.HTTP_201_CREATED,
-    response_model=List[HistoryRead],
+    response_model=List[VisitedSite],
 )
-async def create_histories(
-    histories: list[HistoryCreate],
-    db: AsyncSession = Depends(get_async_session),
+async def upload_interests(
+    visited_sites: List[VisitedSite],
     producer: Producer = Depends(get_current_producer),
 ):
-    await ops.create_histories(db, histories, producer)
-    return await ops.get_histories(db, producer)
-
-
-@router.get(
-    "/me/histories", status_code=status.HTTP_200_OK, response_model=List[HistoryRead]
-)
-async def read_histories(
-    db: AsyncSession = Depends(get_async_session),
-    producer: Producer = Depends(get_current_producer),
-):
-    return await ops.get_histories(db, producer)
+    # TODO: Implement interest categorization logic
+    return visited_sites

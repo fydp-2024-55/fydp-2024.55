@@ -1,11 +1,9 @@
-from datetime import date
-from uuid import UUID
+from datetime import date, datetime
 
 from pydantic import BaseModel
 
 
 class ProducerBase(BaseModel):
-    name: str
     gender: str | None
     ethnicity: str | None
     date_of_birth: date | None
@@ -20,9 +18,14 @@ class ProducerCreate(ProducerBase):
 
 
 class ProducerRead(ProducerBase):
-    id: int
-    user_id: UUID
+    pass
 
 
 class ProducerUpdate(ProducerBase):
     pass
+
+
+class VisitedSite(BaseModel):
+    url: str  # The url of the visited site
+    visited_time: datetime  # The time the site was visited
+    duration: int  # How long the site was visited for (in seconds)

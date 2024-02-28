@@ -4,7 +4,7 @@ from pydantic import BaseModel
 
 
 class ConsumerBase(BaseModel):
-    name: str
+    pass
 
 
 class ConsumerCreate(ConsumerBase):
@@ -12,9 +12,4 @@ class ConsumerCreate(ConsumerBase):
 
 
 class ConsumerRead(ConsumerBase):
-    id: int
-    user_id: UUID
-
-
-class ConsumerUpdate(ConsumerBase):
     pass

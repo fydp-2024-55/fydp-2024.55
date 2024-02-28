@@ -10,7 +10,6 @@ export type Screen =
   | "sign-in";
 
 export interface Producer {
-  name: string;
   gender: string | null;
   ethnicity: string | null;
   dateOfBirth: string | null;
@@ -27,13 +26,6 @@ export interface Wallet {
 
 export interface Permissions {
   [key: string]: boolean;
-}
-
-export interface History {
-  url: string;
-  title: string;
-  visitTime: string;
-  timeSpent: string;
 }
 
 export interface Subscriber {
