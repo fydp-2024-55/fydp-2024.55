@@ -2,7 +2,6 @@ import sqlalchemy as sa
 from sqlalchemy.orm import relationship
 
 from ..database import Base
-from .locations import Location
 from .users import GUID, User
 
 

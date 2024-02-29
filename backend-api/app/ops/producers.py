@@ -5,16 +5,19 @@ from ..models.histories import History
 from ..models.producers import Producer
 from ..models.users import User
 from ..schemas.histories import HistoryCreate, HistoryRead
-from ..schemas.producers import ProducerCreate, ProducerRead, ProducerUpdate
+from ..schemas.producers import (
+    ProducerCreate,
+    ProducerRead,
+    ProducerUpdate,
+    ProducerFilter,
+)
 
 
 async def get_producer(db: AsyncSession, user: User):
     statement = sa.select(Producer).where(Producer.user_id == user.id)
     result = await db.execute(statement)
     producer = result.scalar_one_or_none()
-    if producer is None:
-        return None
-    return ProducerRead(**producer.__dict__, eth_address=user.eth_address)
+    return ProducerRead(**producer.__dict__) if producer is not None else None
 
 
 async def create_producer(db: AsyncSession, producer: ProducerCreate, user: User):
@@ -34,19 +37,10 @@ async def create_producer(db: AsyncSession, producer: ProducerCreate, user: User
 
 
 async def update_producer(db: AsyncSession, producer: ProducerUpdate, user: User):
-    if producer.eth_address:
-        statement = (
-            sa.update(User)
-            .values(eth_address=producer.eth_address)
-            .where(User.id == user.id)
-        )
-    await db.execute(statement)
-
     statement = (
         sa.update(Producer)
         .values(
             name=producer.name,
-            country=producer.country,
             date_of_birth=producer.date_of_birth,
             gender=producer.gender,
             ethnicity=producer.ethnicity,
@@ -86,3 +80,45 @@ async def create_histories(
         )
         await db.execute(statement)
     await db.commit()
+
+
+async def get_producer_countries(db: AsyncSession):
+    statement = sa.select(Producer.country).distinct()
+    result = await db.execute(statement)
+    countries = result.scalars().all()
+    return [country for country in countries]
+
+
+async def get_producers_by_filter(db: AsyncSession, filter: ProducerFilter):
+    statement = sa.select(Producer)
+
+    # TODO: Uncomment these once migrated to PostgreSQL
+    # if filter.min_age is not None:
+    #     statement = statement.where(
+    #         sa.func.age(Producer.date_of_birth) >= filter.min_age
+    #     )
+    # if filter.max_age is not None:
+    #     statement = statement.where(
+    #         sa.func.age(Producer.date_of_birth) <= filter.max_age
+    #     )
+    if filter.min_income is not None:
+        statement = statement.where(Producer.income >= filter.min_income)
+    if filter.max_income is not None:
+        statement = statement.where(Producer.income <= filter.max_income)
+    if filter.genders:
+        statement = statement.where(Producer.gender.in_(filter.genders))
+    if filter.ethnicities:
+        statement = statement.where(Producer.ethnicity.in_(filter.ethnicities))
+    if filter.countries:
+        statement = statement.where(Producer.country.in_(filter.countries))
+    if filter.marital_statuses:
+        statement = statement.where(
+            Producer.marital_status.in_(filter.marital_statuses)
+        )
+    if filter.parental_statuses:
+        statement = statement.where(
+            Producer.parental_status.in_(filter.parental_statuses)
+        )
+
+    producers = await db.execute(statement)
+    return [ProducerRead(**producer.__dict__) for producer in producers.scalars().all()]

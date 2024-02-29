@@ -1,7 +1,6 @@
 from datetime import date
-from uuid import UUID
-
 from pydantic import BaseModel
+from uuid import UUID
 
 
 class ProducerBase(BaseModel):
@@ -26,3 +25,47 @@ class ProducerRead(ProducerBase):
 
 class ProducerUpdate(ProducerBase):
     pass
+
+
+GENDERS = {
+    "M": "Male",
+    "F": "Female",
+    "O": "Other",
+}
+
+
+ETHNICITIES = {
+    "N": "American Indian or Alaskan Native",
+    "A": "Asian/Pacific Islander",
+    "B": "Black or African American",
+    "H": "Hispanic",
+    "W": "White/Caucasian",
+    "O": "Other",
+}
+
+MARITAL_STATUSES = {
+    "S": "Single",
+    "M": "Married",
+    "D": "Divorced",
+    "W": "Widowed",
+}
+
+PARENTAL_STATUSES = {
+    "P": "Parent",
+    "N": "Not Parent",
+}
+
+
+class FilterOptions(BaseModel):
+    genders: list[str]
+    ethnicities: list[str]
+    countries: list[str]
+    marital_statuses: list[str]
+    parental_statuses: list[str]
+
+
+class ProducerFilter(FilterOptions):
+    min_age: int | None
+    max_age: int | None
+    min_income: int | None
+    max_income: int | None

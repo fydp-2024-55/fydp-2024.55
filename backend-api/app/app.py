@@ -2,7 +2,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from .blockchain.client import ETHClient
-from .routes import auth, consumers, producers, locations, users
+from .routes import auth, consumers, producers, users
 
 app = FastAPI()
 
@@ -40,10 +40,4 @@ app.include_router(
     consumers.router,
     prefix="/consumers",
     tags=["consumers"],
-)
-
-app.include_router(
-    locations.router,
-    prefix="/locations",
-    tags=["locations"],
 )

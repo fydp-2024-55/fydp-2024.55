@@ -1,3 +1,4 @@
+from datetime import datetime
 from typing import List
 from fastapi import APIRouter, Request, status, HTTPException
 from fastapi.params import Depends
@@ -15,9 +16,16 @@ from ..managers import UserManager
 from ..models.producers import Producer
 from ..models.users import User
 from ..ops import producers as ops
-from ..ops import users as user_ops
 from ..schemas.histories import HistoryCreate, HistoryRead
-from ..schemas.producers import ProducerCreate, ProducerRead, ProducerUpdate
+from ..schemas.producers import (
+    ProducerCreate,
+    ProducerRead,
+    ProducerUpdate,
+    GENDERS,
+    ETHNICITIES,
+    MARITAL_STATUSES,
+    PARENTAL_STATUSES,
+)
 
 router = APIRouter()
 
@@ -33,6 +41,32 @@ async def create_producer(
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="User does not have a wallet",
+        )
+
+    if producer.gender and producer.gender not in GENDERS:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Invalid gender provided",
+        )
+    if producer.ethnicity and producer.ethnicity not in ETHNICITIES:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Invalid ethnicity provided",
+        )
+    if producer.date_of_birth > datetime.now().date():
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Invalid date of birth provided",
+        )
+    if producer.marital_status and producer.marital_status not in MARITAL_STATUSES:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Invalid marital status provided",
+        )
+    if producer.parental_status and producer.parental_status not in PARENTAL_STATUSES:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Invalid parental status provided",
         )
 
     try:
@@ -114,12 +148,12 @@ async def read_histories(
     return await ops.get_histories(db, producer)
 
 
-@router.get("/me/subscriptions", status_code=status.HTTP_200_OK)
+@router.get(
+    "/me/subscriptions", status_code=status.HTTP_200_OK, response_model=list[str]
+)
 async def read_subscriptions(
     request: Request,
     user: User = Depends(get_current_active_user),
 ):
-    subscriptions: list[str] = producer_consumers(
-        request.app.state.eth_client, user.eth_address
-    )
+    subscriptions = producer_consumers(request.app.state.eth_client, user.eth_address)
     return subscriptions

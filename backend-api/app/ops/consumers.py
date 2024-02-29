@@ -10,9 +10,7 @@ async def get_consumer(db: AsyncSession, user: User):
     statement = sa.select(Consumer).where(Consumer.user_id == user.id)
     result = await db.execute(statement)
     consumer = result.scalar_one_or_none()
-    if consumer is None:
-        return None
-    return ConsumerRead(**consumer.__dict__, eth_address=user.eth_address)
+    return ConsumerRead(**consumer.__dict__) if consumer is not None else None
 
 
 async def create_consumer(db: AsyncSession, consumer: ConsumerCreate, user: User):
@@ -25,14 +23,6 @@ async def create_consumer(db: AsyncSession, consumer: ConsumerCreate, user: User
 
 
 async def update_consumer(db: AsyncSession, consumer: ConsumerUpdate, user: User):
-    if consumer.eth_address:
-        statement = (
-            sa.update(User)
-            .values(eth_address=consumer.eth_address)
-            .where(User.id == user.id)
-        )
-        await db.execute(statement)
-
     statement = (
         sa.update(Consumer)
         .values(
