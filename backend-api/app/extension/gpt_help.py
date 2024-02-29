@@ -50,12 +50,16 @@ def Get_category(website):
 
     website_information_for_classification = title + headings + nav_bar + other_information
 
-    # print(website_information_for_classification)
+    QUERY = "You are a website classifier. You are categorizing websites into the categories of:" \
+            "Shopping, Social Media, travel, entertainment, sports, animal, music, cuisine or beauty websites."\
+            "You will be given content from the HEAD request of the page as well as some of the content on the page"\
+            "and you will be determining what category it is. You will be provided some website content now."\
+            "Answer me in either: SHOP, TRAVEL, ENTERTAINMENT, SOCIAL, SPORTS, ANIMALS, MUSIC, CUISINE, BEAUTY"
 
     completion = client.chat.completions.create(
     model="gpt-4-1106-preview",
     messages=[
-        {"role": "system", "content": "You are a website classifier. You are categorizing websites into the categories of: Shopping, Social Media, travel or entertainment websites. You will be given content from the HEAD request of the page as well as some of the content on the page and you will be determining what category it is. You will be provided some website content now. Answer me in either SHOP, TRAVEL, ENTERTAINMENT, SOCIAL"},
+        {"role": "system", "content": QUERY},
         {"role": "user", "content": website_information_for_classification}
     ]
     )
