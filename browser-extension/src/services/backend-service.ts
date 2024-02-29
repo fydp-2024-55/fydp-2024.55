@@ -7,6 +7,7 @@ import {
   BearerToken,
   Producer,
   Wallet,
+  Permissions,
 } from "../types";
 import storageService from "./storage-service";
 
@@ -100,6 +101,21 @@ const backendService = {
       ethAddress,
       privateKey,
     });
+    return response.data;
+  },
+
+  getPermissions: async () => {
+    const response = await apiClient.get<Permissions>(
+      `/producer/me/permissions`
+    );
+    return response.data;
+  },
+
+  updatePermissions: async (permissions: Permissions) => {
+    const response = await apiClient.patch<Permissions>(
+      `/producer/me/permissions`,
+      permissions
+    );
     return response.data;
   },
 };
