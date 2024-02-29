@@ -80,10 +80,11 @@ async def update_permissions(
     old_permissions = await get_permissions(db, user)
 
     for category, enabled in old_permissions:
-        if category.title not in permissions or enabled == permissions[category.title]:
+        title = category.title.lower()
+        if title not in permissions or enabled == permissions[title]:
             continue
 
-        if permissions[category.title]:
+        if permissions[title]:
             statement = sa.insert(ProducerRestictedCategories).values(
                 producer_id=producer.id, category_id=category.id
             )

@@ -4,39 +4,50 @@ import {
   Switch,
   Typography,
 } from "@material-ui/core";
-import { FC, useEffect, useState } from "react";
+import { FC, useContext, useEffect, useState } from "react";
 import { Permissions } from "../../types";
+import backendService from "../../services/backend-service";
+import AppContext from "../contexts/AppContext";
+
+const getLabel = (key: string) => {
+  if (key == "social") {
+    key = "social media";
+  }
+
+  return `Collect ${key} search history`;
+};
 
 const PermissionsScreen: FC = () => {
+  const { setAuthState } = useContext(AppContext)!;
+
   const [permissions, setPermissions] = useState<Permissions>();
   const [editedPermissions, setEditedPermissions] = useState<Permissions>();
 
   const loadPermissions = async () => {
-    // Todo: Replace timeout with api call
-    setTimeout(() => {
-      const fetchedPermissions = {
-        "Collect shopping search history": true,
-        "Collect entertainment search history": true,
-        "Collect travel search history": false,
-        "Collect social media search history": false,
-        "Collect sports search history": true,
-        "Collect animals search history": true,
-        "Collect music search history": true,
-        "Collect cuisine search history": false,
-        "Collect beauty search history": true,
-      };
-      setPermissions(fetchedPermissions);
-      setEditedPermissions(fetchedPermissions);
-    }, 0);
+    const fetchedPermissions = await backendService.getPermissions();
+    setPermissions(fetchedPermissions);
+    setEditedPermissions(fetchedPermissions);
   };
 
-  const updatedPermissions = async () => {
-    // TODO
+  const updatePermissions = async () => {
+    try {
+      if (editedPermissions) {
+        const fetchedPermissions = await backendService.updatePermissions(
+          editedPermissions
+        );
+        setPermissions(fetchedPermissions);
+        alert("Saved");
+      }
+    } catch (error) {
+      backendService.handleError(error, setAuthState);
+    }
   };
 
   useEffect(() => {
     loadPermissions();
   }, []);
+
+  useEffect(() => {}, [editedPermissions]);
 
   if (editedPermissions === undefined) {
     return <CircularProgress />;
@@ -62,15 +73,14 @@ const PermissionsScreen: FC = () => {
             margin: 20,
           }}
         >
-          <Typography variant="body1">{key}</Typography>
+          <Typography variant="body1">{getLabel(key)}</Typography>
 
           <Switch
-            value={editedPermissions[key]}
             defaultChecked={editedPermissions[key]}
-            onChange={(event) =>
-              setPermissions({
+            onChange={() =>
+              setEditedPermissions({
                 ...editedPermissions,
-                [key]: !event.target.checked,
+                [key]: !editedPermissions[key],
               })
             }
             color="primary"
@@ -96,7 +106,7 @@ const PermissionsScreen: FC = () => {
         </Button>
         <Button
           variant="contained"
-          onClick={() => updatedPermissions()}
+          onClick={() => updatePermissions()}
           color="primary"
         >
           Save

@@ -113,7 +113,7 @@ async def read_permissions(
     user: User = Depends(get_current_active_user),
 ):
     permissions = await ops.get_permissions(db, user)
-    return {category.title: enabled for category, enabled in permissions}
+    return {category.title.lower(): enabled for category, enabled in permissions}
 
 
 @router.patch(
