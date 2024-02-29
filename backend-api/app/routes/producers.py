@@ -1,5 +1,5 @@
-from typing import List
-from fastapi import APIRouter, Request, status, HTTPException
+from typing import Dict, List
+from fastapi import APIRouter, Body, Request, status, HTTPException
 from fastapi.params import Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -7,11 +7,9 @@ from ..blockchain.mint_burn import burn_token, mint_token
 from ..dependencies import (
     get_async_session,
     get_current_active_user,
-    get_current_producer,
     get_user_manager,
 )
 from ..managers import UserManager
-from ..models.producers import Producer
 from ..models.users import User
 from ..ops import producers as ops
 from ..schemas.producers import (
@@ -50,7 +48,7 @@ async def create_producer(
         )
 
     await ops.create_producer(db, producer, user)
-    return await ops.get_producer(db, user)
+    return await read_producer(db, user)
 
 
 @router.get("/me", status_code=status.HTTP_200_OK, response_model=ProducerRead)
@@ -58,7 +56,8 @@ async def read_producer(
     db: AsyncSession = Depends(get_async_session),
     user: User = Depends(get_current_active_user),
 ):
-    return await ops.get_producer(db, user)
+    producer = await ops.get_producer(db, user)
+    return ProducerRead(**producer.__dict__)
 
 
 @router.patch("/me", status_code=status.HTTP_200_OK, response_model=ProducerRead)
@@ -68,7 +67,7 @@ async def update_producer(
     user: User = Depends(get_current_active_user),
 ):
     await ops.update_producer(db, producer, user)
-    return await ops.get_producer(db, user)
+    return await read_producer(db, user)
 
 
 @router.delete("/me", status_code=status.HTTP_204_NO_CONTENT)
@@ -99,7 +98,33 @@ async def delete_producer(
 )
 async def upload_interests(
     visited_sites: List[VisitedSite],
-    producer: Producer = Depends(get_current_producer),
 ):
     # TODO: Implement interest categorization logic
     return visited_sites
+
+
+@router.get(
+    "/me/permissions",
+    status_code=status.HTTP_200_OK,
+    response_model=Dict[str, bool],
+)
+async def read_permissions(
+    db: AsyncSession = Depends(get_async_session),
+    user: User = Depends(get_current_active_user),
+):
+    permissions = await ops.get_permissions(db, user)
+    return {category.title: enabled for category, enabled in permissions}
+
+
+@router.patch(
+    "/me/permissions",
+    status_code=status.HTTP_200_OK,
+    response_model=Dict[str, bool],
+)
+async def update_permissions(
+    permissions: Dict[str, bool] = Body(),
+    db: AsyncSession = Depends(get_async_session),
+    user: User = Depends(get_current_active_user),
+):
+    await ops.update_permissions(db, user, permissions)
+    return await read_permissions(db, user)
