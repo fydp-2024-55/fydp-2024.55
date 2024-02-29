@@ -1,5 +1,5 @@
 from datetime import datetime
-from fastapi import APIRouter, status, Request, HTTPException, Query
+from fastapi import APIRouter, status, Request, HTTPException
 from fastapi.params import Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -12,12 +12,10 @@ from ..dependencies import get_async_session, get_current_active_user, get_user_
 from ..managers import UserManager
 from ..models.users import User
 from ..ops import consumers as ops
-from ..ops.producers import get_producers_by_filter, get_producer_countries
-from ..schemas.consumers import ConsumerCreate, ConsumerRead, ConsumerUpdate
+from ..ops.producers import get_producer_countries
+from ..schemas.consumers import ConsumerCreate, ConsumerRead
 from ..schemas.producers import (
-    ProducerRead,
     FilterOptions,
-    ProducerFilter,
     GENDERS,
     ETHNICITIES,
     MARITAL_STATUSES,
@@ -28,7 +26,6 @@ from ..schemas.subscriptions import (
     SubscriptionRead,
 )
 from ..utils.date import date_to_epoch
-from ..schemas.consumers import ConsumerCreate, ConsumerRead
 
 router = APIRouter()
 
@@ -161,60 +158,3 @@ async def get_producer_filter_options(
         parental_statuses=PARENTAL_STATUSES.values(),
         countries=countries,
     )
-
-
-@router.get(
-    "/available-subscriptions",
-    status_code=status.HTTP_200_OK,
-    response_model=list[ProducerRead],
-)
-async def read_subscriptions_available(
-    min_age: int | None = None,
-    max_age: int | None = None,
-    min_income: int | None = None,
-    max_income: int | None = None,
-    genders: list[str] = Query([]),
-    ethnicities: list[str] = Query([]),
-    countries: list[str] = Query([]),
-    marital_statuses: list[str] = Query([]),
-    parental_statuses: list[str] = Query([]),
-    db: AsyncSession = Depends(get_async_session),
-):
-    # Validate the filter options
-    for gender in genders:
-        if gender not in GENDERS:
-            raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST,
-                detail="Invalid gender provided",
-            )
-    for ethnicity in ethnicities:
-        if ethnicity not in ETHNICITIES:
-            raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST,
-                detail="Invalid ethnicity provided",
-            )
-    for marital_status in marital_statuses:
-        if marital_status not in MARITAL_STATUSES:
-            raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST,
-                detail="Invalid marital status provided",
-            )
-    for parental_status in parental_statuses:
-        if parental_status not in PARENTAL_STATUSES:
-            raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST,
-                detail="Invalid parental status provided",
-            )
-
-    filter = ProducerFilter(
-        genders=genders,
-        ethnicities=ethnicities,
-        countries=countries,
-        marital_statuses=marital_statuses,
-        parental_statuses=parental_statuses,
-        min_age=min_age,
-        max_age=max_age,
-        min_income=min_income,
-        max_income=max_income,
-    )
-    return await get_producers_by_filter(db, filter)

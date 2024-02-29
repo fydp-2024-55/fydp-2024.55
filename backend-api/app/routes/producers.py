@@ -1,11 +1,10 @@
 from datetime import datetime
 from typing import List
-from fastapi import APIRouter, Request, status, HTTPException
+from fastapi import APIRouter, Request, status, HTTPException, Query
 from fastapi.params import Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from ..blockchain.mint_burn import burn_token, mint_token
-from ..blockchain.permissions import producer_consumers
 from ..dependencies import (
     get_async_session,
     get_current_active_user,
@@ -20,6 +19,7 @@ from ..schemas.producers import (
     ProducerCreate,
     ProducerRead,
     ProducerUpdate,
+    ProducerFilter,
     GENDERS,
     ETHNICITIES,
     MARITAL_STATUSES,
@@ -28,6 +28,63 @@ from ..schemas.producers import (
 )
 
 router = APIRouter()
+
+
+@router.get(
+    "/",
+    status_code=status.HTTP_200_OK,
+    response_model=list[ProducerRead],
+)
+async def read_producers_available(
+    min_age: int | None = None,
+    max_age: int | None = None,
+    min_income: int | None = None,
+    max_income: int | None = None,
+    genders: list[str] = Query([]),
+    ethnicities: list[str] = Query([]),
+    countries: list[str] = Query([]),
+    marital_statuses: list[str] = Query([]),
+    parental_statuses: list[str] = Query([]),
+    db: AsyncSession = Depends(get_async_session),
+):
+    # Validate the filter options
+    for gender in genders:
+        if gender not in GENDERS:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Invalid gender provided",
+            )
+    for ethnicity in ethnicities:
+        if ethnicity not in ETHNICITIES:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Invalid ethnicity provided",
+            )
+    for marital_status in marital_statuses:
+        if marital_status not in MARITAL_STATUSES:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Invalid marital status provided",
+            )
+    for parental_status in parental_statuses:
+        if parental_status not in PARENTAL_STATUSES:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Invalid parental status provided",
+            )
+
+    filter = ProducerFilter(
+        genders=genders,
+        ethnicities=ethnicities,
+        countries=countries,
+        marital_statuses=marital_statuses,
+        parental_statuses=parental_statuses,
+        min_age=min_age,
+        max_age=max_age,
+        min_income=min_income,
+        max_income=max_income,
+    )
+    return await ops.get_producers_by_filter(db, filter)
 
 
 @router.post("/me", status_code=status.HTTP_201_CREATED, response_model=ProducerRead)

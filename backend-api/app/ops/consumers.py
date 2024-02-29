@@ -3,7 +3,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from ..models.consumers import Consumer
 from ..models.users import User
-from ..schemas.consumers import ConsumerCreate, ConsumerRead, ConsumerUpdate
+from ..schemas.consumers import ConsumerCreate, ConsumerRead
 
 
 async def get_consumer(db: AsyncSession, user: User):
@@ -20,19 +20,6 @@ async def create_consumer(db: AsyncSession, consumer: ConsumerCreate, user: User
     )
     await db.execute(statement)
     await db.commit()
-
-
-async def update_consumer(db: AsyncSession, consumer: ConsumerUpdate, user: User):
-    statement = (
-        sa.update(Consumer)
-        .values(
-            name=consumer.name,
-        )
-        .where(Consumer.user_id == user.id)
-    )
-    if consumer is None:
-        return None
-    return ConsumerRead(**consumer.__dict__)
 
 
 async def create_consumer(db: AsyncSession, consumer: ConsumerCreate, user: User):
