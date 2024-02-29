@@ -1,10 +1,9 @@
-from datetime import date
+from datetime import date, datetime
 from pydantic import BaseModel
 from uuid import UUID
 
 
 class ProducerBase(BaseModel):
-    name: str
     gender: str | None
     ethnicity: str | None
     date_of_birth: date | None
@@ -19,8 +18,7 @@ class ProducerCreate(ProducerBase):
 
 
 class ProducerRead(ProducerBase):
-    id: int
-    user_id: UUID
+    pass
 
 
 class ProducerUpdate(ProducerBase):
@@ -69,3 +67,9 @@ class ProducerFilter(FilterOptions):
     max_age: int | None
     min_income: int | None
     max_income: int | None
+
+
+class VisitedSite(BaseModel):
+    url: str  # The url of the visited site
+    visited_time: datetime  # The time the site was visited
+    duration: int  # How long the site was visited for (in seconds)

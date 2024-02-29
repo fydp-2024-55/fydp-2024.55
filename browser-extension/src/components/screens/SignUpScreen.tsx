@@ -1,36 +1,38 @@
 import { Button, TextField, Typography } from "@material-ui/core";
 import { FC, useContext, useState } from "react";
-import client from "../api/client";
-import { AuthState, Page } from "../types";
-import AuthContext from "./AppContext";
+import Logo from "../../images/logo.png";
+import backendService from "../../services/backend-service";
+import AuthContext from "../contexts/AppContext";
 
-const RegistrationPage: FC = () => {
-  const { setAuthState, setPage } = useContext(AuthContext)!;
+const SignUpScreen: FC = () => {
+  const { setAuthState, setScreen } = useContext(AuthContext)!;
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [ethAddress, setEthAddress] = useState("");
-  const [privateKey, setPrivateKey] = useState("");
-  const [name, setName] = useState("");
+  const [confirmPassword, setConfirmedPassword] = useState("");
 
   const register = async () => {
+    if (password !== confirmPassword) {
+      alert("Passwords do not match");
+      return;
+    }
+
     try {
-      await client.register(email, password, ethAddress);
-      await client.logIn(email, password);
-      await client.createProducer({
-        name,
-        eth_address: ethAddress,
+      await backendService.register(email, password);
+      await backendService.logIn(email, password);
+      await backendService.createWallet();
+      await backendService.createProducer({
         gender: null,
         ethnicity: null,
-        date_of_birth: null,
+        dateOfBirth: null,
         country: null,
         income: null,
-        marital_status: null,
-        parental_status: null,
+        maritalStatus: null,
+        parentalStatus: null,
       });
-      setAuthState(AuthState.Authenticated);
+      setAuthState("authenticated");
     } catch (error) {
-      client.handleError(error, setAuthState);
+      backendService.handleError(error, setAuthState);
     }
   };
 
@@ -41,47 +43,38 @@ const RegistrationPage: FC = () => {
         display: "flex",
         flexDirection: "column",
         justifyContent: "space-evenly",
+        alignItems: "center",
       }}
     >
-      <Typography variant="h1">Sign Up</Typography>
+      <img src={Logo} alt="Logo" height={100} width={100}></img>
+
       <div
         style={{
           display: "flex",
           flexDirection: "column",
-          gap: 10,
+          gap: 20,
         }}
       >
         <TextField
-          label="Name"
-          type="test"
-          variant="filled"
-          onChange={(event) => setName(event.target.value)}
-        />
-        <TextField
           label="Email"
           type="email"
-          variant="filled"
+          variant="outlined"
           onChange={(event) => setEmail(event.target.value)}
         />
         <TextField
           label="Password"
           type="password"
-          variant="filled"
+          variant="outlined"
           onChange={(event) => setPassword(event.target.value)}
         />
         <TextField
-          label="ETH Address"
-          type="text"
-          variant="filled"
-          onChange={(event) => setEthAddress(event.target.value)}
-        />
-        <TextField
-          label="Private Key"
+          label="Confirm Password"
           type="password"
-          variant="filled"
-          onChange={(event) => setPrivateKey(event.target.value)}
+          variant="outlined"
+          onChange={(event) => setConfirmedPassword(event.target.value)}
         />
       </div>
+
       <div
         style={{
           display: "flex",
@@ -103,7 +96,7 @@ const RegistrationPage: FC = () => {
           <Button
             variant="text"
             color="primary"
-            onClick={() => setPage(Page.Login)}
+            onClick={() => setScreen("sign-in")}
           >
             <Typography variant="body1">Sign in!</Typography>
           </Button>
@@ -113,4 +106,4 @@ const RegistrationPage: FC = () => {
   );
 };
 
-export default RegistrationPage;
+export default SignUpScreen;

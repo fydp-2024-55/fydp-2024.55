@@ -12,7 +12,6 @@ class Producer(Base):
     user_id = sa.Column(
         GUID, sa.ForeignKey("Users.id"), index=True, unique=True, nullable=False
     )
-    name = sa.Column(sa.String, nullable=False)
     country = sa.Column(sa.String, nullable=True)
     date_of_birth = sa.Column(sa.Date, nullable=True)
     gender = sa.Column(sa.CHAR, nullable=True)
@@ -22,7 +21,6 @@ class Producer(Base):
     parental_status = sa.Column(sa.CHAR, nullable=True)
 
     user = relationship(User, back_populates="producer")
-    histories = relationship("History", back_populates="producer")
     restricted_categories = relationship(
         "Category",
         "Producer_Restricted_Categories",

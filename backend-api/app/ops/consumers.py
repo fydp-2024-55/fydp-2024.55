@@ -30,6 +30,13 @@ async def update_consumer(db: AsyncSession, consumer: ConsumerUpdate, user: User
         )
         .where(Consumer.user_id == user.id)
     )
+    if consumer is None:
+        return None
+    return ConsumerRead(**consumer.__dict__)
+
+
+async def create_consumer(db: AsyncSession, consumer: ConsumerCreate, user: User):
+    statement = sa.insert(Consumer).values(user_id=user.id)
     await db.execute(statement)
     await db.commit()
 

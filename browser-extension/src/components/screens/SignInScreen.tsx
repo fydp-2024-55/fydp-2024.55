@@ -1,21 +1,21 @@
 import { Button, TextField, Typography } from "@material-ui/core";
 import { FC, useContext, useState } from "react";
-import client from "../api/client";
-import { AuthState, Page } from "../types";
-import AuthContext from "./AppContext";
+import Logo from "../../images/logo.png";
+import backendService from "../../services/backend-service";
+import AuthContext from "../contexts/AppContext";
 
-const LoginPage: FC = () => {
-  const { setAuthState, setPage } = useContext(AuthContext)!;
+const SignInScreen: FC = () => {
+  const { setAuthState, setScreen } = useContext(AuthContext)!;
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
   const logIn = async () => {
     try {
-      await client.logIn(email, password);
-      setAuthState(AuthState.Authenticated);
+      await backendService.logIn(email, password);
+      setAuthState("authenticated");
     } catch (error) {
-      client.handleError(error, setAuthState);
+      backendService.handleError(error, setAuthState);
     }
   };
 
@@ -29,27 +29,30 @@ const LoginPage: FC = () => {
         alignItems: "center",
       }}
     >
-      <Typography variant="h1">Sign In</Typography>
+      <img src={Logo} alt="Logo" height={100} width={100}></img>
+
       <div
         style={{
           display: "flex",
           flexDirection: "column",
-          gap: 10,
+          gap: 20,
         }}
       >
         <TextField
           label="Email"
           type="email"
-          variant="filled"
+          variant="outlined"
           onChange={(event) => setEmail(event.target.value)}
         />
+
         <TextField
           label="Password"
           type="password"
-          variant="filled"
+          variant="outlined"
           onChange={(event) => setPassword(event.target.value)}
         />
       </div>
+
       <div
         style={{
           display: "flex",
@@ -60,6 +63,7 @@ const LoginPage: FC = () => {
         <Button color="primary" variant="contained" onClick={logIn}>
           Sign in
         </Button>
+
         <div
           style={{
             display: "flex",
@@ -71,7 +75,7 @@ const LoginPage: FC = () => {
           <Button
             variant="text"
             color="primary"
-            onClick={() => setPage(Page.Registration)}
+            onClick={() => setScreen("sign-up")}
           >
             <Typography variant="body1">Sign up!</Typography>
           </Button>
@@ -81,4 +85,4 @@ const LoginPage: FC = () => {
   );
 };
 
-export default LoginPage;
+export default SignInScreen;

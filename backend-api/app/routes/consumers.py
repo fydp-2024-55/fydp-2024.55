@@ -28,6 +28,7 @@ from ..schemas.subscriptions import (
     SubscriptionRead,
 )
 from ..utils.date import date_to_epoch
+from ..schemas.consumers import ConsumerCreate, ConsumerRead
 
 router = APIRouter()
 
@@ -47,16 +48,6 @@ async def read_consumer(
     db: AsyncSession = Depends(get_async_session),
     user: User = Depends(get_current_active_user),
 ):
-    return await ops.get_consumer(db, user)
-
-
-@router.patch("/me", status_code=status.HTTP_200_OK, response_model=ConsumerRead)
-async def update_consumer(
-    consumer: ConsumerUpdate,
-    db: AsyncSession = Depends(get_async_session),
-    user: User = Depends(get_current_active_user),
-):
-    await ops.update_consumer(db, consumer, user)
     return await ops.get_consumer(db, user)
 
 

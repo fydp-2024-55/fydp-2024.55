@@ -3,7 +3,6 @@ from sqlalchemy.orm import relationship
 
 from ..database import Base
 from .consumers import Consumer
-from .histories import History
 from .producers import Producer
 
 
@@ -23,14 +22,6 @@ class ConsumerCategories(Base):
     category_id = sa.Column(sa.Integer, sa.ForeignKey("Categories.id"), nullable=False)
 
 
-class HistoryCategories(Base):
-    __tablename__ = "History_Categories"
-
-    id = sa.Column(sa.Integer, primary_key=True, nullable=False)
-    consumer_id = sa.Column(sa.Integer, sa.ForeignKey("Histories.id"), nullable=False)
-    category_id = sa.Column(sa.Integer, sa.ForeignKey("Categories.id"), nullable=False)
-
-
 class Category(Base):
     __tablename__ = "Categories"
     id = sa.Column(sa.Integer, primary_key=True, nullable=False)
@@ -44,4 +35,3 @@ class Category(Base):
     consumers = relationship(
         Consumer, "Consumer_Categories", back_populates="categories"
     )
-    histories = relationship(History, "History_Categories", back_populates="categories")
