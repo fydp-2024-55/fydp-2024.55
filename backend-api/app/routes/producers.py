@@ -1,4 +1,3 @@
-from datetime import datetime
 from typing import Dict, List
 from fastapi import APIRouter, Body, Request, status, HTTPException, Query
 from fastapi.params import Depends
@@ -18,12 +17,14 @@ from ..schemas.producers import (
     ProducerRead,
     ProducerUpdate,
     ProducerFilter,
+    FilterOptions,
+    VisitedSite,
     GENDERS,
     ETHNICITIES,
     MARITAL_STATUSES,
     PARENTAL_STATUSES,
-    VisitedSite,
 )
+from ..utils.producers import validate_producer_dto
 
 router = APIRouter()
 
@@ -85,6 +86,24 @@ async def read_producers_available(
     return await ops.get_producers_by_filter(db, filter)
 
 
+@router.get(
+    "/filter-options",
+    status_code=status.HTTP_200_OK,
+    response_model=FilterOptions,
+)
+async def get_producer_filter_options(
+    db: AsyncSession = Depends(get_async_session),
+):
+    countries = await ops.get_producer_countries(db)
+    return FilterOptions(
+        genders=GENDERS,
+        ethnicities=ETHNICITIES,
+        marital_statuses=MARITAL_STATUSES,
+        parental_statuses=PARENTAL_STATUSES,
+        countries=countries,
+    )
+
+
 @router.post("/me", status_code=status.HTTP_201_CREATED, response_model=ProducerRead)
 async def create_producer(
     producer: ProducerCreate,
@@ -92,37 +111,19 @@ async def create_producer(
     db: AsyncSession = Depends(get_async_session),
     user: User = Depends(get_current_active_user),
 ):
+    if await ops.get_producer(db, user):
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="User is already a producer",
+        )
+
     if not user.eth_address:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="User does not have a wallet",
         )
 
-    if producer.gender and producer.gender not in GENDERS:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Invalid gender provided",
-        )
-    if producer.ethnicity and producer.ethnicity not in ETHNICITIES:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Invalid ethnicity provided",
-        )
-    if producer.date_of_birth > datetime.now().date():
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Invalid date of birth provided",
-        )
-    if producer.marital_status and producer.marital_status not in MARITAL_STATUSES:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Invalid marital status provided",
-        )
-    if producer.parental_status and producer.parental_status not in PARENTAL_STATUSES:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Invalid parental status provided",
-        )
+    validate_producer_dto(producer)
 
     try:
         # Mint token for the producer
@@ -155,6 +156,8 @@ async def update_producer(
     db: AsyncSession = Depends(get_async_session),
     user: User = Depends(get_current_active_user),
 ):
+    validate_producer_dto(producer)
+
     await ops.update_producer(db, producer, user)
     return await read_producer(db, user)
 

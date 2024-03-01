@@ -12,15 +12,7 @@ from ..dependencies import get_async_session, get_current_active_user, get_user_
 from ..managers import UserManager
 from ..models.users import User
 from ..ops import consumers as ops
-from ..ops.producers import get_producer_countries
-from ..schemas.consumers import ConsumerCreate, ConsumerRead
-from ..schemas.producers import (
-    FilterOptions,
-    GENDERS,
-    ETHNICITIES,
-    MARITAL_STATUSES,
-    PARENTAL_STATUSES,
-)
+from ..schemas.consumers import ConsumerRead
 from ..schemas.subscriptions import (
     SubscriptionCreate,
     SubscriptionRead,
@@ -35,6 +27,11 @@ async def create_consumer(
     db: AsyncSession = Depends(get_async_session),
     user: User = Depends(get_current_active_user),
 ):
+    if await ops.get_consumer(db, user):
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST, detail="User is already a consumer"
+        )
+
     await ops.create_consumer(db, user)
     return await ops.get_consumer(db, user)
 
@@ -139,21 +136,3 @@ async def unsubscribe_from_producers(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Failed to unsubscribe from producers",
         )
-
-
-@router.get(
-    "/producer-filter-options",
-    status_code=status.HTTP_200_OK,
-    response_model=FilterOptions,
-)
-async def get_producer_filter_options(
-    db: AsyncSession = Depends(get_async_session),
-):
-    countries = await get_producer_countries(db)
-    return FilterOptions(
-        genders=GENDERS.values(),
-        ethnicities=ETHNICITIES.values(),
-        marital_statuses=MARITAL_STATUSES.values(),
-        parental_statuses=PARENTAL_STATUSES.values(),
-        countries=countries,
-    )

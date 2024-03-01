@@ -24,33 +24,20 @@ class ProducerUpdate(ProducerBase):
     pass
 
 
-GENDERS = {
-    "M": "Male",
-    "F": "Female",
-    "O": "Other",
-}
+GENDERS = ["Male", "Female", "Other"]
 
+ETHNICITIES = [
+    "American Indian or Alaskan Native",
+    "Asian/Pacific Islander",
+    "Black or African American",
+    "Hispanic",
+    "White/Caucasian",
+    "Other",
+]
 
-ETHNICITIES = {
-    "N": "American Indian or Alaskan Native",
-    "A": "Asian/Pacific Islander",
-    "B": "Black or African American",
-    "H": "Hispanic",
-    "W": "White/Caucasian",
-    "O": "Other",
-}
+MARITAL_STATUSES = ["Single", "Married", "Divorced", "Widowed"]
 
-MARITAL_STATUSES = {
-    "S": "Single",
-    "M": "Married",
-    "D": "Divorced",
-    "W": "Widowed",
-}
-
-PARENTAL_STATUSES = {
-    "P": "Parent",
-    "N": "Not Parent",
-}
+PARENTAL_STATUSES = ["Parent", "Not Parent"]
 
 
 class FilterOptions(BaseModel):
