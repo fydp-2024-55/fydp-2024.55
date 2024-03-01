@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { FC, useState } from "react";
 import {
   TableCell,
   TableRow,
@@ -18,7 +18,7 @@ interface SubscriptionRowProps {
   subscription: Subscription;
 }
 
-const SubscriptionRow: React.FC<SubscriptionRowProps> = ({ subscription }) => {
+const SubscriptionRow: FC<SubscriptionRowProps> = ({ subscription }) => {
   const [open, setOpen] = useState(false);
 
   return (

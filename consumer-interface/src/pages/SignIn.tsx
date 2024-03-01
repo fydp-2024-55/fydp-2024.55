@@ -1,26 +1,39 @@
-import React from "react";
-
-import Avatar from "@mui/material/Avatar";
-import Button from "@mui/material/Button";
-import CssBaseline from "@mui/material/CssBaseline";
-import TextField from "@mui/material/TextField";
-import FormControlLabel from "@mui/material/FormControlLabel";
-import Checkbox from "@mui/material/Checkbox";
-import Link from "@mui/material/Link";
-import Grid from "@mui/material/Grid";
-import Box from "@mui/material/Box";
+import { FC, useContext, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import {
+  Avatar,
+  Button,
+  CssBaseline,
+  TextField,
+  FormControlLabel,
+  Checkbox,
+  Link,
+  Grid,
+  Box,
+  Typography,
+  Container,
+} from "@mui/material";
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
-import Typography from "@mui/material/Typography";
-import Container from "@mui/material/Container";
 
-const SignIn: React.FC = () => {
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    const data = new FormData(event.currentTarget);
-    console.log({
-      email: data.get("email"),
-      password: data.get("password"),
-    });
+import AppContext from "../contexts/AppContext";
+import backendService from "../services/backend-service";
+
+const SignIn: FC = () => {
+  const { setIsAuthenticated } = useContext(AppContext);
+
+  const navigate = useNavigate();
+
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+
+  const logIn = async () => {
+    try {
+      await backendService.logIn(email, password);
+      setIsAuthenticated(true);
+      navigate("/");
+    } catch (error) {
+      backendService.handleError(error, setIsAuthenticated);
+    }
   };
 
   return (
@@ -38,9 +51,9 @@ const SignIn: React.FC = () => {
           <LockOutlinedIcon />
         </Avatar>
         <Typography component="h1" variant="h5">
-          Sign in
+          Sign In
         </Typography>
-        <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
+        <Box component="form" noValidate sx={{ mt: 1 }}>
           <TextField
             margin="normal"
             required
@@ -49,6 +62,8 @@ const SignIn: React.FC = () => {
             label="Email"
             name="email"
             autoFocus
+            value={email}
+            onChange={(event) => setEmail(event.target.value)}
           />
           <TextField
             margin="normal"
@@ -58,16 +73,19 @@ const SignIn: React.FC = () => {
             label="Password"
             type="password"
             id="password"
+            value={password}
+            onChange={(event) => setPassword(event.target.value)}
           />
           <FormControlLabel
             control={<Checkbox value="remember" color="primary" />}
             label="Remember me"
           />
           <Button
-            type="submit"
+            type="button"
             fullWidth
             variant="contained"
             sx={{ mt: 3, mb: 2 }}
+            onClick={logIn}
           >
             Sign In
           </Button>

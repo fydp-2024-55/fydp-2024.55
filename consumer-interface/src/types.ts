@@ -1,19 +1,13 @@
+export const AuthTokenKey = "AuthTokenKey";
+
 export enum Page {
   Subscriptions = "Subscriptions",
   Purchase = "Purchase",
   Profile = "Profile",
+  Wallet = "Wallet",
+  SignUp = "Sign Up",
+  SignIn = "Sign In",
 }
-
-export const AuthTokenKey = "AuthTokenKey";
-
-export type AuthState = "authenticated" | "unauthenticated" | "unknown";
-
-export type Screen =
-  | "profile"
-  | "permissions"
-  | "wallet"
-  | "sign-up"
-  | "sign-in";
 
 export interface BearerToken {
   accessToken: string;
@@ -26,13 +20,28 @@ interface User {
 }
 
 export interface Producer extends User {
-  gender: string | null;
-  ethnicity: string | null;
-  dateOfBirth: string | null;
-  country: string | null;
-  income: number | null;
-  maritalStatus: string | null;
-  parentalStatus: string | null;
+  gender?: string;
+  ethnicity?: string;
+  dateOfBirth?: string;
+  country?: string;
+  income?: number;
+  maritalStatus?: string;
+  parentalStatus?: string;
+}
+
+export interface ProducerFilterOptions {
+  genders?: string[];
+  ethnicities?: string[];
+  countries?: string[];
+  maritalStatuses?: string[];
+  parentalStatuses?: string[];
+}
+
+export interface ProducerFilter extends ProducerFilterOptions {
+  minAge?: number;
+  maxAge?: number;
+  minIncome?: number;
+  maxIncome?: number;
 }
 
 export interface Wallet {

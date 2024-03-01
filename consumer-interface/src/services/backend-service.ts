@@ -2,12 +2,13 @@ import axios from "axios";
 import applyCaseMiddleware from "axios-case-converter";
 
 import {
-  AuthState,
   AuthTokenKey,
   BearerToken,
-  Producer,
   Wallet,
-  Permissions,
+  Consumer,
+  Producer,
+  ProducerFilterOptions,
+  ProducerFilter,
 } from "../types";
 
 const apiClient = applyCaseMiddleware(
@@ -17,12 +18,15 @@ const apiClient = applyCaseMiddleware(
 );
 
 const backendService = {
-  handleError: (error: any, setAuthState: (authState: AuthState) => void) => {
+  handleError: (
+    error: any,
+    setIsAuthenticated: (isAuthenticated: boolean) => void
+  ) => {
     if (axios.isAxiosError(error)) {
       if (error.response?.status === 401) {
         apiClient.defaults.headers.common["Authorization"] = null;
         localStorage.removeItem(AuthTokenKey);
-        setAuthState("unauthenticated");
+        setIsAuthenticated(false);
       } else {
         alert(
           `${error.name} [${error.code}]: ${error.message}
@@ -70,21 +74,6 @@ const backendService = {
     localStorage.removeItem(AuthTokenKey);
   },
 
-  createProducer: async (data: Producer) => {
-    const response = await apiClient.post<Producer>(`/producers/me`, data);
-    return response.data;
-  },
-
-  getProducer: async () => {
-    const response = await apiClient.get<Producer>(`/producers/me`);
-    return response.data;
-  },
-
-  updateProducer: async (data: Partial<Producer>) => {
-    const response = await apiClient.patch<Producer>(`/producers/me`, data);
-    return response.data;
-  },
-
   getWallet: async () => {
     const response = await apiClient.get<Wallet>(`users/me/wallet`);
     return response.data;
@@ -103,18 +92,47 @@ const backendService = {
     return response.data;
   },
 
-  getPermissions: async () => {
-    const response = await apiClient.get<Permissions>(
-      `/producers/me/permissions`
+  createConsumer: async () => {
+    const response = await apiClient.post<Consumer>(`/consumers/me`);
+    return response.data;
+  },
+
+  getConsumer: async () => {
+    const response = await apiClient.get<Consumer>(`/consumers/me`);
+    return response.data;
+  },
+
+  deleteConsumer: async () => {
+    await apiClient.delete(`/consumers/me`);
+  },
+
+  // getSubscriptions: async () => {
+  //   const response = await apiClient.get<Producer[]>(
+  //     `/consumers/me/subscriptions`
+  //   );
+  //   return response.data;
+  // },
+
+  // createSubscriptions: async () => {
+  //   const response = await apiClient.post<Producer[]>(
+  //     `/consumers/me/subscriptions`
+  //   );
+  //   return response.data;
+  // },
+
+  // deleteSubscriptions: async () => {
+  //   await apiClient.delete(`/consumers/me/subscriptions`);
+  // },
+
+  getProducerFilterOptions: async () => {
+    const response = await apiClient.get<ProducerFilterOptions>(
+      `/producers/filter-options`
     );
     return response.data;
   },
 
-  updatePermissions: async (permissions: Permissions) => {
-    const response = await apiClient.patch<Permissions>(
-      `/producers/me/permissions`,
-      permissions
-    );
+  getProducers: async (params: ProducerFilter) => {
+    const response = await apiClient.get<Producer[]>(`/producers`, { params });
     return response.data;
   },
 };

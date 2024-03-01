@@ -1,11 +1,7 @@
-import React from "react";
+import { FC, ReactNode } from "react";
 import { Grid } from "@mui/material";
 
-interface PageTemplateProps {
-  children: JSX.Element;
-}
-
-const PageTemplate: React.FC<PageTemplateProps> = ({ children }) => {
+const PageTemplate: FC<{ children: ReactNode }> = ({ children }) => {
   return (
     <Grid
       container

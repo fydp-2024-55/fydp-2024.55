@@ -11,7 +11,7 @@ import {
   Button,
 } from "@mui/material";
 
-import { GlobalContext } from "../App";
+import AppContext from "../contexts/AppContext";
 import SubscriptionRow from "../components/SubscriptionRow";
 import { Subscription } from "../types";
 import PageTemplate from "../components/PageTemplate";
@@ -111,7 +111,7 @@ const mockSubscriptions: Subscription[] = [
 ];
 
 const Subscriptions: React.FC = () => {
-  const { account } = useContext(GlobalContext);
+  const { account } = useContext(AppContext);
 
   const [subscriptions, setSubscriptions] =
     useState<Subscription[]>(mockSubscriptions);

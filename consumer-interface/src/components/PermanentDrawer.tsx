@@ -1,4 +1,4 @@
-import React from "react";
+import { FC } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import {
   Box,
@@ -29,7 +29,7 @@ export interface PermanentDrawerProps {
   bottomDrawerItems: DrawerItem[];
 }
 
-const DrawerItemComponent: React.FC<DrawerItem> = ({
+const DrawerItemComponent: FC<DrawerItem> = ({
   text,
   element,
   href,

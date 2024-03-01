@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react";
+import { FC, useContext, useState } from "react";
 import {
   Box,
   Typography,
@@ -9,15 +9,14 @@ import {
 } from "@mui/material";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
 
+import AppContext from "../contexts/AppContext";
 import PageTemplate from "../components/PageTemplate";
 
-import { GlobalContext } from "../App";
-
-const Profile: React.FC = () => {
-  const { account, setAccount } = useContext(GlobalContext);
+const Profile: FC = () => {
+  const { account, setAccount } = useContext(AppContext);
 
   const [editMode, setEditMode] = useState<boolean>(false);
-  const [email, setEmail] = useState<string | undefined>(account.email);
+  const [email, setEmail] = useState<string | undefined>(account?.email);
   const [newPassword, setNewPassword] = useState<string>("");
   const [showPassword, setShowPassword] = useState<boolean>(false);
 
@@ -41,7 +40,7 @@ const Profile: React.FC = () => {
             <Box fontWeight="fontWeightMedium" display="inline">
               Wallet Address:
             </Box>{" "}
-            {account.ethAddress}
+            {account?.ethAddress}
           </Typography>
           <Typography sx={{ m: 2 }}>
             <Box fontWeight="fontWeightMedium" display="inline">
