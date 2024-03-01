@@ -15,6 +15,7 @@ from ..dependencies import (
 )
 from ..models.users import User
 from ..ops import users as ops
+from ..ops.producers import get_producer
 from ..schemas.users import UserRead, UserUpdate
 from ..schemas.wallet import WalletRead, WalletUpdate
 
@@ -113,7 +114,7 @@ async def update_user_wallet(
         )
 
     # If the user is a producer, burn their old token and mint a new token
-    if user.producer:
+    if get_producer(db, user) is not None:
         try:
             burn_token(request.app.state.eth_client, user.eth_address)
             mint_token(request.app.state.eth_client, account.address)
