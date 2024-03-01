@@ -5,7 +5,7 @@ import { Visibility, ShoppingCart, Person, Logout } from "@mui/icons-material";
 import { Page, Consumer } from "./types";
 import SignIn from "./pages/SignIn";
 import SignUp from "./pages/SignUp";
-import Purchase from "./pages/Purchase";
+// import Purchase from "./pages/Purchase";
 import Subscriptions from "./pages/Subscriptions";
 import Profile from "./pages/Profile";
 import Layout from "./components/Layout";
@@ -40,7 +40,6 @@ const bottomDrawerItems: DrawerItem[] = [
 ];
 
 const mockAccount: Consumer = {
-  name: "William Park",
   email: "william@gmail.com",
   ethAddress: "0x1234567890",
 };
@@ -64,14 +63,14 @@ const App: React.FC = () => {
           <Route
             element={
               <Layout
-                title="FYDP"
+                title="ByteBucks"
                 topDrawerItems={topDrawerItems}
                 bottomDrawerItems={bottomDrawerItems}
               />
             }
           >
             <Route path="/" element={<Subscriptions />} />
-            <Route path="/purchase" element={<Purchase />} />
+            {/* <Route path="/purchase" element={<Purchase />} /> */}
             <Route path="/profile" element={<Profile />} />
           </Route>
           <Route path="/signin" element={<SignIn />} />

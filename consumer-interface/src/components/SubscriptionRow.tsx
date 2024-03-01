@@ -33,9 +33,6 @@ const SubscriptionRow: React.FC<SubscriptionRowProps> = ({ subscription }) => {
             {open ? <KeyboardArrowUp /> : <KeyboardArrowDown />}
           </IconButton>
         </TableCell>
-        <TableCell component="th" scope="row">
-          {subscription.name}
-        </TableCell>
         <TableCell>{subscription.email}</TableCell>
         <TableCell>{subscription.gender}</TableCell>
         <TableCell>{subscription.ethnicity}</TableCell>
@@ -62,26 +59,22 @@ const SubscriptionRow: React.FC<SubscriptionRowProps> = ({ subscription }) => {
                 component="div"
                 align="center"
               >
-                History
+                Interests
               </Typography>
-              <Table size="medium" aria-label="history">
+              <Table size="medium" aria-label="interests">
                 <TableHead>
                   <TableRow>
-                    <TableCell>URL</TableCell>
-                    <TableCell>Title</TableCell>
-                    <TableCell>Visit Time</TableCell>
-                    <TableCell>Time Spent (minutes)</TableCell>
+                    <TableCell align="center">Category</TableCell>
+                    <TableCell align="center">Time Spent (seconds)</TableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {subscription.history.map((historyRow) => (
-                    <TableRow key={historyRow.visitTime}>
-                      <TableCell component="th" scope="row">
-                        {historyRow.url}
+                  {subscription.interests.map((interest) => (
+                    <TableRow key={interest.category}>
+                      <TableCell align="center" component="th" scope="row">
+                        {interest.category}
                       </TableCell>
-                      <TableCell>{historyRow.title}</TableCell>
-                      <TableCell>{historyRow.visitTime}</TableCell>
-                      <TableCell>{historyRow.timeSpent}</TableCell>
+                      <TableCell align="center">{interest.timeSpent}</TableCell>
                     </TableRow>
                   ))}
                 </TableBody>

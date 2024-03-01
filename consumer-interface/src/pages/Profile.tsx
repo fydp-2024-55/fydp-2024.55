@@ -17,14 +17,13 @@ const Profile: React.FC = () => {
   const { account, setAccount } = useContext(GlobalContext);
 
   const [editMode, setEditMode] = useState<boolean>(false);
-  const [name, setName] = useState<string>(account.name);
-  const [email, setEmail] = useState<string>(account.email);
+  const [email, setEmail] = useState<string | undefined>(account.email);
   const [newPassword, setNewPassword] = useState<string>("");
   const [showPassword, setShowPassword] = useState<boolean>(false);
 
   const handleSubmit = () => {
-    // Update the user's data: name, email, password
-    setAccount({ ...account, name, email });
+    // Update the user's data: email, password
+    setAccount({ ...account, email });
     setEditMode(false);
   };
 
@@ -52,16 +51,6 @@ const Profile: React.FC = () => {
           </Typography>
           {editMode ? (
             <>
-              <TextField
-                id="amount-input"
-                label="Name"
-                variant="outlined"
-                defaultValue={name}
-                onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
-                  setName(event.target.value);
-                }}
-                sx={{ m: 2, width: "30vw" }}
-              />
               <TextField
                 id="password-input"
                 label="New Password"
@@ -94,12 +83,6 @@ const Profile: React.FC = () => {
             </>
           ) : (
             <>
-              <Typography sx={{ m: 2 }}>
-                <Box fontWeight="fontWeightMedium" display="inline">
-                  Name:
-                </Box>{" "}
-                {name}
-              </Typography>
               <Typography sx={{ m: 2 }}>
                 <Box fontWeight="fontWeightMedium" display="inline">
                   Password:

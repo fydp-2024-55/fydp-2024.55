@@ -4,16 +4,35 @@ export enum Page {
   Profile = "Profile",
 }
 
-export interface Producer {
-  name: string;
-  email: string;
-  gender: string;
-  ethnicity: string;
-  dateOfBirth: string;
-  country: string;
-  income: number;
-  maritalStatus: string;
-  parentalStatus: string;
+export const AuthTokenKey = "AuthTokenKey";
+
+export type AuthState = "authenticated" | "unauthenticated" | "unknown";
+
+export type Screen =
+  | "profile"
+  | "permissions"
+  | "wallet"
+  | "sign-up"
+  | "sign-in";
+
+export interface BearerToken {
+  accessToken: string;
+  tokenType: string;
+}
+
+interface User {
+  email?: string;
+  ethAddress?: string;
+}
+
+export interface Producer extends User {
+  gender: string | null;
+  ethnicity: string | null;
+  dateOfBirth: string | null;
+  country: string | null;
+  income: number | null;
+  maritalStatus: string | null;
+  parentalStatus: string | null;
 }
 
 export interface Wallet {
@@ -25,45 +44,28 @@ export interface Permissions {
   [key: string]: boolean;
 }
 
-export interface History {
-  url: string;
-  title: string;
-  visitTime: string;
-  timeSpent: string;
+export interface Interest {
+  category: string;
+  timeSpent: number;
 }
 
-export interface Consumer {
-  name: string;
-  email: string;
-  ethAddress: string;
-}
+export interface Consumer extends User {}
 
 export interface Subscription extends Producer {
-  history: History[];
+  interests: Interest[];
 }
 
-export enum Gender {
-  M = "Male",
-  F = "Female",
-}
+export const GENDERS = ["Male", "Female", "Other"];
 
-export enum Ethnicity {
-  N = "American Indian or Alaskan Native",
-  A = "Asian/Pacific Islander",
-  B = "Black or African American",
-  H = "Hispanic",
-  W = "White/Caucasian",
-  O = "Other",
-}
+export const ETHNICITIES = [
+  "American Indian or Alaskan Native",
+  "Asian/Pacific Islander",
+  "Black or African American",
+  "Hispanic",
+  "White/Caucasian",
+  "Other",
+];
 
-export enum MaritalStatus {
-  M = "Married",
-  S = "Single",
-  D = "Divorced",
-  W = "Widowed",
-}
+export const MARITAL_STATUSES = ["Single", "Married", "Divorced", "Widowed"];
 
-export enum ParentalStatus {
-  Y = "Parent",
-  N = "Not a Parent",
-}
+export const PARENTAL_STATUSES = ["Parent", "Not Parent"];

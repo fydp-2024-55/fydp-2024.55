@@ -19,7 +19,6 @@ import { exportDataToCSV, exportDataToJSON } from "../utils/export";
 
 const mockSubscriptions: Subscription[] = [
   {
-    name: "John Doe",
     email: "johndoe@example.com",
     gender: "Male",
     ethnicity: "White/Caucasian",
@@ -28,144 +27,85 @@ const mockSubscriptions: Subscription[] = [
     income: 100000,
     maritalStatus: "Single",
     parentalStatus: "Parent",
-    history: [
-      {
-        url: "google.ca",
-        title: "Google",
-        visitTime: "December 23, 2023 10:00",
-        timeSpent: "1",
-      },
-      {
-        url: "facebook.ca",
-        title: "Facebook",
-        visitTime: "December 25, 2023 10:00",
-        timeSpent: "1",
-      },
+    interests: [
+      { category: "Sports", timeSpent: 250 },
+      { category: "Music", timeSpent: 200 },
+      { category: "Travel", timeSpent: 150 },
     ],
   },
   {
-    name: "John Doe",
-    email: "johndoe@example.com",
-    gender: "Male",
-    ethnicity: "White/Caucasian",
-    dateOfBirth: "September 3 2001",
-    country: "United States",
-    income: 100000,
-    maritalStatus: "Single",
-    parentalStatus: "Parent",
-    history: [
-      {
-        url: "google.ca",
-        title: "Google",
-        visitTime: "December 23, 2023 10:00",
-        timeSpent: "1",
-      },
-      {
-        url: "facebook.ca",
-        title: "Facebook",
-        visitTime: "December 25, 2023 10:00",
-        timeSpent: "1",
-      },
+    email: "janedoe@example.com",
+    gender: "Female",
+    ethnicity: "Black or African American",
+    dateOfBirth: "April 15 1995",
+    country: "United Kingdom",
+    income: 75000,
+    maritalStatus: "Married",
+    parentalStatus: "Not Parent",
+    interests: [
+      { category: "Shopping", timeSpent: 280 },
+      { category: "Entertainment", timeSpent: 220 },
+      { category: "Social", timeSpent: 170 },
     ],
   },
   {
-    name: "John Doe",
-    email: "johndoe@example.com",
-    gender: "Male",
-    ethnicity: "White/Caucasian",
-    dateOfBirth: "September 3 2001",
-    country: "United States",
-    income: 100000,
-    maritalStatus: "Single",
+    email: "alice@example.com",
+    gender: "Female",
+    ethnicity: "Hispanic",
+    dateOfBirth: "February 8 1990",
+    country: "Canada",
+    income: 60000,
+    maritalStatus: "Divorced",
     parentalStatus: "Parent",
-    history: [
-      {
-        url: "google.ca",
-        title: "Google",
-        visitTime: "December 23, 2023 10:00",
-        timeSpent: "1",
-      },
-      {
-        url: "facebook.ca",
-        title: "Facebook",
-        visitTime: "December 25, 2023 10:00",
-        timeSpent: "1",
-      },
+    interests: [
+      { category: "Social", timeSpent: 290 },
+      { category: "Cuisine", timeSpent: 240 },
+      { category: "Animals", timeSpent: 180 },
     ],
   },
   {
-    name: "John Doe",
-    email: "johndoe@example.com",
+    email: "bob@example.com",
     gender: "Male",
-    ethnicity: "White/Caucasian",
-    dateOfBirth: "September 3 2001",
-    country: "United States",
-    income: 100000,
-    maritalStatus: "Single",
+    ethnicity: "Asian/Pacific Islander",
+    dateOfBirth: "November 20 1985",
+    country: "Australia",
+    income: 85000,
+    maritalStatus: "Married",
     parentalStatus: "Parent",
-    history: [
-      {
-        url: "google.ca",
-        title: "Google",
-        visitTime: "December 23, 2023 10:00",
-        timeSpent: "1",
-      },
-      {
-        url: "facebook.ca",
-        title: "Facebook",
-        visitTime: "December 25, 2023 10:00",
-        timeSpent: "1",
-      },
+    interests: [
+      { category: "Shopping", timeSpent: 260 },
+      { category: "Music", timeSpent: 210 },
+      { category: "Animals", timeSpent: 160 },
     ],
   },
   {
-    name: "John Doe",
-    email: "johndoe@example.com",
-    gender: "Male",
+    email: "sarah@example.com",
+    gender: "Female",
     ethnicity: "White/Caucasian",
-    dateOfBirth: "September 3 2001",
-    country: "United States",
-    income: 100000,
+    dateOfBirth: "March 10 2000",
+    country: "Germany",
+    income: 40000,
     maritalStatus: "Single",
-    parentalStatus: "Parent",
-    history: [
-      {
-        url: "google.ca",
-        title: "Google",
-        visitTime: "December 23, 2023 10:00",
-        timeSpent: "1",
-      },
-      {
-        url: "facebook.ca",
-        title: "Facebook",
-        visitTime: "December 25, 2023 10:00",
-        timeSpent: "1",
-      },
+    parentalStatus: "Not Parent",
+    interests: [
+      { category: "Social", timeSpent: 300 },
+      { category: "Cuisine", timeSpent: 250 },
+      { category: "Beauty", timeSpent: 190 },
     ],
   },
   {
-    name: "John Doe",
-    email: "johndoe@example.com",
+    email: "mike@example.com",
     gender: "Male",
-    ethnicity: "White/Caucasian",
-    dateOfBirth: "September 3 2001",
-    country: "United States",
-    income: 100000,
+    ethnicity: "Other",
+    dateOfBirth: "July 7 1998",
+    country: "Japan",
+    income: 55000,
     maritalStatus: "Single",
-    parentalStatus: "Parent",
-    history: [
-      {
-        url: "google.ca",
-        title: "Google",
-        visitTime: "December 23, 2023 10:00",
-        timeSpent: "1",
-      },
-      {
-        url: "facebook.ca",
-        title: "Facebook",
-        visitTime: "December 25, 2023 10:00",
-        timeSpent: "1",
-      },
+    parentalStatus: "Not Parent",
+    interests: [
+      { category: "Travel", timeSpent: 270 },
+      { category: "Sports", timeSpent: 220 },
+      { category: "Entertainment", timeSpent: 170 },
     ],
   },
 ];
@@ -208,7 +148,6 @@ const Subscriptions: React.FC = () => {
             <TableHead>
               <TableRow>
                 <TableCell />
-                <TableCell>Name</TableCell>
                 <TableCell>Email</TableCell>
                 <TableCell>Gender</TableCell>
                 <TableCell>Ethnicity</TableCell>
