@@ -10,4 +10,4 @@ class ConsumerCreate(ConsumerBase):
 
 
 class ConsumerRead(ConsumerBase):
-    pass
+    id: int
