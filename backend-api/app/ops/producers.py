@@ -70,17 +70,17 @@ async def get_producers_by_filter(db: AsyncSession, filter: ProducerFilter):
     statement = sa.select(Producer)
 
     # TODO: Uncomment these once migrated to PostgreSQL
-    # if filter.min_age is not None:
+    # if filter.min_age:
     #     statement = statement.where(
     #         sa.func.age(Producer.date_of_birth) >= filter.min_age
     #     )
-    # if filter.max_age is not None:
+    # if filter.max_age:
     #     statement = statement.where(
     #         sa.func.age(Producer.date_of_birth) <= filter.max_age
     #     )
-    if filter.min_income is not None:
+    if filter.min_income:
         statement = statement.where(Producer.income >= filter.min_income)
-    if filter.max_income is not None:
+    if filter.max_income:
         statement = statement.where(Producer.income <= filter.max_income)
     if filter.genders:
         statement = statement.where(Producer.gender.in_(filter.genders))

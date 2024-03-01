@@ -114,7 +114,7 @@ async def update_user_wallet(
         )
 
     # If the user is a producer, burn their old token and mint a new token
-    if get_producer(db, user) is not None:
+    if await get_producer(db, user):
         try:
             burn_token(request.app.state.eth_client, user.eth_address)
             mint_token(request.app.state.eth_client, account.address)

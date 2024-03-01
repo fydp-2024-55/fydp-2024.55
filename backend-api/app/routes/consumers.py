@@ -33,7 +33,7 @@ async def create_consumer(
         )
 
     await ops.create_consumer(db, user)
-    return await ops.get_consumer(db, user)
+    return await read_consumer(db, user)
 
 
 @router.get("/me", status_code=status.HTTP_200_OK, response_model=ConsumerRead)
@@ -41,7 +41,8 @@ async def read_consumer(
     db: AsyncSession = Depends(get_async_session),
     user: User = Depends(get_current_active_user),
 ):
-    return await ops.get_consumer(db, user)
+    consumer = await ops.get_consumer(db, user)
+    return ConsumerRead(**consumer.__dict__)
 
 
 @router.delete("/me", status_code=status.HTTP_204_NO_CONTENT)
