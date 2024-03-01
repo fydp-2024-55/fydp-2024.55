@@ -13,16 +13,7 @@ async def get_consumer(db: AsyncSession, user: User):
     return ConsumerRead(**consumer.__dict__) if consumer is not None else None
 
 
-async def create_consumer(db: AsyncSession, consumer: ConsumerCreate, user: User):
-    statement = sa.insert(Consumer).values(
-        user_id=user.id,
-        name=consumer.name,
-    )
-    await db.execute(statement)
-    await db.commit()
-
-
-async def create_consumer(db: AsyncSession, consumer: ConsumerCreate, user: User):
+async def create_consumer(db: AsyncSession, user: User):
     statement = sa.insert(Consumer).values(user_id=user.id)
     await db.execute(statement)
     await db.commit()

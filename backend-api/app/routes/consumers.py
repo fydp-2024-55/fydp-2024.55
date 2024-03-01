@@ -32,11 +32,10 @@ router = APIRouter()
 
 @router.post("/me", status_code=status.HTTP_201_CREATED, response_model=ConsumerRead)
 async def create_consumer(
-    consumer: ConsumerCreate,
     db: AsyncSession = Depends(get_async_session),
     user: User = Depends(get_current_active_user),
 ):
-    await ops.create_consumer(db, consumer, user)
+    await ops.create_consumer(db, user)
     return await ops.get_consumer(db, user)
 
 
