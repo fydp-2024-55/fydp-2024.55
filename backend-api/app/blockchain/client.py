@@ -13,8 +13,8 @@ class ETHClient:
     def __init__(
         self, connection_url: str = CONNECTION_URL, contract_path: str = CONTRACT_PATH
     ):
-        if connection_url == "" or contract_path == "":
-            raise Exception("Missing constructor arguments")
+        if not connection_url or not contract_path:
+            raise Exception("Missing ETHClient constructor arguments")
 
         # Establish connection with the test ETH network
         self.w3: Web3 = Web3(HTTPProvider(connection_url))
