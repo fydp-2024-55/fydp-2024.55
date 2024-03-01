@@ -17,3 +17,14 @@ def consumer_purchase_tokens(
     tx_receipt = eth_client.w3.eth.wait_for_transaction_receipt(tx_hash)
 
     return tx_receipt
+
+
+def consumer_unsubscribe_tokens(
+    eth_client: ETHClient, consumer: str, producers: list[str]
+) -> None:
+    tx_hash = eth_client.token_contract.functions.consumerCancelMultipleTokens(
+        consumer, producers
+    ).transact({"from": consumer})
+    tx_receipt = eth_client.w3.eth.wait_for_transaction_receipt(tx_hash)
+
+    return tx_receipt
