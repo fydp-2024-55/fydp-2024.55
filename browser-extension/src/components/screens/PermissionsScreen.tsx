@@ -10,7 +10,7 @@ import backendService from "../../services/backend-service";
 import AppContext from "../contexts/AppContext";
 
 const getLabel = (key: string) => {
-  if (key == "social") {
+  if (key === "social") {
     key = "social media";
   }
 
