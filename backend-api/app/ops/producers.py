@@ -1,5 +1,8 @@
+from typing import Dict
 import sqlalchemy as sa
 from sqlalchemy.ext.asyncio import AsyncSession
+
+from ..models.categories import Category, ProducerRestictedCategories
 
 from ..models.producers import Producer
 from ..models.users import User
@@ -14,8 +17,7 @@ from ..schemas.producers import (
 async def get_producer(db: AsyncSession, user: User):
     statement = sa.select(Producer).where(Producer.user_id == user.id)
     result = await db.execute(statement)
-    producer = result.scalar_one_or_none()
-    return ProducerRead(**producer.__dict__) if producer is not None else None
+    return result.scalar()
 
 
 async def create_producer(db: AsyncSession, producer: ProducerCreate, user: User):
@@ -97,3 +99,47 @@ async def get_producers_by_filter(db: AsyncSession, filter: ProducerFilter):
 
     producers = await db.execute(statement)
     return [ProducerRead(**producer.__dict__) for producer in producers.scalars().all()]
+
+
+async def get_permissions(db: AsyncSession, user: User):
+    statement = (
+        sa.select(Category, Producer)
+        .join(
+            ProducerRestictedCategories,
+            Category.id == ProducerRestictedCategories.category_id,
+            isouter=True,
+        )
+        .join(
+            Producer,
+            Producer.id == ProducerRestictedCategories.producer_id
+            and Producer.user_id == user.id,
+            isouter=True,
+        )
+    )
+    results = await db.execute(statement)
+    return [(category, producer is not None) for category, producer in results.tuples()]
+
+
+async def update_permissions(
+    db: AsyncSession, user: User, permissions: Dict[str, bool]
+):
+    producer = await get_producer(db, user)
+    old_permissions = await get_permissions(db, user)
+
+    for category, enabled in old_permissions:
+        title = category.title.lower()
+        if title not in permissions or enabled == permissions[title]:
+            continue
+
+        if permissions[title]:
+            statement = sa.insert(ProducerRestictedCategories).values(
+                producer_id=producer.id, category_id=category.id
+            )
+        else:
+            statement = sa.delete(ProducerRestictedCategories).where(
+                ProducerRestictedCategories.producer_id == producer.id
+                and ProducerRestictedCategories.category_id == category.id
+            )
+
+        await db.execute(statement)
+        await db.commit()
