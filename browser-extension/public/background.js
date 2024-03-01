@@ -33,7 +33,7 @@ chrome.tabs.onRemoved.addListener(async (tabId) => {
 
     if (token) {
       const response = await fetch(
-        "http://localhost:8000/producer/me/histories",
+        "http://localhost:8000/producers/me/histories",
         {
           method: "POST",
           headers: {

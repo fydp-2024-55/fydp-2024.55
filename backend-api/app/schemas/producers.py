@@ -1,5 +1,4 @@
 from datetime import date, datetime
-
 from pydantic import BaseModel
 
 
@@ -18,11 +17,42 @@ class ProducerCreate(ProducerBase):
 
 
 class ProducerRead(ProducerBase):
-    pass
+    id: int
 
 
 class ProducerUpdate(ProducerBase):
     pass
+
+
+GENDERS = ["Male", "Female", "Other"]
+
+ETHNICITIES = [
+    "American Indian or Alaskan Native",
+    "Asian/Pacific Islander",
+    "Black or African American",
+    "Hispanic",
+    "White/Caucasian",
+    "Other",
+]
+
+MARITAL_STATUSES = ["Single", "Married", "Divorced", "Widowed"]
+
+PARENTAL_STATUSES = ["Parent", "Not Parent"]
+
+
+class FilterOptions(BaseModel):
+    genders: list[str]
+    ethnicities: list[str]
+    countries: list[str]
+    marital_statuses: list[str]
+    parental_statuses: list[str]
+
+
+class ProducerFilter(FilterOptions):
+    min_age: int | None
+    max_age: int | None
+    min_income: int | None
+    max_income: int | None
 
 
 class VisitedSite(BaseModel):
