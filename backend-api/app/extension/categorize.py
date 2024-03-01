@@ -1,3 +1,4 @@
+from typing import List
 from dotenv import load_dotenv
 from openai import OpenAI
 import requests
@@ -6,9 +7,9 @@ from bs4 import BeautifulSoup
 load_dotenv()
 client = OpenAI()
 
-def Get_category(website):
+
+def get_category(website: str, enabled_categories: List[str]):
     response = requests.get(website)
-    # print(response)
     soup = BeautifulSoup(response.text, "html.parser")
     soup = soup.prettify()
     soup = soup.replace("\n", "")
@@ -23,7 +24,7 @@ def Get_category(website):
     # Get the title of the website
     title = ""
     try:
-      title = soup.split("<title>")[1].split("</title>")[0]
+        title = soup.split("<title>")[1].split("</title>")[0]
     except:
         pass
 
@@ -48,27 +49,40 @@ def Get_category(website):
     except:
         pass
 
-    website_information_for_classification = title + headings + nav_bar + other_information
+    website_information_for_classification = (
+        title + headings + nav_bar + other_information
+    )
 
-    QUERY = "You are a website classifier. You are categorizing websites into the categories of:" \
-            "Shopping, Social Media, travel, entertainment, sports, animal, music, cuisine or beauty websites."\
-            "You will be given content from the HEAD request of the page as well as some of the content on the page"\
-            "and you will be determining what category it is. You will be provided some website content now."\
-            "Answer me in either: SHOP, TRAVEL, ENTERTAINMENT, SOCIAL, SPORTS, ANIMALS, MUSIC, CUISINE, BEAUTY"
+    QUERY = (
+        "You are a website classifier. You are categorizing websites into the categories of:"
+        "Shopping, Social Media, travel, entertainment, sports, animal, music, cuisine or beauty websites."
+        "You will be given content from the HEAD request of the page as well as some of the content on the page"
+        "and you will be determining what category it is. You will be provided some website content now."
+        f"Answer me in either: {', '.join(enabled_categories)}"
+    )
 
     completion = client.chat.completions.create(
-    model="gpt-4-1106-preview",
-    messages=[
-        {"role": "system", "content": QUERY},
-        {"role": "user", "content": website_information_for_classification}
-    ]
+        model="gpt-4-1106-preview",
+        messages=[
+            {"role": "system", "content": QUERY},
+            {"role": "user", "content": website_information_for_classification},
+        ],
     )
 
     resp = completion.choices[0].message.content
-    CATEGORIES = ['SHOP', 'TRAVEL', 'ENTERTAINMENT', 'SOCIAL']
+    CATEGORIES = [
+        "SHOPPING",
+        "TRAVEL",
+        "ENTERTAINMENT",
+        "SOCIAL",
+        "SPORTS",
+        "ANIMALS",
+        "MUSIC",
+        "CUISINE",
+        "BEAUTY",
+    ]
 
     if not any(resp.startswith(prefix) for prefix in CATEGORIES):
-      return None
+        return None
 
-
-    return completion.choices[0].message.content
+    return str(completion.choices[0].message.content)

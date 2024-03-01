@@ -1,6 +1,10 @@
-from typing import Dict
+from typing import Dict, List
 import sqlalchemy as sa
 from sqlalchemy.ext.asyncio import AsyncSession
+
+from ..models.interests import ProducerInterests
+
+from ..extension.categorize import get_category
 
 from ..models.categories import Category, ProducerRestictedCategories
 
@@ -11,6 +15,7 @@ from ..schemas.producers import (
     ProducerRead,
     ProducerUpdate,
     ProducerFilter,
+    VisitedSite,
 )
 
 
@@ -101,6 +106,66 @@ async def get_producers_by_filter(db: AsyncSession, filter: ProducerFilter):
     return [ProducerRead(**producer.__dict__) for producer in producers.scalars().all()]
 
 
+async def get_interests(db: AsyncSession, user: User):
+    producer = await get_producer(db, user)
+    statement = (
+        sa.select(Category, ProducerInterests.duration)
+        .join(ProducerInterests, ProducerInterests.category_id == Category.id)
+        .where(ProducerInterests.producer_id == producer.id)
+    )
+    results = await db.execute(statement)
+    return [(category, duration) for category, duration in results.tuples()]
+
+
+async def update_interests(
+    db: AsyncSession, visited_sites: List[VisitedSite], user: User
+):
+    producer = await get_producer(db, user)
+    previous_interests = {
+        category.title: duration
+        for (category, duration) in await get_interests(db, user)
+    }
+    enabled_categories = {
+        category.title: category
+        for category, enabled in await get_permissions(db, user)
+        if enabled
+    }
+    interests = [
+        (
+            get_category(site.url, enabled_categories.keys()),
+            site.duration,
+        )
+        for site in visited_sites
+    ]
+
+    for title, duration in interests:
+        if title not in enabled_categories:
+            continue
+
+        category = enabled_categories[title]
+
+        if title not in previous_interests:
+            statement = sa.insert(ProducerInterests).values(
+                producer_id=producer.id,
+                category_id=category.id,
+                duration=duration,
+            )
+        else:
+            previous_duration = previous_interests[title]
+            statement = (
+                sa.update(ProducerInterests)
+                .values(duration=previous_duration + duration)
+                .where(
+                    ProducerInterests.producer_id == producer.id
+                    and ProducerInterests.category_id == category.id
+                )
+            )
+
+        await db.execute(statement)
+
+    await db.commit()
+
+
 async def get_permissions(db: AsyncSession, user: User):
     statement = (
         sa.select(Category, Producer)
@@ -142,4 +207,5 @@ async def update_permissions(
             )
 
         await db.execute(statement)
-        await db.commit()
+
+    await db.commit()

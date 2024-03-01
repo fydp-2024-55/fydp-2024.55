@@ -2,7 +2,6 @@ from typing import Dict, List
 from fastapi import APIRouter, Body, Request, status, HTTPException, Query
 from fastapi.params import Depends
 from sqlalchemy.ext.asyncio import AsyncSession
-import datetime
 
 
 from ..blockchain.mint_burn import burn_token, mint_token
@@ -12,7 +11,6 @@ from ..dependencies import (
     get_user_manager,
 )
 from ..managers import UserManager
-from ..models.producers import Producer
 from ..models.users import User
 from ..ops import producers as ops
 from ..schemas.producers import (
@@ -126,7 +124,7 @@ async def create_producer(
             detail="User does not have a wallet",
         )
 
-    validate_producer_dto(producer)
+    # validate_producer_dto(producer)
 
     try:
         # Mint token for the producer
@@ -189,32 +187,16 @@ async def delete_producer(
 @router.post(
     "/me/interests",
     status_code=status.HTTP_201_CREATED,
-    response_model=List[VisitedSite],
+    response_model=Dict[str, int],
 )
 async def upload_interests(
     visited_sites: List[VisitedSite],
+    db: AsyncSession = Depends(get_async_session),
+    user: User = Depends(get_current_active_user),
 ):
-    return []
-    # TESTING
-    # TODO: Remove test_histories
-    # from ..extension.sample_websites import WEBSITES
-
-    # test_histories = [
-    #     HistoryCreate(
-    #         url=WEBSITES[2][0],
-    #         title=WEBSITES[2][1],
-    #         visit_time=datetime.datetime.now(),
-    #         time_spent=15,
-    #     ),
-    #     HistoryCreate(
-    #         url=WEBSITES[3][0],
-    #         title=WEBSITES[3][1],
-    #         visit_time=datetime.datetime.now(),
-    #         time_spent=10,
-    #     ),
-    # ]
-    # await ops.create_histories(db, test_histories, producer)
-    # return await ops.get_histories(db, producer)
+    await ops.update_interests(db, visited_sites, user)
+    interests = await ops.get_interests(db, user)
+    return {category.title.lower(): duration for category, duration in interests}
 
 
 @router.get(
