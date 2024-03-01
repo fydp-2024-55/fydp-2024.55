@@ -72,17 +72,17 @@ const backendService = {
   },
 
   createProducer: async (data: Producer) => {
-    const response = await apiClient.post<Producer>(`/producer/me`, data);
+    const response = await apiClient.post<Producer>(`/producers/me`, data);
     return response.data;
   },
 
   getProducer: async () => {
-    const response = await apiClient.get<Producer>(`/producer/me`);
+    const response = await apiClient.get<Producer>(`/producers/me`);
     return response.data;
   },
 
   updateProducer: async (data: Partial<Producer>) => {
-    const response = await apiClient.patch<Producer>(`/producer/me`, data);
+    const response = await apiClient.patch<Producer>(`/producers/me`, data);
     return response.data;
   },
 
@@ -106,14 +106,14 @@ const backendService = {
 
   getPermissions: async () => {
     const response = await apiClient.get<Permissions>(
-      `/producer/me/permissions`
+      `/producers/me/permissions`
     );
     return response.data;
   },
 
   updatePermissions: async (permissions: Permissions) => {
     const response = await apiClient.patch<Permissions>(
-      `/producer/me/permissions`,
+      `/producers/me/permissions`,
       permissions
     );
     return response.data;

@@ -31,12 +31,12 @@ const logOut = async () => {
 };
 
 const getProducer = async () => {
-  const response = await api.get<Producer>(`/producer/me`);
+  const response = await api.get<Producer>(`/producers/me`);
   return response.data;
 };
 
 const updateProducer = async (data: Producer) => {
-  const response = await api.patch(`producer/me`, data);
+  const response = await api.patch(`producers/me`, data);
   console.log(response);
 };
 
