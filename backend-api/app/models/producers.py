@@ -1,8 +1,7 @@
 import sqlalchemy as sa
-from sqlalchemy.orm import relationship
 
 from ..database import Base
-from .users import GUID, User
+from fastapi_users_db_sqlalchemy.generics import GUID
 
 
 class Producer(Base):
@@ -19,10 +18,3 @@ class Producer(Base):
     income = sa.Column(sa.Integer, nullable=True)
     marital_status = sa.Column(sa.CHAR, nullable=True)
     parental_status = sa.Column(sa.CHAR, nullable=True)
-
-    user = relationship(User, back_populates="producer")
-    restricted_categories = relationship(
-        "Category",
-        "Producer_Restricted_Categories",
-        back_populates="restricting_producers",
-    )

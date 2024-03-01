@@ -1,9 +1,6 @@
 import sqlalchemy as sa
-from sqlalchemy.orm import relationship
 
 from ..database import Base
-from .consumers import Consumer
-from .producers import Producer
 
 
 class ProducerRestictedCategories(Base):
@@ -26,12 +23,3 @@ class Category(Base):
     __tablename__ = "Categories"
     id = sa.Column(sa.Integer, primary_key=True, nullable=False)
     title = sa.Column(sa.String, unique=True, nullable=False)
-
-    restricting_producers = relationship(
-        Producer,
-        "Producer_Restricted_Categories",
-        back_populates="restricted_categories",
-    )
-    consumers = relationship(
-        Consumer, "Consumer_Categories", back_populates="categories"
-    )
