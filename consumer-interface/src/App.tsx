@@ -1,28 +1,18 @@
-import React from "react";
+import { FC } from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 
-import AppContext from "./contexts/AppContext";
-import { Consumer } from "./types";
-import ProtectedRoute from "./components/ProtectedRoute";
+import { AppContextProvider } from "./contexts/AppContext";
+import ProtectedRoute from "./routers/ProtectedRoute";
 import SignIn from "./pages/SignIn";
 import SignUp from "./pages/SignUp";
-// import Purchase from "./pages/Purchase";
 import Subscriptions from "./pages/Subscriptions";
+import WalletSetup from "./pages/WalletSetup";
+// import Purchase from "./pages/Purchase";
 import Profile from "./pages/Profile";
 
-const mockAccount: Consumer = {
-  email: "william@gmail.com",
-  ethAddress: "0x1234567890",
-};
-
-const App: React.FC = () => {
-  const [isAuthenticated, setIsAuthenticated] = React.useState<boolean>(false);
-  const [account, setAccount] = React.useState<Consumer>(mockAccount);
-
+const App: FC = () => {
   return (
-    <AppContext.Provider
-      value={{ isAuthenticated, setIsAuthenticated, account, setAccount }}
-    >
+    <AppContextProvider>
       <Router>
         <Routes>
           <Route path="/signin" element={<SignIn />} />
@@ -35,14 +25,15 @@ const App: React.FC = () => {
               </ProtectedRoute>
             }
           />
-          <Route
+          <Route path="/wallet-setup" element={<WalletSetup />} />
+          {/* <Route
             path="/purchase"
             element={
               <ProtectedRoute>
-                <div>Purchase</div>
+                <Purchase />
               </ProtectedRoute>
             }
-          />
+          /> */}
           <Route
             path="/profile"
             element={
@@ -53,7 +44,7 @@ const App: React.FC = () => {
           />
         </Routes>
       </Router>
-    </AppContext.Provider>
+    </AppContextProvider>
   );
 };
 

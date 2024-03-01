@@ -14,7 +14,8 @@ export interface BearerToken {
   tokenType: string;
 }
 
-interface User {
+export interface User {
+  id?: string;
   email?: string;
   ethAddress?: string;
 }

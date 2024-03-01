@@ -4,6 +4,7 @@ import applyCaseMiddleware from "axios-case-converter";
 import {
   AuthTokenKey,
   BearerToken,
+  User,
   Wallet,
   Consumer,
   Producer,
@@ -72,6 +73,19 @@ const backendService = {
 
     apiClient.defaults.headers.common["Authorization"] = null;
     localStorage.removeItem(AuthTokenKey);
+  },
+
+  getUser: async () => {
+    const response = await apiClient.get<User>(`/users/me`);
+    return response.data;
+  },
+
+  updateUser: async (email?: string, password?: string) => {
+    const response = await apiClient.patch<User>(`/users/me`, {
+      email,
+      password,
+    });
+    return response.data;
   },
 
   getWallet: async () => {

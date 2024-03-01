@@ -10,25 +10,24 @@ import {
 import { Visibility, VisibilityOff } from "@mui/icons-material";
 
 import AppContext from "../contexts/AppContext";
+import backendService from "../services/backend-service";
 import PageTemplate from "../components/PageTemplate";
 
 const Profile: FC = () => {
-  const { account, setAccount } = useContext(AppContext);
+  const { account } = useContext(AppContext);
 
   const [editMode, setEditMode] = useState<boolean>(false);
-  const [email, setEmail] = useState<string | undefined>(account?.email);
   const [newPassword, setNewPassword] = useState<string>("");
   const [showPassword, setShowPassword] = useState<boolean>(false);
 
   const handleSubmit = () => {
-    // Update the user's data: email, password
-    setAccount({ ...account, email });
+    backendService.updateUser(account?.email, newPassword);
     setEditMode(false);
   };
 
   return (
     <PageTemplate>
-      <Box sx={{ boxShadow: 2, p: 4, minWidth: "40vw" }}>
+      <Box sx={{ boxShadow: 2, p: 4, minWidth: "40vw", marginTop: -6 }}>
         <Box
           component="form"
           sx={{
@@ -46,7 +45,7 @@ const Profile: FC = () => {
             <Box fontWeight="fontWeightMedium" display="inline">
               Email:
             </Box>{" "}
-            {email}
+            {account?.email}
           </Typography>
           {editMode ? (
             <>
@@ -55,7 +54,7 @@ const Profile: FC = () => {
                 label="New Password"
                 variant="outlined"
                 type={showPassword ? "text" : "password"}
-                onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
+                onChange={(event) => {
                   setNewPassword(event.target.value);
                 }}
                 InputProps={{
@@ -72,13 +71,23 @@ const Profile: FC = () => {
                 }}
                 sx={{ m: 2, width: "30vw" }}
               />
-              <Button
-                variant="contained"
-                sx={{ m: 3, width: 200, alignSelf: "center" }}
-                onClick={handleSubmit}
-              >
-                Submit
-              </Button>
+              <Box display="flex" justifyContent="center">
+                <Button
+                  variant="contained"
+                  sx={{ m: 3, width: 150 }}
+                  onClick={handleSubmit}
+                >
+                  Submit
+                </Button>
+                <Button
+                  variant="contained"
+                  color="error"
+                  sx={{ m: 3, width: 150 }}
+                  onClick={() => setEditMode(false)}
+                >
+                  Cancel
+                </Button>
+              </Box>
             </>
           ) : (
             <>

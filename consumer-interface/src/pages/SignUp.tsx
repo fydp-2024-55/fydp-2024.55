@@ -17,7 +17,7 @@ import AppContext from "../contexts/AppContext";
 import backendService from "../services/backend-service";
 
 const SignUp: FC = () => {
-  const { setIsAuthenticated } = useContext(AppContext);
+  const { setIsAuthenticated, setAccount } = useContext(AppContext);
 
   const navigate = useNavigate();
 
@@ -29,7 +29,16 @@ const SignUp: FC = () => {
       await backendService.register(email, password);
       await backendService.logIn(email, password);
       setIsAuthenticated(true);
-      navigate("/");
+
+      // Create a consumer instance for the new user
+      await backendService.createConsumer();
+
+      // Set the user's account information
+      const account = await backendService.getUser();
+      setAccount(account);
+
+      // Navigate to the wallet setup page
+      navigate("/wallet-setup");
     } catch (error) {
       backendService.handleError(error, setIsAuthenticated);
     }

@@ -19,7 +19,7 @@ import AppContext from "../contexts/AppContext";
 import backendService from "../services/backend-service";
 
 const SignIn: FC = () => {
-  const { setIsAuthenticated } = useContext(AppContext);
+  const { setIsAuthenticated, setAccount } = useContext(AppContext);
 
   const navigate = useNavigate();
 
@@ -30,6 +30,16 @@ const SignIn: FC = () => {
     try {
       await backendService.logIn(email, password);
       setIsAuthenticated(true);
+
+      // Verify that the user is a consumer
+      await backendService.getConsumer();
+
+      // Set the user's account and wallet information
+      const account = await backendService.getUser();
+      const wallet = await backendService.getWallet();
+      setAccount({ ...account, ethAddress: wallet.ethAddress });
+
+      // Navigate to the subscriptions page
       navigate("/");
     } catch (error) {
       backendService.handleError(error, setIsAuthenticated);
