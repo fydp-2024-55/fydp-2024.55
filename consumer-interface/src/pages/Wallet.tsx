@@ -13,7 +13,7 @@ import backendService from "../services/backend-service";
 import PageTemplate from "../components/PageTemplate";
 
 const Wallet: FC = () => {
-  const { account, setIsAuthenticated } = useContext(AppContext);
+  const { account } = useContext(AppContext);
 
   const [balance, setBalance] = useState<number | null>(null);
 
@@ -23,7 +23,7 @@ const Wallet: FC = () => {
         const wallet = await backendService.getWallet();
         setBalance(wallet.balance);
       } catch (error) {
-        backendService.handleError(error, setIsAuthenticated);
+        console.error(error);
       }
     };
 
@@ -34,7 +34,7 @@ const Wallet: FC = () => {
     const interval = setInterval(fetchWalletBalance, 5000);
 
     return () => clearInterval(interval);
-  }, [setIsAuthenticated]);
+  }, []);
 
   return (
     <PageTemplate>

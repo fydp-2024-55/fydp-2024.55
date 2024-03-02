@@ -20,9 +20,13 @@ const Profile: FC = () => {
   const [newPassword, setNewPassword] = useState<string>("");
   const [showPassword, setShowPassword] = useState<boolean>(false);
 
-  const handleSubmit = () => {
-    backendService.updateUser(account?.email, newPassword);
-    setEditMode(false);
+  const handleSubmit = async () => {
+    try {
+      await backendService.updateUser(account?.email, newPassword);
+      setEditMode(false);
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   return (

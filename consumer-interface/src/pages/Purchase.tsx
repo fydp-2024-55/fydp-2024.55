@@ -53,10 +53,13 @@ const Purchase: React.FC = () => {
   };
 
   const handleSearch = async (event: React.FormEvent) => {
-    event.preventDefault();
     if (!filters) return;
-    const result = await backendService.getProducerCounts(filters);
-    setCounts(result);
+    try {
+      const result = await backendService.getProducerCounts(filters);
+      setCounts(result);
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   const fetchFilterCriteria = async () => {
@@ -170,7 +173,7 @@ const Purchase: React.FC = () => {
               </TableBody>
             </Table>
           </TableContainer>
-          <Button variant="contained" sx={{ width: 200 }}>
+          <Button variant="contained" sx={{ width: 200 }} onClick={() => {}}>
             Purchase
           </Button>
         </Box>
