@@ -35,7 +35,7 @@ const Profile: FC = () => {
             flexDirection: "column",
           }}
         >
-          <Typography sx={{ m: 2 }}>
+          <Typography sx={{ m: 1 }}>
             <Box fontWeight="fontWeightMedium" display="inline">
               Email:
             </Box>{" "}
@@ -63,7 +63,7 @@ const Profile: FC = () => {
                     </InputAdornment>
                   ),
                 }}
-                sx={{ m: 2, width: "30vw" }}
+                sx={{ m: 1, width: "30vw" }}
               />
               <Box display="flex" justifyContent="center">
                 <Button
@@ -85,7 +85,7 @@ const Profile: FC = () => {
             </>
           ) : (
             <>
-              <Typography sx={{ m: 2 }}>
+              <Typography sx={{ m: 1 }}>
                 <Box fontWeight="fontWeightMedium" display="inline">
                   Password:
                 </Box>{" "}
