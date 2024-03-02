@@ -1,5 +1,6 @@
 import sqlalchemy as sa
 
+from collections import defaultdict
 from datetime import datetime
 from typing import Dict
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -105,6 +106,7 @@ async def get_producer_counts_by_filter(db: AsyncSession, filter: ProducerFilter
             Ethnicities.White_Caucasian.value: 0,
             Ethnicities.Other.value: 0,
         },
+        "countries": defaultdict(int),
         "maritalStatuses": {
             MaritalStatuses.Single.value: 0,
             MaritalStatuses.Married.value: 0,
@@ -144,6 +146,10 @@ async def get_producer_counts_by_filter(db: AsyncSession, filter: ProducerFilter
         ethnicity = getattr(producer, "ethnicity", None)
         if ethnicity:
             counts["ethnicities"][ethnicity] += 1
+
+        country = getattr(producer, "country", None)
+        if country:
+            counts["countries"][country] += 1
 
         marital_status = getattr(producer, "marital_status", None)
         if marital_status:

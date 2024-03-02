@@ -83,6 +83,7 @@ class ProducerSearchResults(BaseModel):
     totalResults: int
     genders: dict[str, int]
     ethnicities: dict[str, int]
+    countries: dict[str, int]
     maritalStatuses: dict[str, int]
     parentalStatuses: dict[str, int]
     incomes: dict[str, int]

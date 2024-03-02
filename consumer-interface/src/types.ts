@@ -67,7 +67,7 @@ export interface Subscription extends Producer {
 
 export interface ProducerCounts {
   totalResults: number;
-  gender: { [key: string]: number };
+  genders: { [key: string]: number };
   ethnicities: { [key: string]: number };
   countries: { [key: string]: number };
   maritalStatuses: { [key: string]: number };

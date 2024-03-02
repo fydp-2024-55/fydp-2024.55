@@ -46,7 +46,7 @@ const Purchase: React.FC = () => {
     maritalStatuses: [],
     parentalStatuses: [],
   });
-  const [counts, setCounts] = useState<ProducerCounts | undefined>();
+  const [counts, setCounts] = useState<ProducerCounts>();
 
   const handleCheck = (
     checked: boolean,
@@ -128,7 +128,7 @@ const Purchase: React.FC = () => {
 
   return (
     <PageTemplate>
-      {/* {results ? (
+      {counts ? (
         <Box
           sx={{
             display: "flex",
@@ -165,183 +165,101 @@ const Purchase: React.FC = () => {
               </TableHead>
               <TableBody>
                 <TableRow>
-                  <TableCell>{results.ethAddresses.length}</TableCell>
+                  <TableCell>{counts.totalResults}</TableCell>
                   <TableCell>
-                    <Box fontWeight="fontWeightMedium" display="inline">
-                      Male:
-                    </Box>{" "}
-                    {results.gender.M}
-                    <br />
-                    <br />
-                    <Box fontWeight="fontWeightMedium" display="inline">
-                      Female:
-                    </Box>{" "}
-                    {results.gender.F}
+                    {counts.genders &&
+                      Object.entries(counts.genders).map(([key, value]) => (
+                        <div key={key}>
+                          <Box fontWeight="fontWeightMedium" display="inline">
+                            {key}:
+                          </Box>{" "}
+                          {value}
+                          <br />
+                          <br />
+                        </div>
+                      ))}
                   </TableCell>
                   <TableCell>
-                    <Box fontWeight="fontWeightMedium" display="inline">
-                      {Ethnicity.N}:
-                    </Box>{" "}
-                    {results.ethnicities.N}
-                    <br />
-                    <br />
-                    <Box fontWeight="fontWeightMedium" display="inline">
-                      {Ethnicity.A}:
-                    </Box>{" "}
-                    {results.ethnicities.A}
-                    <br />
-                    <br />
-                    <Box fontWeight="fontWeightMedium" display="inline">
-                      {Ethnicity.B}:
-                    </Box>{" "}
-                    {results.ethnicities.B}
-                    <br />
-                    <br />
-                    <Box fontWeight="fontWeightMedium" display="inline">
-                      {Ethnicity.H}:
-                    </Box>{" "}
-                    {results.ethnicities.H}
-                    <br />
-                    <br />
-                    <Box fontWeight="fontWeightMedium" display="inline">
-                      {Ethnicity.W}:
-                    </Box>{" "}
-                    {results.ethnicities.W}
-                    <br />
-                    <br />
-                    <Box fontWeight="fontWeightMedium" display="inline">
-                      {Ethnicity.O}:
-                    </Box>{" "}
-                    {results.ethnicities.O}
+                    {counts.ethnicities &&
+                      Object.entries(counts.ethnicities).map(([key, value]) => (
+                        <div key={key}>
+                          <Box fontWeight="fontWeightMedium" display="inline">
+                            {key}:
+                          </Box>{" "}
+                          {value}
+                          <br />
+                          <br />
+                        </div>
+                      ))}
                   </TableCell>
                   <TableCell>
-                    <Box fontWeight="fontWeightMedium" display="inline">
-                      10-20:{" "}
-                    </Box>{" "}
-                    <br />
-                    <br />
-                    <Box fontWeight="fontWeightMedium" display="inline">
-                      20-30:{" "}
-                    </Box>{" "}
-                    <br />
-                    <br />
-                    <Box fontWeight="fontWeightMedium" display="inline">
-                      30-40:{" "}
-                    </Box>{" "}
-                    <br />
-                    <br />
-                    <Box fontWeight="fontWeightMedium" display="inline">
-                      40-50:{" "}
-                    </Box>{" "}
-                    <br />
-                    <br />
-                    <Box fontWeight="fontWeightMedium" display="inline">
-                      50-60:{" "}
-                    </Box>{" "}
-                    <br />
-                    <br />
-                    <Box fontWeight="fontWeightMedium" display="inline">
-                      60-70:{" "}
-                    </Box>{" "}
-                    <br />
-                    <br />
-                    <Box fontWeight="fontWeightMedium" display="inline">
-                      70-80:{" "}
-                    </Box>{" "}
-                    <br />
-                    <br />
-                    <Box fontWeight="fontWeightMedium" display="inline">
-                      80-90:{" "}
-                    </Box>{" "}
+                    {counts.ages &&
+                      Object.entries(counts.ages).map(([key, value]) => (
+                        <div key={key}>
+                          <Box fontWeight="fontWeightMedium" display="inline">
+                            {key}:
+                          </Box>{" "}
+                          {value}
+                          <br />
+                          <br />
+                        </div>
+                      ))}
                   </TableCell>
                   <TableCell>
-                    <Box fontWeight="fontWeightMedium" display="inline">
-                      Canada:
-                    </Box>{" "}
-                    {results.countries.Canada}
-                    <br />
-                    <br />
-                    <Box fontWeight="fontWeightMedium" display="inline">
-                      United States of America:{" "}
-                    </Box>{" "}
-                    {results.countries["United States of America"]}
-                    <br />
-                    <br />
-                    <Box fontWeight="fontWeightMedium" display="inline">
-                      Mexico:
-                    </Box>{" "}
-                    {results.countries.Mexico}
+                    {counts.countries &&
+                      Object.entries(counts.countries).map(([key, value]) => (
+                        <div key={key}>
+                          <Box fontWeight="fontWeightMedium" display="inline">
+                            {key}:
+                          </Box>{" "}
+                          {value}
+                          <br />
+                          <br />
+                        </div>
+                      ))}
                   </TableCell>
                   <TableCell>
-                    <Box fontWeight="fontWeightMedium" display="inline">
-                      $0-50,000:{" "}
-                    </Box>{" "}
-                    <br />
-                    <br />
-                    <Box fontWeight="fontWeightMedium" display="inline">
-                      $50,000-100,000:{" "}
-                    </Box>{" "}
-                    <br />
-                    <br />
-                    <Box fontWeight="fontWeightMedium" display="inline">
-                      $100,000-150,000:{" "}
-                    </Box>{" "}
-                    <br />
-                    <br />
-                    <Box fontWeight="fontWeightMedium" display="inline">
-                      $150,000-200,000:{" "}
-                    </Box>{" "}
-                    <br />
-                    <br />
-                    <Box fontWeight="fontWeightMedium" display="inline">
-                      $200,000-250,000:{" "}
-                    </Box>{" "}
-                    <br />
-                    <br />
-                    <Box fontWeight="fontWeightMedium" display="inline">
-                      $250,000-300,000:{" "}
-                    </Box>{" "}
-                    <br />
-                    <br />
-                    <Box fontWeight="fontWeightMedium" display="inline">
-                      $300,000-350,000:{" "}
-                    </Box>{" "}
+                    {counts.incomes &&
+                      Object.entries(counts.incomes).map(([key, value]) => (
+                        <div key={key}>
+                          <Box fontWeight="fontWeightMedium" display="inline">
+                            {key}:
+                          </Box>{" "}
+                          {value}
+                          <br />
+                          <br />
+                        </div>
+                      ))}
                   </TableCell>
                   <TableCell>
-                    <Box fontWeight="fontWeightMedium" display="inline">
-                      {MaritalStatus.M}:
-                    </Box>{" "}
-                    {results.maritalStatuses.M}
-                    <br />
-                    <br />
-                    <Box fontWeight="fontWeightMedium" display="inline">
-                      {MaritalStatus.S}:
-                    </Box>{" "}
-                    {results.maritalStatuses.S}
-                    <br />
-                    <br />
-                    <Box fontWeight="fontWeightMedium" display="inline">
-                      {MaritalStatus.D}:
-                    </Box>{" "}
-                    {results.maritalStatuses.D}
-                    <br />
-                    <br />
-                    <Box fontWeight="fontWeightMedium" display="inline">
-                      {MaritalStatus.W}:
-                    </Box>{" "}
-                    {results.maritalStatuses.W}
+                    {counts.maritalStatuses &&
+                      Object.entries(counts.maritalStatuses).map(
+                        ([key, value]) => (
+                          <div key={key}>
+                            <Box fontWeight="fontWeightMedium" display="inline">
+                              {key}:
+                            </Box>{" "}
+                            {value}
+                            <br />
+                            <br />
+                          </div>
+                        )
+                      )}
                   </TableCell>
                   <TableCell>
-                    <Box fontWeight="fontWeightMedium" display="inline">
-                      {ParentalStatus.Y}:
-                    </Box>{" "}
-                    {results.parentalStatuses.Y}
-                    <br />
-                    <br />
-                    <Box fontWeight="fontWeightMedium" display="inline">
-                      {ParentalStatus.N}:
-                    </Box>{" "}
-                    {results.parentalStatuses.N}
+                    {counts.parentalStatuses &&
+                      Object.entries(counts.parentalStatuses).map(
+                        ([key, value]) => (
+                          <div key={key}>
+                            <Box fontWeight="fontWeightMedium" display="inline">
+                              {key}:
+                            </Box>{" "}
+                            {value}
+                            <br />
+                            <br />
+                          </div>
+                        )
+                      )}
                   </TableCell>
                 </TableRow>
               </TableBody>
@@ -351,109 +269,115 @@ const Purchase: React.FC = () => {
             Purchase
           </Button>
         </Box>
-      ) : ( */}
-      <Box
-        sx={{
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-        }}
-      >
-        <TableContainer component={Paper} sx={{ maxWidth: "60vw", m: 4 }}>
-          <Table aria-label="criteria-table">
-            <TableBody>
-              {criteria &&
-                criteria.map((row, criteriaIdx) => (
-                  <TableRow key={row.name}>
-                    <TableCell component="th" scope="row">
-                      <Box fontWeight="fontWeightMedium" display="inline">
-                        {row.name}
-                      </Box>
-                    </TableCell>
-                    <TableCell align="right">
-                      {row.type === "range" && row.minKey && row.maxKey ? (
-                        <Box>
-                          <TextField
-                            id="min-text-field"
-                            label="Minimum"
-                            variant="outlined"
-                            InputProps={
-                              row.inputPrefix
-                                ? {
-                                    startAdornment: (
-                                      <InputAdornment position="start">
-                                        {row.inputPrefix}
-                                      </InputAdornment>
-                                    ),
-                                  }
-                                : undefined
-                            }
-                            onChange={(e) =>
-                              setFilters({
-                                ...filters,
-                                [row.minKey!]: e.target.value,
-                              })
-                            }
-                          />
-                          <TextField
-                            id="max-text-field"
-                            label="Maximum"
-                            variant="outlined"
-                            InputProps={
-                              row.inputPrefix
-                                ? {
-                                    startAdornment: (
-                                      <InputAdornment position="start">
-                                        {row.inputPrefix}
-                                      </InputAdornment>
-                                    ),
-                                  }
-                                : undefined
-                            }
-                            onChange={(e) =>
-                              setFilters({
-                                ...filters,
-                                [row.maxKey!]: e.target.value,
-                              })
-                            }
-                          />
+      ) : (
+        <Box
+          sx={{
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+          }}
+        >
+          <TableContainer component={Paper} sx={{ maxWidth: "60vw", m: 4 }}>
+            <Table aria-label="criteria-table">
+              <TableBody>
+                {criteria &&
+                  criteria.map((row, criteriaIdx) => (
+                    <TableRow key={row.name}>
+                      <TableCell component="th" scope="row">
+                        <Box fontWeight="fontWeightMedium" display="inline">
+                          {row.name}
                         </Box>
-                      ) : row.type === "select" && row.options && row.key ? (
-                        <Box>
-                          {row.options.map((option, optionIdx) => (
-                            <FormControlLabel
-                              key={option}
-                              control={
-                                <Checkbox
-                                  checked={(filters as any)[row.key!].includes(
-                                    criteria[criteriaIdx].options![optionIdx]
-                                  )}
-                                  onChange={(event) =>
-                                    handleCheck(
-                                      event.target.checked,
-                                      row.key!,
-                                      criteriaIdx,
-                                      optionIdx
-                                    )
-                                  }
-                                />
+                      </TableCell>
+                      <TableCell align="right">
+                        {row.type === "range" && row.minKey && row.maxKey ? (
+                          <Box>
+                            <TextField
+                              id="min-text-field"
+                              label="Minimum"
+                              variant="outlined"
+                              InputProps={
+                                row.inputPrefix
+                                  ? {
+                                      startAdornment: (
+                                        <InputAdornment position="start">
+                                          {row.inputPrefix}
+                                        </InputAdornment>
+                                      ),
+                                    }
+                                  : undefined
                               }
-                              label={option}
+                              onChange={(e) =>
+                                setFilters({
+                                  ...filters,
+                                  [row.minKey!]: e.target.value,
+                                })
+                              }
                             />
-                          ))}
-                        </Box>
-                      ) : null}
-                    </TableCell>
-                  </TableRow>
-                ))}
-            </TableBody>
-          </Table>
-        </TableContainer>
-        <Button variant="contained" sx={{ width: 200 }} onClick={handleSearch}>
-          Search
-        </Button>
-      </Box>
-      {/* )} */}
+                            <TextField
+                              id="max-text-field"
+                              label="Maximum"
+                              variant="outlined"
+                              InputProps={
+                                row.inputPrefix
+                                  ? {
+                                      startAdornment: (
+                                        <InputAdornment position="start">
+                                          {row.inputPrefix}
+                                        </InputAdornment>
+                                      ),
+                                    }
+                                  : undefined
+                              }
+                              onChange={(e) =>
+                                setFilters({
+                                  ...filters,
+                                  [row.maxKey!]: e.target.value,
+                                })
+                              }
+                            />
+                          </Box>
+                        ) : row.type === "select" && row.options && row.key ? (
+                          <Box>
+                            {row.options.map((option, optionIdx) => (
+                              <FormControlLabel
+                                key={option}
+                                control={
+                                  <Checkbox
+                                    checked={(filters as any)[
+                                      row.key!
+                                    ].includes(
+                                      criteria[criteriaIdx].options![optionIdx]
+                                    )}
+                                    onChange={(event) =>
+                                      handleCheck(
+                                        event.target.checked,
+                                        row.key!,
+                                        criteriaIdx,
+                                        optionIdx
+                                      )
+                                    }
+                                  />
+                                }
+                                label={option}
+                              />
+                            ))}
+                          </Box>
+                        ) : null}
+                      </TableCell>
+                    </TableRow>
+                  ))}
+              </TableBody>
+            </Table>
+          </TableContainer>
+          <Button
+            variant="contained"
+            sx={{ width: 200 }}
+            onClick={handleSearch}
+          >
+            Search
+          </Button>
+        </Box>
+      )}
     </PageTemplate>
   );
 };
