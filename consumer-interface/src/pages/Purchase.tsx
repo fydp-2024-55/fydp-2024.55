@@ -40,25 +40,14 @@ const Purchase: React.FC = () => {
   });
   const [counts, setCounts] = useState<ProducerCounts>();
 
-  const handleCheck = (
-    checked: boolean,
-    key: string,
-    criteriaIdx: number,
-    optionIdx: number
-  ) => {
-    if (!criteria) return;
-    let arr: any[] = [];
-    if (checked) {
-      arr.push(criteria[criteriaIdx].options![optionIdx]);
-    } else {
-      let index = arr.indexOf(criteria[criteriaIdx].options![optionIdx]);
-      if (index > -1) {
-        arr.splice(index, 1);
-      }
-    }
+  const handleCheck = (checked: boolean, key: string, value: string) => {
+    if (!filters) return;
+    const updatedValues = checked
+      ? [...((filters as any)[key] || []), value] // Add the value if checked
+      : ((filters as any)[key] || []).filter((v: string) => v !== value); // Remove the value if unchecked
     setFilters({
       ...filters,
-      [key!]: arr,
+      [key]: updatedValues,
     });
   };
 
@@ -253,22 +242,19 @@ const Purchase: React.FC = () => {
                           </Box>
                         ) : row.type === "select" && row.options && row.key ? (
                           <Box>
-                            {row.options.map((option, optionIdx) => (
+                            {row.options.map((option) => (
                               <FormControlLabel
                                 key={option}
                                 control={
                                   <Checkbox
-                                    checked={(filters as any)[
-                                      row.key!
-                                    ].includes(
-                                      criteria[criteriaIdx].options![optionIdx]
-                                    )}
+                                    checked={(
+                                      (filters as any)[row.key!] || []
+                                    ).includes(option)}
                                     onChange={(event) =>
                                       handleCheck(
                                         event.target.checked,
                                         row.key!,
-                                        criteriaIdx,
-                                        optionIdx
+                                        option
                                       )
                                     }
                                   />
