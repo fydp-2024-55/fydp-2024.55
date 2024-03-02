@@ -7,9 +7,9 @@ import {
   User,
   Wallet,
   Consumer,
-  Producer,
   ProducerFilterOptions,
   ProducerFilter,
+  ProducerCounts,
 } from "../types";
 
 const apiClient = applyCaseMiddleware(
@@ -145,8 +145,10 @@ const backendService = {
     return response.data;
   },
 
-  getProducers: async (params: ProducerFilter) => {
-    const response = await apiClient.get<Producer[]>(`/producers`, { params });
+  getProducerCounts: async (params: ProducerFilter) => {
+    const response = await apiClient.get<ProducerCounts>(`/producers/counts`, {
+      params,
+    });
     return response.data;
   },
 };

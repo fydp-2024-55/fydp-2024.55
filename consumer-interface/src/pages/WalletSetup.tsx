@@ -22,13 +22,8 @@ import backendService from "../services/backend-service";
 import PageTemplate from "../components/PageTemplate";
 
 const WalletSetup: React.FC = () => {
-  const {
-    isAuthenticated,
-    setIsAuthenticated,
-    setIsWalletSetup,
-    account,
-    setAccount,
-  } = useContext(AppContext);
+  const { isAuthenticated, setIsAuthenticated, account, setAccount } =
+    useContext(AppContext);
 
   const navigate = useNavigate();
 
@@ -52,7 +47,6 @@ const WalletSetup: React.FC = () => {
         await backendService.updateWallet(ethAddress, privateKey);
         setAccount({ ...account, ethAddress });
       }
-      setIsWalletSetup(true);
       navigate("/");
     } catch (error) {
       backendService.handleError(error, setIsAuthenticated);

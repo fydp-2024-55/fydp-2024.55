@@ -6,8 +6,6 @@ import backendService from "../services/backend-service";
 interface AppContextType {
   isAuthenticated: boolean;
   setIsAuthenticated: (isAuthenticated: boolean) => void;
-  isWalletSetup: boolean;
-  setIsWalletSetup: (isWalletSetup: boolean) => void;
   account?: Consumer;
   setAccount: (consumer: Consumer) => void;
 }
@@ -15,8 +13,6 @@ interface AppContextType {
 const AppContext = createContext<AppContextType>({
   isAuthenticated: false,
   setIsAuthenticated: () => {},
-  isWalletSetup: false,
-  setIsWalletSetup: () => {},
   setAccount: () => {},
 });
 
@@ -24,7 +20,6 @@ export const AppContextProvider: FC<{ children: ReactNode }> = ({
   children,
 }) => {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
-  const [isWalletSetup, setIsWalletSetup] = useState<boolean>(false);
   const [account, setAccount] = useState<Consumer | undefined>();
 
   useEffect(() => {
@@ -42,8 +37,6 @@ export const AppContextProvider: FC<{ children: ReactNode }> = ({
       value={{
         isAuthenticated,
         setIsAuthenticated,
-        isWalletSetup,
-        setIsWalletSetup,
         account,
         setAccount,
       }}

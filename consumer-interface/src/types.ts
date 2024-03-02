@@ -65,17 +65,13 @@ export interface Subscription extends Producer {
   interests: Interest[];
 }
 
-export const GENDERS = ["Male", "Female", "Other"];
-
-export const ETHNICITIES = [
-  "American Indian or Alaskan Native",
-  "Asian/Pacific Islander",
-  "Black or African American",
-  "Hispanic",
-  "White/Caucasian",
-  "Other",
-];
-
-export const MARITAL_STATUSES = ["Single", "Married", "Divorced", "Widowed"];
-
-export const PARENTAL_STATUSES = ["Parent", "Not Parent"];
+export interface ProducerCounts {
+  totalResults: number;
+  gender: { [key: string]: number };
+  ethnicities: { [key: string]: number };
+  countries: { [key: string]: number };
+  maritalStatuses: { [key: string]: number };
+  parentalStatuses: { [key: string]: number };
+  incomes: { [key: string]: number };
+  ages: { [key: string]: number };
+}

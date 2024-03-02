@@ -5,13 +5,10 @@ import AppContext from "../contexts/AppContext";
 import Layout from "../components/Layout";
 
 export const ProtectedRoute: FC<{ children: ReactNode }> = ({ children }) => {
-  const { isAuthenticated, isWalletSetup } = useContext(AppContext)!;
+  const { isAuthenticated } = useContext(AppContext)!;
 
   if (!isAuthenticated) {
     return <Navigate to="/signin" />;
-  }
-  if (!isWalletSetup) {
-    return <Navigate to="/wallet-setup" />;
   }
   return <Layout>{children}</Layout>;
 };

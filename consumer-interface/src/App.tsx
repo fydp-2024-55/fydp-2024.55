@@ -7,7 +7,7 @@ import SignIn from "./pages/SignIn";
 import SignUp from "./pages/SignUp";
 import Subscriptions from "./pages/Subscriptions";
 import WalletSetup from "./pages/WalletSetup";
-// import Purchase from "./pages/Purchase";
+import Purchase from "./pages/Purchase";
 import Profile from "./pages/Profile";
 
 const App: FC = () => {
@@ -26,14 +26,14 @@ const App: FC = () => {
             }
           />
           <Route path="/wallet-setup" element={<WalletSetup />} />
-          {/* <Route
+          <Route
             path="/purchase"
             element={
               <ProtectedRoute>
                 <Purchase />
               </ProtectedRoute>
             }
-          /> */}
+          />
           <Route
             path="/profile"
             element={
