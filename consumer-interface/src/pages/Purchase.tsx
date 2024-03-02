@@ -17,6 +17,7 @@ import {
 
 import { ProducerFilter, ProducerCounts } from "../types";
 import backendService from "../services/backend-service";
+import { camelCaseToHumanReadable } from "../utils/strings";
 import PageTemplate from "../components/PageTemplate";
 
 export interface Row {
@@ -119,7 +120,7 @@ const Purchase: React.FC = () => {
         >
           <TableContainer
             component={Paper}
-            sx={{ my: 2, height: "60vh", maxWidth: "70vw" }}
+            sx={{ my: 2, height: "60vh", maxWidth: "80vw" }}
           >
             <Table>
               <TableHead>
@@ -155,7 +156,7 @@ const Purchase: React.FC = () => {
                                 fontWeight="fontWeightMedium"
                                 display="inline"
                               >
-                                {subKey}:
+                                {camelCaseToHumanReadable(subKey)}:
                               </Box>{" "}
                               {value as string}
                               <br />

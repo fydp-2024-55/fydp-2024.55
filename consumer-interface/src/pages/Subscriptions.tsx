@@ -12,10 +12,10 @@ import {
 } from "@mui/material";
 
 import AppContext from "../contexts/AppContext";
-import SubscriptionRow from "../components/SubscriptionRow";
 import { Subscription } from "../types";
-import PageTemplate from "../components/PageTemplate";
 import { exportDataToCSV, exportDataToJSON } from "../utils/export";
+import SubscriptionRow from "../components/SubscriptionRow";
+import PageTemplate from "../components/PageTemplate";
 
 const mockSubscriptions: Subscription[] = [
   {

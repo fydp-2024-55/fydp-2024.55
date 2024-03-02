@@ -118,11 +118,11 @@ async def get_producer_counts_by_filter(db: AsyncSession, filter: ProducerFilter
             ParentalStatuses.Not_Parent.value: 0,
         },
         "incomes": {
-            "under25k": 0,
-            "25kto50k": 0,
-            "50kto75k": 0,
-            "75kto100k": 0,
-            "over100k": 0,
+            "under25000": 0,
+            "25000to50000": 0,
+            "50000to75000": 0,
+            "75000to100000": 0,
+            "over100000": 0,
         },
         "ages": {
             "under15": 0,
@@ -162,15 +162,15 @@ async def get_producer_counts_by_filter(db: AsyncSession, filter: ProducerFilter
         income = getattr(producer, "income", None)
         if income:
             if income < 25000:
-                counts["incomes"]["under25k"] += 1
+                counts["incomes"]["under25000"] += 1
             elif income < 50000:
-                counts["incomes"]["25kto50k"] += 1
+                counts["incomes"]["25000to50000"] += 1
             elif income < 75000:
-                counts["incomes"]["50kto75k"] += 1
+                counts["incomes"]["50000to75000"] += 1
             elif income < 100000:
-                counts["incomes"]["75kto100k"] += 1
+                counts["incomes"]["75000to100000"] += 1
             else:
-                counts["incomes"]["over100k"] += 1
+                counts["incomes"]["over100000"] += 1
 
         date_of_birth = getattr(producer, "date_of_birth", None)
         if date_of_birth:
