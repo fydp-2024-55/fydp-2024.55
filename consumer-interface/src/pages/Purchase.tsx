@@ -15,11 +15,7 @@ import {
   InputAdornment,
 } from "@mui/material";
 
-import {
-  ProducerFilterOptions,
-  ProducerFilter,
-  ProducerCounts,
-} from "../types";
+import { ProducerFilter, ProducerCounts } from "../types";
 import backendService from "../services/backend-service";
 import PageTemplate from "../components/PageTemplate";
 
@@ -36,13 +32,9 @@ export interface Row {
 const Purchase: React.FC = () => {
   const [criteria, setCriteria] = useState<Row[]>();
   const [filters, setFilters] = useState<ProducerFilter>({
-    minAge: 0,
-    maxAge: 0,
     genders: [],
     ethnicities: [],
     countries: [],
-    minIncome: 0,
-    maxIncome: 0,
     maritalStatuses: [],
     parentalStatuses: [],
   });
@@ -141,16 +133,6 @@ const Purchase: React.FC = () => {
             sx={{ my: 2, height: "60vh", maxWidth: "70vw" }}
           >
             <Table>
-              <colgroup>
-                <col style={{ width: "800px" }} />
-                <col style={{ width: "800px" }} />
-                <col style={{ width: "800px" }} />
-                <col style={{ width: "800px" }} />
-                <col style={{ width: "800px" }} />
-                <col style={{ width: "800px" }} />
-                <col style={{ width: "800px" }} />
-                <col style={{ width: "800px" }} />
-              </colgroup>
               <TableHead>
                 <TableRow>
                   <TableCell>Total Results</TableCell>
@@ -166,101 +148,34 @@ const Purchase: React.FC = () => {
               <TableBody>
                 <TableRow>
                   <TableCell>{counts.totalResults}</TableCell>
-                  <TableCell>
-                    {counts.genders &&
-                      Object.entries(counts.genders).map(([key, value]) => (
-                        <div key={key}>
-                          <Box fontWeight="fontWeightMedium" display="inline">
-                            {key}:
-                          </Box>{" "}
-                          {value}
-                          <br />
-                          <br />
-                        </div>
-                      ))}
-                  </TableCell>
-                  <TableCell>
-                    {counts.ethnicities &&
-                      Object.entries(counts.ethnicities).map(([key, value]) => (
-                        <div key={key}>
-                          <Box fontWeight="fontWeightMedium" display="inline">
-                            {key}:
-                          </Box>{" "}
-                          {value}
-                          <br />
-                          <br />
-                        </div>
-                      ))}
-                  </TableCell>
-                  <TableCell>
-                    {counts.ages &&
-                      Object.entries(counts.ages).map(([key, value]) => (
-                        <div key={key}>
-                          <Box fontWeight="fontWeightMedium" display="inline">
-                            {key}:
-                          </Box>{" "}
-                          {value}
-                          <br />
-                          <br />
-                        </div>
-                      ))}
-                  </TableCell>
-                  <TableCell>
-                    {counts.countries &&
-                      Object.entries(counts.countries).map(([key, value]) => (
-                        <div key={key}>
-                          <Box fontWeight="fontWeightMedium" display="inline">
-                            {key}:
-                          </Box>{" "}
-                          {value}
-                          <br />
-                          <br />
-                        </div>
-                      ))}
-                  </TableCell>
-                  <TableCell>
-                    {counts.incomes &&
-                      Object.entries(counts.incomes).map(([key, value]) => (
-                        <div key={key}>
-                          <Box fontWeight="fontWeightMedium" display="inline">
-                            {key}:
-                          </Box>{" "}
-                          {value}
-                          <br />
-                          <br />
-                        </div>
-                      ))}
-                  </TableCell>
-                  <TableCell>
-                    {counts.maritalStatuses &&
-                      Object.entries(counts.maritalStatuses).map(
-                        ([key, value]) => (
-                          <div key={key}>
-                            <Box fontWeight="fontWeightMedium" display="inline">
-                              {key}:
-                            </Box>{" "}
-                            {value}
-                            <br />
-                            <br />
-                          </div>
-                        )
-                      )}
-                  </TableCell>
-                  <TableCell>
-                    {counts.parentalStatuses &&
-                      Object.entries(counts.parentalStatuses).map(
-                        ([key, value]) => (
-                          <div key={key}>
-                            <Box fontWeight="fontWeightMedium" display="inline">
-                              {key}:
-                            </Box>{" "}
-                            {value}
-                            <br />
-                            <br />
-                          </div>
-                        )
-                      )}
-                  </TableCell>
+                  {[
+                    "genders",
+                    "ethnicities",
+                    "ages",
+                    "countries",
+                    "incomes",
+                    "maritalStatuses",
+                    "parentalStatuses",
+                  ].map((key) => (
+                    <TableCell key={key}>
+                      {(counts as any)[key] &&
+                        Object.entries((counts as any)[key]).map(
+                          ([subKey, value]) => (
+                            <div key={subKey}>
+                              <Box
+                                fontWeight="fontWeightMedium"
+                                display="inline"
+                              >
+                                {subKey}:
+                              </Box>{" "}
+                              {value as string}
+                              <br />
+                              <br />
+                            </div>
+                          )
+                        )}
+                    </TableCell>
+                  ))}
                 </TableRow>
               </TableBody>
             </Table>

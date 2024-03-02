@@ -15,6 +15,9 @@ import {
 const apiClient = applyCaseMiddleware(
   axios.create({
     baseURL: "http://localhost:8000",
+    paramsSerializer: {
+      indexes: null,
+    },
   })
 );
 

@@ -154,42 +154,46 @@ async def update_permissions(
     response_model=ProducerSearchResults,
 )
 async def read_producer_counts(
+    genders: list[str] = Query(None),
+    ethnicities: list[str] = Query(None),
+    countries: list[str] = Query(None),
+    marital_statuses: list[str] = Query(None),
+    parental_statuses: list[str] = Query(None),
     min_age: int | None = None,
     max_age: int | None = None,
     min_income: int | None = None,
     max_income: int | None = None,
-    genders: list[str] = Query([]),
-    ethnicities: list[str] = Query([]),
-    countries: list[str] = Query([]),
-    marital_statuses: list[str] = Query([]),
-    parental_statuses: list[str] = Query([]),
     db: AsyncSession = Depends(get_async_session),
 ):
     # Validate the filter options
-    for gender in genders:
-        if gender not in GENDERS:
-            raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST,
-                detail="Invalid gender provided",
-            )
-    for ethnicity in ethnicities:
-        if ethnicity not in ETHNICITIES:
-            raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST,
-                detail="Invalid ethnicity provided",
-            )
-    for marital_status in marital_statuses:
-        if marital_status not in MARITAL_STATUSES:
-            raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST,
-                detail="Invalid marital status provided",
-            )
-    for parental_status in parental_statuses:
-        if parental_status not in PARENTAL_STATUSES:
-            raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST,
-                detail="Invalid parental status provided",
-            )
+    if genders:
+        for gender in genders:
+            if gender not in GENDERS:
+                raise HTTPException(
+                    status_code=status.HTTP_400_BAD_REQUEST,
+                    detail="Invalid gender provided",
+                )
+    if ethnicities:
+        for ethnicity in ethnicities:
+            if ethnicity not in ETHNICITIES:
+                raise HTTPException(
+                    status_code=status.HTTP_400_BAD_REQUEST,
+                    detail="Invalid ethnicity provided",
+                )
+    if marital_statuses:
+        for marital_status in marital_statuses:
+            if marital_status not in MARITAL_STATUSES:
+                raise HTTPException(
+                    status_code=status.HTTP_400_BAD_REQUEST,
+                    detail="Invalid marital status provided",
+                )
+    if parental_statuses:
+        for parental_status in parental_statuses:
+            if parental_status not in PARENTAL_STATUSES:
+                raise HTTPException(
+                    status_code=status.HTTP_400_BAD_REQUEST,
+                    detail="Invalid parental status provided",
+                )
 
     filter = ProducerFilter(
         genders=genders,

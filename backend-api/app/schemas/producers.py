@@ -65,11 +65,11 @@ PARENTAL_STATUSES = [parental_status.value for parental_status in ParentalStatus
 
 
 class FilterOptions(BaseModel):
-    genders: list[str]
-    ethnicities: list[str]
-    countries: list[str]
-    marital_statuses: list[str]
-    parental_statuses: list[str]
+    genders: list[str] | None
+    ethnicities: list[str] | None
+    countries: list[str] | None
+    marital_statuses: list[str] | None
+    parental_statuses: list[str] | None
 
 
 class ProducerFilter(FilterOptions):
