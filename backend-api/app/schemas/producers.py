@@ -1,4 +1,5 @@
 from datetime import date, datetime
+from enum import Enum
 from pydantic import BaseModel
 
 
@@ -24,20 +25,43 @@ class ProducerUpdate(ProducerBase):
     pass
 
 
-GENDERS = ["Male", "Female", "Other"]
+class Genders(Enum):
+    Male = "Male"
+    Female = "Female"
+    Other = "Other"
 
-ETHNICITIES = [
-    "American Indian or Alaskan Native",
-    "Asian/Pacific Islander",
-    "Black or African American",
-    "Hispanic",
-    "White/Caucasian",
-    "Other",
-]
 
-MARITAL_STATUSES = ["Single", "Married", "Divorced", "Widowed"]
+GENDERS = [gender.value for gender in Genders]
 
-PARENTAL_STATUSES = ["Parent", "Not Parent"]
+
+class Ethnicities(Enum):
+    American_Indian_or_Alaskan_Native = "American Indian or Alaskan Native"
+    Asian_Pacific_Islander = "Asian/Pacific Islander"
+    Black_or_African_American = "Black or African American"
+    Hispanic = "Hispanic"
+    White_Caucasian = "White/Caucasian"
+    Other = "Other"
+
+
+ETHNICITIES = [ethnicity.value for ethnicity in Ethnicities]
+
+
+class MaritalStatuses(Enum):
+    Single = "Single"
+    Married = "Married"
+    Divorced = "Divorced"
+    Widowed = "Widowed"
+
+
+MARITAL_STATUSES = [marital_status.value for marital_status in MaritalStatuses]
+
+
+class ParentalStatuses(Enum):
+    Parent = "Parent"
+    Not_Parent = "Not Parent"
+
+
+PARENTAL_STATUSES = [parental_status.value for parental_status in ParentalStatuses]
 
 
 class FilterOptions(BaseModel):
@@ -53,6 +77,16 @@ class ProducerFilter(FilterOptions):
     max_age: int | None
     min_income: int | None
     max_income: int | None
+
+
+class ProducerSearchResults(BaseModel):
+    totalResults: int
+    genders: dict[str, int]
+    ethnicities: dict[str, int]
+    maritalStatuses: dict[str, int]
+    parentalStatuses: dict[str, int]
+    incomes: dict[str, int]
+    ages: dict[str, int]
 
 
 class VisitedSite(BaseModel):
