@@ -1,7 +1,13 @@
 import { FC, ReactNode } from "react";
 import { useNavigate } from "react-router-dom";
 import { Box } from "@mui/material";
-import { Visibility, ShoppingCart, Person, Logout } from "@mui/icons-material";
+import {
+  Visibility,
+  ShoppingCart,
+  Person,
+  Wallet,
+  Logout,
+} from "@mui/icons-material";
 
 import { Page } from "../types";
 import backendService from "../services/backend-service";
@@ -27,6 +33,11 @@ const Layout: FC<{ children: ReactNode }> = ({ children }) => {
       text: Page.Profile,
       element: <Person />,
       href: "/profile",
+    },
+    {
+      text: Page.Wallet,
+      element: <Wallet />,
+      href: "/wallet",
     },
     {
       text: "Logout",

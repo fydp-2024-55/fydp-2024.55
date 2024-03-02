@@ -1,4 +1,4 @@
-import React, { useContext, useState, useEffect } from "react";
+import { FC, useContext, useState, useEffect } from "react";
 import {
   Box,
   Table,
@@ -110,7 +110,7 @@ const mockSubscriptions: Subscription[] = [
   },
 ];
 
-const Subscriptions: React.FC = () => {
+const Subscriptions: FC = () => {
   const { account } = useContext(AppContext);
 
   const [subscriptions, setSubscriptions] =

@@ -15,7 +15,7 @@ import {
   Paper,
   Avatar,
 } from "@mui/material";
-import WalletIcon from "@mui/icons-material/Wallet";
+import { Wallet } from "@mui/icons-material";
 
 import AppContext from "../contexts/AppContext";
 import backendService from "../services/backend-service";
@@ -69,7 +69,7 @@ const WalletSetup: React.FC = () => {
             }}
           >
             <Avatar sx={{ m: 1, bgcolor: "secondary.main" }}>
-              <WalletIcon />
+              <Wallet />
             </Avatar>
             <Typography
               component="h1"

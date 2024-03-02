@@ -37,12 +37,6 @@ const Profile: FC = () => {
         >
           <Typography sx={{ m: 2 }}>
             <Box fontWeight="fontWeightMedium" display="inline">
-              Wallet Address:
-            </Box>{" "}
-            {account?.ethAddress}
-          </Typography>
-          <Typography sx={{ m: 2 }}>
-            <Box fontWeight="fontWeightMedium" display="inline">
               Email:
             </Box>{" "}
             {account?.email}
