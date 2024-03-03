@@ -40,7 +40,10 @@ const WalletSetup: React.FC = () => {
     event.preventDefault();
     try {
       if (walletOption === "create") {
+        // Create a new wallet for the user
         const wallet = await backendService.createWallet();
+        // Create a consumer instance for the user
+        await backendService.createConsumer();
         setAccount({ ...account, ethAddress: wallet.ethAddress });
       } else {
         await backendService.updateWallet(ethAddress, privateKey);

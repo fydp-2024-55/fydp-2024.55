@@ -30,9 +30,6 @@ const SignUp: FC = () => {
       await backendService.logIn(email, password);
       setIsAuthenticated(true);
 
-      // Create a consumer instance for the new user
-      await backendService.createConsumer();
-
       // Set the user's account information
       const account = await backendService.getUser();
       setAccount(account);
