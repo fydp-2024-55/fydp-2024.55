@@ -32,6 +32,12 @@ async def create_consumer(
             status_code=status.HTTP_400_BAD_REQUEST, detail="User is already a consumer"
         )
 
+    if not user.eth_address:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="User does not have a wallet",
+        )
+
     await ops.create_consumer(db, user)
     return await read_consumer(db, user)
 
@@ -88,16 +94,7 @@ async def create_subscriptions(
             detail="Failed to purchase the tokens",
         )
 
-    try:
-        subscriptions = consumer_subscriptions(
-            request.app.state.eth_client, user.eth_address
-        )
-        return SubscriptionRead(subscriptions=subscriptions)
-    except Exception:
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Failed to retrieve subscriptions",
-        )
+    return await read_subscriptions(request, user)
 
 
 @router.get(

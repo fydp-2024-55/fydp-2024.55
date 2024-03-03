@@ -71,8 +71,10 @@ async def get_producer_countries(db: AsyncSession):
     return [country for country in countries]
 
 
-async def get_producer_counts_by_filter(db: AsyncSession, filter: ProducerFilter):
-    query = sa.select(Producer)
+async def get_producers_by_filter(db: AsyncSession, filter: ProducerFilter):
+    query = sa.select(Producer, User.eth_address).outerjoin(
+        User, Producer.user_id == User.id
+    )
 
     # TODO: Add filtering for age
     if filter.min_income:
@@ -92,11 +94,11 @@ async def get_producer_counts_by_filter(db: AsyncSession, filter: ProducerFilter
 
     # Execute the subquery to retrieve filtered producers
     result = await db.execute(query)
-    producers = result.scalars().all()
+    producers = result.all()
 
     # Calculate counts based on filtered producers
     counts = {
-        "totalResults": 0,
+        "ethAddresses": [],
         "genders": {Genders.Male.value: 0, Genders.Female.value: 0},
         "ethnicities": {
             Ethnicities.American_Indian_or_Alaskan_Native.value: 0,
@@ -136,61 +138,55 @@ async def get_producer_counts_by_filter(db: AsyncSession, filter: ProducerFilter
     }
 
     # Iterate through filtered producers to update counts
-    for producer in producers:
-        counts["totalResults"] += 1
+    for producer, eth_address in producers:
+        if not (
+            eth_address
+            and producer.gender
+            and producer.ethnicity
+            and producer.country
+            and producer.marital_status
+            and producer.parental_status
+            and producer.income
+            and producer.date_of_birth
+        ):
+            continue
 
-        gender = getattr(producer, "gender", None)
-        if gender:
-            counts["genders"][gender] += 1
+        counts["ethAddresses"].append(eth_address)
+        counts["genders"][producer.gender] += 1
+        counts["ethnicities"][producer.ethnicity] += 1
+        counts["countries"][producer.country] += 1
+        counts["maritalStatuses"][producer.marital_status] += 1
+        counts["parentalStatuses"][producer.parental_status] += 1
 
-        ethnicity = getattr(producer, "ethnicity", None)
-        if ethnicity:
-            counts["ethnicities"][ethnicity] += 1
+        if producer.income < 25000:
+            counts["incomes"]["under25000"] += 1
+        elif producer.income < 50000:
+            counts["incomes"]["25000to50000"] += 1
+        elif producer.income < 75000:
+            counts["incomes"]["50000to75000"] += 1
+        elif producer.income < 100000:
+            counts["incomes"]["75000to100000"] += 1
+        else:
+            counts["incomes"]["over100000"] += 1
 
-        country = getattr(producer, "country", None)
-        if country:
-            counts["countries"][country] += 1
-
-        marital_status = getattr(producer, "marital_status", None)
-        if marital_status:
-            counts["maritalStatuses"][marital_status] += 1
-
-        parental_status = getattr(producer, "parental_status", None)
-        if parental_status:
-            counts["parentalStatuses"][parental_status] += 1
-
-        income = getattr(producer, "income", None)
-        if income:
-            if income < 25000:
-                counts["incomes"]["under25000"] += 1
-            elif income < 50000:
-                counts["incomes"]["25000to50000"] += 1
-            elif income < 75000:
-                counts["incomes"]["50000to75000"] += 1
-            elif income < 100000:
-                counts["incomes"]["75000to100000"] += 1
-            else:
-                counts["incomes"]["over100000"] += 1
-
-        date_of_birth = getattr(producer, "date_of_birth", None)
-        if date_of_birth:
-            age = (
-                datetime.now() - datetime.combine(date_of_birth, datetime.min.time())
-            ).days // 365
-            if age < 15:
-                counts["ages"]["under15"] += 1
-            elif age < 25:
-                counts["ages"]["15to24"] += 1
-            elif age < 35:
-                counts["ages"]["25to34"] += 1
-            elif age < 45:
-                counts["ages"]["35to44"] += 1
-            elif age < 55:
-                counts["ages"]["45to54"] += 1
-            elif age < 65:
-                counts["ages"]["55to64"] += 1
-            else:
-                counts["ages"]["over64"] += 1
+        age = (
+            datetime.now()
+            - datetime.combine(producer.date_of_birth, datetime.min.time())
+        ).days // 365
+        if age < 15:
+            counts["ages"]["under15"] += 1
+        elif age < 25:
+            counts["ages"]["15to24"] += 1
+        elif age < 35:
+            counts["ages"]["25to34"] += 1
+        elif age < 45:
+            counts["ages"]["35to44"] += 1
+        elif age < 55:
+            counts["ages"]["45to54"] += 1
+        elif age < 65:
+            counts["ages"]["55to64"] += 1
+        else:
+            counts["ages"]["over64"] += 1
 
     return counts
 

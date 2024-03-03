@@ -80,7 +80,7 @@ class ProducerFilter(FilterOptions):
 
 
 class ProducerSearchResults(BaseModel):
-    totalResults: int
+    ethAddresses: list[str]
     genders: dict[str, int]
     ethnicities: dict[str, int]
     countries: dict[str, int]

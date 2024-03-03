@@ -30,21 +30,6 @@ export interface Producer extends User {
   parentalStatus?: string;
 }
 
-export interface ProducerFilterOptions {
-  genders?: string[];
-  ethnicities?: string[];
-  countries?: string[];
-  maritalStatuses?: string[];
-  parentalStatuses?: string[];
-}
-
-export interface ProducerFilter extends ProducerFilterOptions {
-  minAge?: number;
-  maxAge?: number;
-  minIncome?: number;
-  maxIncome?: number;
-}
-
 export interface Wallet {
   ethAddress: string;
   balance: number;
@@ -65,8 +50,23 @@ export interface Subscription extends Producer {
   interests: Interest[];
 }
 
-export interface ProducerCounts {
-  totalResults: number;
+export interface ProducerFilterOptions {
+  genders?: string[];
+  ethnicities?: string[];
+  countries?: string[];
+  maritalStatuses?: string[];
+  parentalStatuses?: string[];
+}
+
+export interface ProducerFilter extends ProducerFilterOptions {
+  minAge?: number;
+  maxAge?: number;
+  minIncome?: number;
+  maxIncome?: number;
+}
+
+export interface ProducerResults {
+  ethAddresses: string[];
   genders: { [key: string]: number };
   ethnicities: { [key: string]: number };
   countries: { [key: string]: number };

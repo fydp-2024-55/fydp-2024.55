@@ -109,8 +109,8 @@ const WalletSetup: React.FC = () => {
                   <Grid item xs={12}>
                     <TextField
                       fullWidth
-                      id="eth-address"
-                      label="ETH Address"
+                      id="address"
+                      label="Address"
                       variant="outlined"
                       value={ethAddress}
                       onChange={(e) => setEthAddress(e.target.value)}

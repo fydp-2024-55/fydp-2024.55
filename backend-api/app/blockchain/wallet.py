@@ -1,15 +1,24 @@
 from eth_account import Account
-from web3 import types, middleware
+from web3 import middleware
 
 from .client import ETHClient
-from .constants import WALLET_ENTROPY
 
 
-def generate_account(eth_client: ETHClient, entropy: str = WALLET_ENTROPY) -> Account:
-    return eth_client.w3.eth.account.create(entropy)
+def generate_account(
+    eth_client: ETHClient,
+    idx: int,
+) -> str:
+    if idx == 0:
+        raise Exception("Cannot assign wallet with idx 0")
+
+    if idx >= 10:
+        raise Exception("Insufficient wallets available")
+
+    return eth_client.w3.eth.accounts[idx]
 
 
-def get_balance(eth_client: ETHClient, address: str) -> types.Wei:
+# Get balance of ETH address (in Wei)
+def get_balance(eth_client: ETHClient, address: str) -> int:
     return eth_client.w3.eth.get_balance(address)
 
 

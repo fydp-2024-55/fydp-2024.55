@@ -47,8 +47,7 @@ const Wallet: FC = () => {
             <Divider />
             <Box mt={2}>
               <Typography variant="body1" mb={1}>
-                <strong>ETH Address:</strong>{" "}
-                {account?.ethAddress || "Loading..."}
+                <strong>Address:</strong> {account?.ethAddress || "Loading..."}
               </Typography>
               <Typography variant="body1">
                 <strong>Balance:</strong>{" "}

@@ -40,7 +40,9 @@ async def read_user_wallet(
         )
 
     try:
-        balance = get_balance(request.app.state.eth_client, user.eth_address)
+        balance = (
+            get_balance(request.app.state.eth_client, user.eth_address) // 10**18
+        )  # Convert from Wei to Ether
         return WalletRead(eth_address=user.eth_address, balance=balance)
     except Exception:
         raise HTTPException(
@@ -62,9 +64,10 @@ async def create_user_wallet(
         )
 
     try:
-        account = generate_account(request.app.state.eth_client, user.email)
-        await ops.update_user_eth_address(db, account.address, user)
-        return WalletRead(eth_address=account.address, balance=0)
+        user_wallets_count = await ops.get_user_wallets_count(db)
+        address = generate_account(request.app.state.eth_client, user_wallets_count + 1)
+        await ops.update_user_eth_address(db, address, user)
+        return WalletRead(eth_address=address, balance=0)
     except Exception:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
@@ -126,11 +129,4 @@ async def update_user_wallet(
 
     await ops.update_user_eth_address(db, account.address, user)
 
-    try:
-        balance = get_balance(request.app.state.eth_client, account.address)
-        return WalletRead(eth_address=account.address, balance=balance)
-    except Exception:
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Failed to retrieve the wallet balance",
-        )
+    return await read_user_wallet(request, user)

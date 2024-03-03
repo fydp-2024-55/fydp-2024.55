@@ -11,3 +11,9 @@ async def update_user_eth_address(db: AsyncSession, eth_address: str, user: User
     )
     await db.execute(statement)
     await db.commit()
+
+
+async def get_user_wallets_count(db: AsyncSession):
+    statement = sa.select(sa.func.count(User.id)).where(User.eth_address != None)
+    result = await db.execute(statement)
+    return result.scalar()

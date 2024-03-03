@@ -15,8 +15,8 @@ import {
   InputAdornment,
 } from "@mui/material";
 
-import { ProducerFilter, ProducerCounts } from "../types";
 import backendService from "../services/backend-service";
+import { ProducerFilter, ProducerResults } from "../types";
 import { camelCaseToHumanReadable } from "../utils/strings";
 import PageTemplate from "../components/PageTemplate";
 
@@ -39,7 +39,7 @@ const Purchase: React.FC = () => {
     maritalStatuses: [],
     parentalStatuses: [],
   });
-  const [counts, setCounts] = useState<ProducerCounts>();
+  const [producerResults, setProducerResults] = useState<ProducerResults>();
 
   const handleCheck = (checked: boolean, key: string, value: string) => {
     if (!filters) return;
@@ -52,14 +52,24 @@ const Purchase: React.FC = () => {
     });
   };
 
-  const handleSearch = async (event: React.FormEvent) => {
+  const handleSearch = async () => {
     if (!filters) return;
     try {
-      const result = await backendService.getProducerCounts(filters);
-      setCounts(result);
+      const result = await backendService.getProducers(filters);
+      setProducerResults(result);
     } catch (error) {
       console.error(error);
     }
+  };
+
+  const handlePurchase = async () => {
+    if (!producerResults || !producerResults.ethAddresses) return;
+    console.log(producerResults.ethAddresses);
+    // try {
+    //   await backendService.createSubscriptions(producerResults.ethAddresses);
+    // } catch (error) {
+    //   console.error(error);
+    // }
   };
 
   const fetchFilterCriteria = async () => {
@@ -113,7 +123,7 @@ const Purchase: React.FC = () => {
 
   return (
     <PageTemplate>
-      {counts ? (
+      {producerResults ? (
         <Box
           sx={{
             display: "flex",
@@ -140,7 +150,7 @@ const Purchase: React.FC = () => {
               </TableHead>
               <TableBody>
                 <TableRow>
-                  <TableCell>{counts.totalResults}</TableCell>
+                  <TableCell>{producerResults.ethAddresses.length}</TableCell>
                   {[
                     "genders",
                     "ethnicities",
@@ -151,8 +161,8 @@ const Purchase: React.FC = () => {
                     "parentalStatuses",
                   ].map((key) => (
                     <TableCell key={key}>
-                      {(counts as any)[key] &&
-                        Object.entries((counts as any)[key]).map(
+                      {(producerResults as any)[key] &&
+                        Object.entries((producerResults as any)[key]).map(
                           ([subKey, value]) => (
                             <div key={subKey}>
                               <Box
@@ -173,7 +183,11 @@ const Purchase: React.FC = () => {
               </TableBody>
             </Table>
           </TableContainer>
-          <Button variant="contained" sx={{ width: 200 }} onClick={() => {}}>
+          <Button
+            variant="contained"
+            sx={{ width: 200 }}
+            onClick={handlePurchase}
+          >
             Purchase
           </Button>
         </Box>
