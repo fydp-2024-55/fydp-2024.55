@@ -3,12 +3,14 @@ from dotenv import load_dotenv
 from openai import OpenAI
 import requests
 from bs4 import BeautifulSoup
+from urllib.parse import urlparse
 
 load_dotenv()
 client = OpenAI()
 
 
 def get_category(website: str, enabled_categories: List[str]):
+    domain = urlparse(website).netloc
     response = requests.get(website)
     soup = BeautifulSoup(response.text, "html.parser")
     soup = soup.prettify()
@@ -50,7 +52,7 @@ def get_category(website: str, enabled_categories: List[str]):
         pass
 
     website_information_for_classification = (
-        title + headings + nav_bar + other_information
+        "domain: " + domain + " " + title + headings + nav_bar + other_information
     )
 
     QUERY = (
