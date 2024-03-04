@@ -19,45 +19,45 @@ chrome.tabs.onCreated.addListener((tab) => {
     tab.url !== "about:blank" &&
     !tab.url.startsWith("chrome://")
   ) {
-    openTabs[tab.id] = { url: tab.url, openedAt: Date.now() };
+    openTabs[tab.id] = [{ url: tab.url, openedAt: Date.now(), duration: 0 }];
   }
 });
 
 // Track closed tabs
 chrome.tabs.onRemoved.addListener(async (tabId) => {
   if (openTabs[tabId]) {
-    const tabs = openTabs[tabId];
+    const idx = openTabs[tabId].length - 1;
+    const prev = openTabs[tabId][idx];
+    prev.duration = Math.round((Date.now() - prev.openedAt) / 1000);
+    const visitedSites = openTabs[tabId].map(({ url, duration }) => ({
+      url,
+      duration,
+    }));
+    delete openTabs[tabId];
 
     const results = await chrome.storage.local.get(AuthTokenKey);
     const token = results[AuthTokenKey];
 
     if (token) {
-      tabs.forEach(async (tab) => {
-        const response = await fetch(
-          "http://localhost:8000/producers/me/interests",
-          {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${token}`,
-            },
-            body: JSON.stringify([
-              {
-                url: tab.url,
-                duration: Math.round((Date.now() - tab.openedAt) / 1000),
-              },
-            ]),
-          }
-        );
-
-        if (!response.ok) {
-          throw new Error(
-            `Network response was not ok, status: ${response.status}`
-          );
+      const response = await fetch(
+        "http://localhost:8000/producers/me/interests",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify(visitedSites),
         }
-      });
+      );
+
+      if (!response.ok) {
+        console.log("Error: ", response.message);
+        throw new Error(
+          `Network response was not ok, status: ${response.status}`
+        );
+      }
     }
-    delete openTabs[tabId];
   }
 });
 
@@ -68,7 +68,7 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo) => {
     changeInfo.url !== "about:blank" &&
     !changeInfo.url.startsWith("chrome://")
   ) {
-    obj = { url: changeInfo.url, openedAt: Date.now() };
+    obj = { url: changeInfo.url, openedAt: Date.now(), duration: 0 };
     // if tab is new, initialize with array
     if (!openTabs.hasOwnProperty(tabId)) {
       openTabs[tabId] = [obj];
@@ -76,10 +76,7 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo) => {
       // access last object and we get the closing time
       const idx = openTabs[tabId].length - 1;
       const prev = openTabs[tabId][idx];
-      const time_spent = Date.now() - openTabs[tabId][idx].openedAt;
-      prev.time_spent = time_spent;
-      // insert into previous
-      openTabs[tabId][idx] = prev;
+      prev.duration = Math.round((Date.now() - prev.openedAt) / 1000);
       // add new object
       openTabs[tabId].push(obj);
     }
