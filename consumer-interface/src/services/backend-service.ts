@@ -87,7 +87,9 @@ const backendService = {
   },
 
   getUserByEthAddress: async (ethAddress: string) => {
-    const response = await apiClient.get<User>(`/users/eth/${ethAddress}`);
+    const response = await apiClient.get<User>(
+      `/users/eth-address/${ethAddress}`
+    );
     return response.data;
   },
 
@@ -153,7 +155,9 @@ const backendService = {
   },
 
   getProducerByEthAddress: async (ethAddress: string) => {
-    const response = await apiClient.get<Producer>(`/producers/${ethAddress}`);
+    const response = await apiClient.get<Producer>(
+      `/producers/eth-address/${ethAddress}`
+    );
     return response.data;
   },
 

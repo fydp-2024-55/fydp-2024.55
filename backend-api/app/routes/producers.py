@@ -112,7 +112,9 @@ async def get_producer_filter_options(
 
 
 @router.get(
-    "/{eth_address}", status_code=status.HTTP_200_OK, response_model=ProducerRead
+    "/eth-address/{eth_address}",
+    status_code=status.HTTP_200_OK,
+    response_model=ProducerRead,
 )
 async def read_producer_by_eth_address(
     eth_address: str,

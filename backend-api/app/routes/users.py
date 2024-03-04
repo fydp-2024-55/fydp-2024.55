@@ -130,7 +130,9 @@ async def create_user_wallet(
 
 
 @router.get(
-    "/eth/{eth_address}", status_code=status.HTTP_200_OK, response_model=UserRead
+    "/eth-address/{eth_address}",
+    status_code=status.HTTP_200_OK,
+    response_model=UserRead,
 )
 async def read_user_by_eth_address(
     eth_address: str,
