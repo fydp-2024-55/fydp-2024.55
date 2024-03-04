@@ -64,7 +64,7 @@ const SubscriptionRow: FC<{ subscription: SubscriptionResult }> = ({
                   <TableHead>
                     <TableRow>
                       <TableCell align="center">Category</TableCell>
-                      <TableCell align="center">Time Spent (seconds)</TableCell>
+                      <TableCell align="center">Duration (seconds)</TableCell>
                     </TableRow>
                   </TableHead>
                   <TableBody>
