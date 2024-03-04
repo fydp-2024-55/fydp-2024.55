@@ -82,6 +82,7 @@ const PermanentDrawer: React.FC<PermanentDrawerProps> = ({
             flexDirection: "column",
             justifyContent: "space-between",
             height: "100vh",
+            backgroundColor: "#f5f5f5",
           }}
         >
           <Box>

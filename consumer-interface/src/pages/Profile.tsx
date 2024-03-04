@@ -52,7 +52,7 @@ const Profile: FC = () => {
               alignItems="center"
               justifyContent="center"
             >
-              <Typography variant="h4" gutterBottom sx={{ mb: 4 }}>
+              <Typography variant="h4" gutterBottom sx={{ mb: 5 }}>
                 Profile
               </Typography>
               <Box
@@ -136,14 +136,14 @@ const Profile: FC = () => {
                   <Button
                     variant="contained"
                     type="submit"
-                    sx={{ mr: 1 }}
+                    sx={{ mr: 1, width: "150px" }}
                     onClick={handleSubmit}
                   >
                     Submit
                   </Button>
                   <Button
                     variant="outlined"
-                    sx={{ ml: 1 }}
+                    sx={{ ml: 1, width: "150px" }}
                     onClick={() => setEditMode(false)}
                   >
                     Cancel
@@ -153,7 +153,7 @@ const Profile: FC = () => {
                 <Button
                   variant="contained"
                   onClick={() => setEditMode(true)}
-                  sx={{ mt: 4 }}
+                  sx={{ mt: 4, width: "150px" }}
                 >
                   Edit
                 </Button>

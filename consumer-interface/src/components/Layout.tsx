@@ -51,7 +51,7 @@ const Layout: FC<{ children: ReactNode }> = ({ children }) => {
   ];
 
   return (
-    <Box sx={{ display: "flex" }}>
+    <Box display="flex">
       <PermanentDrawer
         topDrawerItems={topDrawerItems}
         bottomDrawerItems={bottomDrawerItems}
