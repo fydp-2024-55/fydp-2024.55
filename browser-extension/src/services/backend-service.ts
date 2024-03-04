@@ -5,11 +5,13 @@ import {
   AuthState,
   AuthTokenKey,
   BearerToken,
-  Producer,
-  Wallet,
   Permissions,
+  Producer,
+  ProducerOptions,
+  Wallet,
 } from "../types";
 import storageService from "./storage-service";
+import { COUNTRIES } from "../utils/countries";
 
 const apiClient = applyCaseMiddleware(
   axios.create({
@@ -120,6 +122,14 @@ const backendService = {
       `/producers/me/permissions`,
       permissions
     );
+    return response.data;
+  },
+
+  getProfileOptions: async () => {
+    const response = await apiClient.get<ProducerOptions>(
+      `/producers/filter-options`
+    );
+    response.data.countries = COUNTRIES;
     return response.data;
   },
 };

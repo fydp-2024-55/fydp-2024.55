@@ -1,7 +1,12 @@
-import { Button, CircularProgress, TextField } from "@material-ui/core";
+import {
+  Button,
+  CircularProgress,
+  MenuItem,
+  TextField,
+} from "@material-ui/core";
 import { FC, useContext, useEffect, useState } from "react";
 import backendService from "../../services/backend-service";
-import { Producer } from "../../types";
+import { Producer, ProducerOptions } from "../../types";
 import AppContext from "../contexts/AppContext";
 
 const ProfileScreen: FC = () => {
@@ -9,9 +14,13 @@ const ProfileScreen: FC = () => {
 
   const [profile, setProfile] = useState<Producer>();
   const [shouldCreate, setShouldCreate] = useState(false);
+  const [options, setOptions] = useState<ProducerOptions>();
 
   const load = async () => {
     try {
+      const options = await backendService.getProfileOptions();
+      setOptions(options);
+
       const producer = await backendService.getProducer();
       setProfile(producer);
     } catch (error) {
@@ -61,12 +70,34 @@ const ProfileScreen: FC = () => {
     // eslint-disable-next-line
   }, []);
 
-  if (!profile) {
+  if (!profile || !options) {
     return <CircularProgress />;
   }
 
   const isValid = Object.keys(profile).every(
     (key) => profile[key as keyof Producer] !== null
+  );
+
+  const renderOptions = (
+    label: string,
+    producerKey: keyof Producer,
+    optionsKey: keyof ProducerOptions
+  ) => (
+    <TextField
+      label={label}
+      style={{ width: "85%", margin: "20px 0px" }}
+      variant="outlined"
+      fullWidth
+      value={profile[producerKey]}
+      onChange={(event) =>
+        setProfile({ ...profile, [producerKey]: event.target.value as string })
+      }
+      select
+    >
+      {options[optionsKey].map((option) => (
+        <MenuItem value={option}>{option}</MenuItem>
+      ))}
+    </TextField>
   );
 
   return (
@@ -80,22 +111,37 @@ const ProfileScreen: FC = () => {
         overflow: "auto",
       }}
     >
-      {Object.keys(profile) // TODO: Use appropriate input form
-        .map((key) => (
-          <TextField
-            key={key}
-            label={key}
-            style={{ width: "85%", margin: "20px 0px" }}
-            variant="outlined"
-            value={profile[key as keyof Producer]}
-            onChange={(event) =>
-              setProfile({
-                ...profile,
-                [key as keyof Producer]: event.target.value,
-              })
-            }
-          />
-        ))}
+      {renderOptions("Gender", "gender", "genders")}
+      {renderOptions("Ethnicity", "ethnicity", "ethnicities")}
+      {renderOptions("Country", "country", "countries")}
+      <TextField
+        label="Date of Birth"
+        style={{ width: "85%", margin: "20px 0px" }}
+        variant="outlined"
+        type="date"
+        value={profile.dateOfBirth}
+        onChange={(event) =>
+          setProfile({
+            ...profile,
+            dateOfBirth: event.target.value,
+          })
+        }
+      />
+      <TextField
+        label="Income"
+        style={{ width: "85%", margin: "20px 0px" }}
+        variant="outlined"
+        type="number"
+        value={profile.income}
+        onChange={(event) =>
+          setProfile({
+            ...profile,
+            income: parseInt(event.target.value),
+          })
+        }
+      />
+      {renderOptions("Marital Status", "maritalStatus", "maritalStatuses")}
+      {renderOptions("Parental Status", "parentalStatus", "parentalStatuses")}
 
       <div
         style={{

@@ -38,3 +38,11 @@ export interface BearerToken {
   accessToken: string;
   tokenType: string;
 }
+
+export interface ProducerOptions {
+  genders: string[];
+  ethnicities: string[];
+  countries: string[];
+  maritalStatuses: string[];
+  parentalStatuses: string[];
+}
