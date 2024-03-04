@@ -97,7 +97,8 @@ const Subscriptions: FC = () => {
                   <TableCell
                     colSpan={10}
                     align="center"
-                    style={{
+                    sx={{
+                      borderBottom: "none",
                       fontWeight: "bold",
                       fontSize: "1.2em",
                     }}

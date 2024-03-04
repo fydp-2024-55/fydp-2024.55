@@ -141,6 +141,7 @@ const Purchase: FC = () => {
         >
           <TableContainer
             component={Paper}
+            elevation={3}
             sx={{ my: 2, height: "60vh", maxWidth: "80vw" }}
           >
             <Table>
@@ -158,7 +159,13 @@ const Purchase: FC = () => {
               </TableHead>
               <TableBody>
                 <TableRow>
-                  <TableCell>{producerResults.ethAddresses.length}</TableCell>
+                  <TableCell
+                    sx={{
+                      borderBottom: "none",
+                    }}
+                  >
+                    {producerResults.ethAddresses.length}
+                  </TableCell>
                   {[
                     "genders",
                     "ethnicities",
@@ -168,7 +175,12 @@ const Purchase: FC = () => {
                     "maritalStatuses",
                     "parentalStatuses",
                   ].map((key) => (
-                    <TableCell key={key}>
+                    <TableCell
+                      key={key}
+                      sx={{
+                        borderBottom: "none",
+                      }}
+                    >
                       {(producerResults as any)[key] &&
                         Object.entries((producerResults as any)[key]).map(
                           ([subKey, value]) => (
