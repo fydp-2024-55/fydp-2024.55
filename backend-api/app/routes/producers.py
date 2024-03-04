@@ -111,6 +111,23 @@ async def get_producer_filter_options(
     )
 
 
+@router.get(
+    "/{eth_address}", status_code=status.HTTP_200_OK, response_model=ProducerRead
+)
+async def read_producer_by_eth_address(
+    eth_address: str,
+    db: AsyncSession = Depends(get_async_session),
+):
+    producer = await ops.get_producer_by_eth_address(db, eth_address)
+    if not producer:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Producer not found",
+        )
+
+    return ProducerRead(**producer.__dict__)
+
+
 @router.post("/me", status_code=status.HTTP_201_CREATED, response_model=ProducerRead)
 async def create_producer(
     producer: ProducerCreate,

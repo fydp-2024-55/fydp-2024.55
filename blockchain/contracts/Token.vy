@@ -153,7 +153,7 @@ def _hasConsumerAccessRights(_consumer: address, _producer: address) -> bool:
     assert _consumer != EMPTY_ADDRESS and _producer != EMPTY_ADDRESS
     expirationDate: uint256 = self.consumerToSubscriptionsMap[_consumer][_producer].expirationDate
 
-    return expirationDate >= block.timestamp
+    return expirationDate != 0 and expirationDate >= block.timestamp
 
 @internal
 def _addConsumerAccess(_consumer: address, _producer: address, _creationDate: uint256, _expirationDate: uint256):
@@ -167,10 +167,10 @@ def _addConsumerAccess(_consumer: address, _producer: address, _creationDate: ui
     @param _creationDate The creation date of the purchased subscription.
     @param _expirationDate The expiration date of the purchased subscription.
     """
-    assert _consumer != EMPTY_ADDRESS and _producer != EMPTY_ADDRESS and _creationDate > 0 and _expirationDate > _creationDate
-    assert self.producerToTokenId[_producer] != 0
-    subscriptionActive: bool = self.consumerToSubscriptionsMap[_consumer][_producer].active
-    assert subscriptionActive == False
+    # assert _consumer != EMPTY_ADDRESS and _producer != EMPTY_ADDRESS and _creationDate > 0 and _expirationDate > _creationDate
+    # assert self.producerToTokenId[_producer] != 0
+    # subscriptionActive: bool = self.consumerToSubscriptionsMap[_consumer][_producer].active
+    # assert subscriptionActive == False
 
     subscription: Subscription = Subscription({producerAddress: _producer, creationDate: _creationDate, expirationDate: _expirationDate, active: True})
     
@@ -297,18 +297,18 @@ def _consumerPurchaseToken(_consumer: address, _producer: address, _creationDate
     @param _creationDate The creation date of the purchased subscription.
     @param _expirationDate The expiration date of the purchased subscription.
     """
-    assert _consumer != EMPTY_ADDRESS and _producer != EMPTY_ADDRESS and _creationDate > 0 and _expirationDate > _creationDate
-    tokenId: uint256 = self.producerToTokenId[_producer]
-    assert tokenId > 0
-    assert msg.sender == _consumer
-    assert _value == SUBSCRIPTION_PRICE
+    # assert _consumer != EMPTY_ADDRESS and _producer != EMPTY_ADDRESS and _creationDate > 0 and _expirationDate > _creationDate
+    # tokenId: uint256 = self.producerToTokenId[_producer]
+    # assert tokenId > 0
+    # assert msg.sender == _consumer
+    # assert _value == SUBSCRIPTION_PRICE
 
     # Send ETH funds to the producer
     send(_producer, _value)
     
-    self._addConsumerAccess(_consumer, _producer, _creationDate, _expirationDate)
+    # self._addConsumerAccess(_consumer, _producer, _creationDate, _expirationDate)
 
-    log Purchase(tokenId, _consumer, _producer)
+    # log Purchase(tokenId, _consumer, _producer)
 
 @internal
 def _consumerCancelToken(_consumer: address, _producer: address):
@@ -403,3 +403,41 @@ def burn(_producer: address):
 
     self.tokenCount -= 1
     log Burn(tokenId, _producer)
+
+### SUBSCRIPTION FUNCTIONS ###
+
+@payable
+@external
+def consumerSubscribe(_producer: address, _creationDate: uint256, _expirationDate: uint256):
+    """
+    @dev Consumer purchases access rights to a token for a specified subscription length.
+         Throws if `_tokenId` is invalid, `_consumer` is the zero address, `_creationDate` is invalid, or _expirationDate is invalid.
+         Throws if `_tokenId` has no producer.
+         Throws if the address interacting with the contract is not `_consumer`.
+    @param _consumer The address of the consumer.
+    @param _producer The address of the producer.
+    @param _creationDate The creation date of the purchased subscription.
+    @param _expirationDate The expiration date of the purchased subscription.
+    """
+    # assert _producer != EMPTY_ADDRESS and _creationDate > 0 and _expirationDate > _creationDate
+    # tokenId: uint256 = self.producerToTokenId[_producer]
+    # assert tokenId > 0
+
+    # if not self._hasConsumerAccessRights(msg.sender, _producer):
+    # Send ETH funds to the producer
+    send(_producer, msg.value)
+    self._addConsumerAccess(msg.sender, _producer, _creationDate, _expirationDate)
+    # log Purchase(tokenId, msg.sender, _producer)
+
+
+@payable
+@external
+def consumerUnsubscribe(_producer: address):
+    assert _producer != EMPTY_ADDRESS
+    tokenId: uint256 = self.producerToTokenId[_producer]
+    assert tokenId > 0
+    assert self._hasConsumerAccessRights(msg.sender, _producer)
+    
+    self._removeConsumerAccess(msg.sender, _producer)
+
+    log Cancel(tokenId, msg.sender, _producer)

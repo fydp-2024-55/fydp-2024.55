@@ -11,7 +11,7 @@ def consumer_subscriptions(token_contract, test_consumer) -> list[dict[str, any]
     subscriptions = token_contract.consumerSubscriptions(test_consumer)
     return [
         {
-            "producer_eth_address": subscription[0],
+            "eth_address": subscription[0],
             "creation_date": subscription[1],
             "expiration_date": subscription[2],
             "active": subscription[3],

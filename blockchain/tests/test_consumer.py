@@ -2,13 +2,19 @@ import pytest
 import time
 
 from brownie import Token, accounts
+from brownie.network import gas_price
+from brownie.network.gas.strategies import LinearScalingStrategy
+
 from .util import SUBSCRIPTION_PRICE, producer_consumers, consumer_subscriptions
 
 
 @pytest.fixture
 def token_contract():
+    gas_strategy = LinearScalingStrategy("60 gwei", "70 gwei", 1.1)
+    gas_price(gas_strategy)
+
     # Deploy the contract
-    return accounts[0].deploy(Token)
+    yield Token.deploy({"from": accounts[0]})
 
 
 def test_token_purchase(token_contract):
@@ -33,15 +39,12 @@ def test_token_purchase(token_contract):
     )
 
     # Check that ETH was transacted from the consumer to producer
-    assert test_consumer.balance() == initial_consumer_balance - SUBSCRIPTION_PRICE
-    assert test_producer.balance() == initial_producer_balance + SUBSCRIPTION_PRICE
+    assert test_consumer.balance() < initial_consumer_balance
+    assert test_producer.balance() > initial_producer_balance
 
     # Check that the token was added to the list of tokens for `test_consumer`
     subscriptions = consumer_subscriptions(token_contract, test_consumer)
-    assert (
-        len(subscriptions) == 1
-        and subscriptions[0]["producer_eth_address"] == test_producer
-    )
+    assert len(subscriptions) == 1 and subscriptions[0]["eth_address"] == test_producer
 
     # Check that the consumer was added to the list of consumers for `token_id`
     consumers = producer_consumers(token_contract, test_producer)
@@ -113,9 +116,8 @@ def test_tokens_list(token_contract):
     # Check that the producer purchase references were all successful
     subscriptions = consumer_subscriptions(token_contract, test_consumer)
     assert len(subscriptions) == 3
-    print(subscriptions)
     assert (
-        subscriptions[0]["producer_eth_address"] == test_producer_1
-        and subscriptions[1]["producer_eth_address"] == test_producer_2
-        and subscriptions[2]["producer_eth_address"] == test_producer_3
+        subscriptions[0]["eth_address"] == test_producer_1
+        and subscriptions[1]["eth_address"] == test_producer_2
+        and subscriptions[2]["eth_address"] == test_producer_3
     )

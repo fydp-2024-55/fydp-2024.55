@@ -5,18 +5,15 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from ..blockchain.permissions import consumer_subscriptions
 from ..blockchain.subscription import (
-    consumer_purchase_tokens,
-    consumer_unsubscribe_tokens,
+    consumer_subscribe,
+    consumer_unsubscribe,
 )
 from ..dependencies import get_async_session, get_current_active_user, get_user_manager
 from ..managers import UserManager
 from ..models.users import User
 from ..ops import consumers as ops
 from ..schemas.consumers import ConsumerRead
-from ..schemas.subscriptions import (
-    SubscriptionCreate,
-    SubscriptionRead,
-)
+from ..schemas.subscriptions import SubscriptionCreate, SubscriptionItem
 from ..utils.date import date_to_epoch
 
 router = APIRouter()
@@ -64,7 +61,7 @@ async def delete_consumer(
 @router.post(
     "/me/subscriptions",
     status_code=status.HTTP_201_CREATED,
-    response_model=SubscriptionRead,
+    response_model=list[SubscriptionItem],
 )
 async def create_subscriptions(
     subscriptions: SubscriptionCreate,
@@ -73,20 +70,19 @@ async def create_subscriptions(
 ):
     # Check for a valid expiration date
     current_date = datetime.now().date()
-    expiration_date = subscriptions.expiration_date
-    if expiration_date <= current_date:
+    if subscriptions.expiration_date <= current_date:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST, detail="Invalid expiration date"
         )
 
     try:
         # Perform the token purchases through the smart contract
-        consumer_purchase_tokens(
+        consumer_subscribe(
             request.app.state.eth_client,
             user.eth_address,
-            subscriptions.producer_eth_addresses,
+            subscriptions.eth_addresses,
             date_to_epoch(current_date),
-            date_to_epoch(expiration_date),
+            date_to_epoch(subscriptions.expiration_date),
         )
     except Exception:
         raise HTTPException(
@@ -98,7 +94,9 @@ async def create_subscriptions(
 
 
 @router.get(
-    "/me/subscriptions", status_code=status.HTTP_200_OK, response_model=SubscriptionRead
+    "/me/subscriptions",
+    status_code=status.HTTP_200_OK,
+    response_model=list[SubscriptionItem],
 )
 async def read_subscriptions(
     request: Request,
@@ -108,7 +106,10 @@ async def read_subscriptions(
         subscriptions = consumer_subscriptions(
             request.app.state.eth_client, user.eth_address
         )
-        return SubscriptionRead(subscriptions=subscriptions)
+        response = []
+        for subscription in subscriptions:
+            response.append(SubscriptionItem(**subscription))
+        return response
     except Exception:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
@@ -126,9 +127,7 @@ async def unsubscribe_from_producers(
     user: User = Depends(get_current_active_user),
 ):
     try:
-        consumer_unsubscribe_tokens(
-            request.app.state.eth_client, user.eth_address, producers
-        )
+        consumer_unsubscribe(request.app.state.eth_client, user.eth_address, producers)
     except Exception:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,

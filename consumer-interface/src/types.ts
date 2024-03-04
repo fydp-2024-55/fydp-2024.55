@@ -39,15 +39,15 @@ export interface Permissions {
   [key: string]: boolean;
 }
 
+export interface Consumer extends User {}
+
 export interface Interest {
   category: string;
   timeSpent: number;
 }
 
-export interface Consumer extends User {}
-
-export interface Subscription extends Producer {
-  interests: Interest[];
+export interface SubscriptionResult extends Producer {
+  interests?: Interest[];
 }
 
 export interface ProducerFilterOptions {
@@ -74,4 +74,16 @@ export interface ProducerResults {
   parentalStatuses: { [key: string]: number };
   incomes: { [key: string]: number };
   ages: { [key: string]: number };
+}
+
+export interface SubscriptionCreate {
+  ethAddresses: string[];
+  expirationDate: string;
+}
+
+export interface SubscriptionItem {
+  ethAddress: string;
+  creationDate: string;
+  expirationDate: string;
+  active: boolean;
 }

@@ -1,37 +1,30 @@
-from eth_account import Account
-from web3 import middleware
+from eth_account.signers.local import LocalAccount
+from secrets import token_hex
+from web3.middleware import construct_sign_and_send_raw_middleware
 
 from .client import ETHClient
 
 
-def generate_account(
-    eth_client: ETHClient,
-    idx: int,
-) -> str:
-    if idx == 0:
-        raise Exception("Cannot assign wallet with idx 0")
+def generate_account(eth_client: ETHClient) -> LocalAccount:
+    # Create account from private key
+    account = eth_client.w3.eth.account.from_key(token_hex(32))
 
-    if idx >= 10:
-        raise Exception("Insufficient wallets available")
+    # Fund the new account with 100 ETH
+    eth_client.w3.eth.send_transaction(
+        {
+            "from": eth_client.minter,
+            "nonce": eth_client.w3.eth.get_transaction_count(eth_client.minter),
+            "value": eth_client.w3.to_wei(10, "ether"),
+            "to": account.address,
+        }
+    )
 
-    return eth_client.w3.eth.accounts[idx]
+    # Add account as auto-signer
+    eth_client.w3.middleware_onion.add(construct_sign_and_send_raw_middleware(account))
+
+    return account
 
 
 # Get balance of ETH address (in Wei)
 def get_balance(eth_client: ETHClient, address: str) -> int:
     return eth_client.w3.eth.get_balance(address)
-
-
-def get_account_from_private_key(eth_client: ETHClient, private_key: str) -> Account:
-    if not private_key.startswith("0x"):
-        raise Exception("Invalid private key")
-
-    account = eth_client.w3.eth.account.from_key(private_key)
-    if not account:
-        return None
-
-    eth_client.w3.middleware_onion.add(
-        middleware.construct_sign_and_send_raw_middleware(account)
-    )
-
-    return account

@@ -23,6 +23,7 @@ class ETHClient:
 
         # Set the token minter
         self.minter: str = self.w3.eth.accounts[0]
+        self.w3.eth.default_account = self.minter
 
         # Compile the contract
         bytecode = subprocess.getoutput(f"vyper {contract_path}")

@@ -7,9 +7,12 @@ import {
   User,
   Wallet,
   Consumer,
+  Producer,
   ProducerFilterOptions,
   ProducerFilter,
   ProducerResults,
+  SubscriptionCreate,
+  SubscriptionItem,
 } from "../types";
 
 const apiClient = applyCaseMiddleware(
@@ -83,6 +86,11 @@ const backendService = {
     return response.data;
   },
 
+  getUserByEthAddress: async (ethAddress: string) => {
+    const response = await apiClient.get<User>(`/users/eth/${ethAddress}`);
+    return response.data;
+  },
+
   updateUser: async (email?: string, password?: string) => {
     const response = await apiClient.patch<User>(`/users/me`, {
       email,
@@ -123,23 +131,31 @@ const backendService = {
     await apiClient.delete(`/consumers/me`);
   },
 
-  // getSubscriptions: async () => {
-  //   const response = await apiClient.get<Producer[]>(
-  //     `/consumers/me/subscriptions`
-  //   );
-  //   return response.data;
-  // },
+  getSubscriptions: async () => {
+    const response = await apiClient.get<SubscriptionItem[]>(
+      `/consumers/me/subscriptions`
+    );
+    return response.data;
+  },
 
-  // createSubscriptions: async () => {
-  //   const response = await apiClient.post<Producer[]>(
-  //     `/consumers/me/subscriptions`
-  //   );
-  //   return response.data;
-  // },
+  createSubscriptions: async (data: SubscriptionCreate) => {
+    const response = await apiClient.post<SubscriptionItem[]>(
+      `/consumers/me/subscriptions`,
+      data
+    );
+    return response.data;
+  },
 
-  // deleteSubscriptions: async () => {
-  //   await apiClient.delete(`/consumers/me/subscriptions`);
-  // },
+  deleteSubscriptions: async (ethAddresses: string[]) => {
+    await apiClient.delete(`/consumers/me/subscriptions`, {
+      data: { ethAddresses },
+    });
+  },
+
+  getProducerByEthAddress: async (ethAddress: string) => {
+    const response = await apiClient.get<Producer>(`/producers/${ethAddress}`);
+    return response.data;
+  },
 
   getProducerFilterOptions: async () => {
     const response = await apiClient.get<ProducerFilterOptions>(

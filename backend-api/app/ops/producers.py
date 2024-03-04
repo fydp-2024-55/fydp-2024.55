@@ -25,6 +25,14 @@ async def get_producer(db: AsyncSession, user: User):
     return result.scalar()
 
 
+async def get_producer_by_eth_address(db: AsyncSession, eth_address: str):
+    statement = sa.select(Producer).join(
+        User, Producer.user_id == User.id and User.eth_address == eth_address
+    )
+    result = await db.execute(statement)
+    return result.scalar()
+
+
 async def create_producer(db: AsyncSession, producer: ProducerCreate, user: User):
     statement = sa.insert(Producer).values(
         user_id=user.id,

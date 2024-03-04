@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from "react";
+import { FC, useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   Box,
   TableContainer,
@@ -30,7 +31,7 @@ export interface Row {
   key?: string;
 }
 
-const Purchase: React.FC = () => {
+const Purchase: FC = () => {
   const [criteria, setCriteria] = useState<Row[]>();
   const [filters, setFilters] = useState<ProducerFilter>({
     genders: [],
@@ -40,6 +41,8 @@ const Purchase: React.FC = () => {
     parentalStatuses: [],
   });
   const [producerResults, setProducerResults] = useState<ProducerResults>();
+
+  const navigate = useNavigate();
 
   const handleCheck = (checked: boolean, key: string, value: string) => {
     if (!filters) return;
@@ -64,12 +67,17 @@ const Purchase: React.FC = () => {
 
   const handlePurchase = async () => {
     if (!producerResults || !producerResults.ethAddresses) return;
-    console.log(producerResults.ethAddresses);
-    // try {
-    //   await backendService.createSubscriptions(producerResults.ethAddresses);
-    // } catch (error) {
-    //   console.error(error);
-    // }
+    try {
+      let tomorrow = new Date();
+      tomorrow.setDate(tomorrow.getDate() + 1);
+      await backendService.createSubscriptions({
+        ethAddresses: producerResults.ethAddresses,
+        expirationDate: tomorrow.toISOString().substring(0, 10), // TODO: Set expiration date
+      });
+      navigate("/");
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   const fetchFilterCriteria = async () => {
