@@ -35,6 +35,10 @@ const backendService = {
     }
   },
 
+  isNotFoundError: (error: any) => {
+    return axios.isAxiosError(error) && error.response?.status === 404;
+  },
+
   setToken: (token: string) => {
     apiClient.defaults.headers.common["Authorization"] = `Bearer ${token}`;
   },

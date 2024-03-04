@@ -21,15 +21,6 @@ const SignUpScreen: FC = () => {
       await backendService.register(email, password);
       await backendService.logIn(email, password);
       await backendService.createWallet();
-      await backendService.createProducer({
-        gender: null,
-        ethnicity: null,
-        dateOfBirth: null,
-        country: null,
-        income: null,
-        maritalStatus: null,
-        parentalStatus: null,
-      });
       setAuthState("authenticated");
     } catch (error) {
       backendService.handleError(error, setAuthState);
