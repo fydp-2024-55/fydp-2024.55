@@ -1,4 +1,4 @@
-from datetime import date, datetime
+from datetime import date
 from enum import Enum
 from pydantic import BaseModel
 
@@ -92,5 +92,4 @@ class ProducerSearchResults(BaseModel):
 
 class VisitedSite(BaseModel):
     url: str  # The url of the visited site
-    visited_time: datetime  # The time the site was visited
-    duration: int  # How long the site was visited for (in seconds)
+    duration: int  # How long the site was visited for (in sec)
