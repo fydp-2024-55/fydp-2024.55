@@ -14,7 +14,7 @@ def generate_account(eth_client: ETHClient) -> LocalAccount:
         {
             "from": eth_client.minter,
             "nonce": eth_client.w3.eth.get_transaction_count(eth_client.minter),
-            "value": eth_client.w3.to_wei(10, "ether"),
+            "value": eth_client.w3.to_wei(100, "ether"),
             "to": account.address,
         }
     )
@@ -25,6 +25,6 @@ def generate_account(eth_client: ETHClient) -> LocalAccount:
     return account
 
 
-# Get balance of ETH address (in Wei)
-def get_balance(eth_client: ETHClient, address: str) -> int:
-    return eth_client.w3.eth.get_balance(address)
+# Get balance of ETH address (in ETH)
+def get_balance(eth_client: ETHClient, address: str) -> float:
+    return eth_client.w3.from_wei(eth_client.w3.eth.get_balance(address), "ether")

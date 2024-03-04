@@ -52,7 +52,7 @@ const Wallet: FC = () => {
               <Typography variant="body1">
                 <strong>Balance:</strong>{" "}
                 {balance !== null ? (
-                  `${balance} Wei`
+                  `${balance} ETH`
                 ) : (
                   <CircularProgress size={16} />
                 )}

@@ -1,5 +1,4 @@
 from .client import ETHClient
-from .constants import SUBSCRIPTION_PRICE
 
 
 def consumer_subscribe(
@@ -9,7 +8,6 @@ def consumer_subscribe(
     creation_date: int,
     expiration_date: int,
 ):
-    print(consumer, producers, creation_date, expiration_date)
     for producer in producers:
         tx_hash = eth_client.token_contract.functions.consumerSubscribe(
             producer, creation_date, expiration_date
@@ -17,7 +15,7 @@ def consumer_subscribe(
             {
                 "from": consumer,
                 # "nonce": eth_client.w3.eth.get_transaction_count(consumer),
-                "value": eth_client.w3.to_wei(SUBSCRIPTION_PRICE, "ether"),
+                "value": eth_client.w3.to_wei(1, "ether"),  # Send 1 ETH
             },
         )
         eth_client.w3.eth.wait_for_transaction_receipt(tx_hash)

@@ -419,14 +419,15 @@ def consumerSubscribe(_producer: address, _creationDate: uint256, _expirationDat
     @param _creationDate The creation date of the purchased subscription.
     @param _expirationDate The expiration date of the purchased subscription.
     """
-    # assert _producer != EMPTY_ADDRESS and _creationDate > 0 and _expirationDate > _creationDate
-    # tokenId: uint256 = self.producerToTokenId[_producer]
-    # assert tokenId > 0
+    assert _producer != EMPTY_ADDRESS and _creationDate > 0 and _expirationDate > _creationDate
+    tokenId: uint256 = self.producerToTokenId[_producer]
+    assert tokenId > 0
 
-    # if not self._hasConsumerAccessRights(msg.sender, _producer):
-    # Send ETH funds to the producer
-    send(_producer, msg.value)
-    self._addConsumerAccess(msg.sender, _producer, _creationDate, _expirationDate)
+    if not self._hasConsumerAccessRights(msg.sender, _producer):
+        # Send ETH funds to the producer
+        send(_producer, msg.value)
+        self._addConsumerAccess(msg.sender, _producer, _creationDate, _expirationDate)
+
     # log Purchase(tokenId, msg.sender, _producer)
 
 
