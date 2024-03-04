@@ -58,6 +58,7 @@ const ProfileScreen: FC = () => {
 
   useEffect(() => {
     load();
+    // eslint-disable-next-line
   }, []);
 
   if (!profile) {
@@ -72,9 +73,10 @@ const ProfileScreen: FC = () => {
     <div
       style={{
         height: "100%",
-        width: "90%",
+        width: "100%",
         display: "flex",
         flexDirection: "column",
+        alignItems: "center",
         overflow: "auto",
       }}
     >
@@ -83,7 +85,7 @@ const ProfileScreen: FC = () => {
           <TextField
             key={key}
             label={key}
-            style={{ margin: 20 }}
+            style={{ width: "85%", margin: "20px 0px" }}
             variant="outlined"
             value={profile[key as keyof Producer]}
             onChange={(event) =>

@@ -46,13 +46,12 @@ const WalletScreen: FC = () => {
 
   useEffect(() => {
     load();
-    const interval = setInterval(() => {
-      load();
-    }, 10 * 60 * 1000); // 10 minutes
+    const interval = setInterval(load, 10 * 60 * 1000); // 10 minutes
 
     return () => {
       clearInterval(interval);
     };
+    // eslint-disable-next-line
   }, []);
 
   if (!wallet) {
@@ -63,7 +62,7 @@ const WalletScreen: FC = () => {
     <div
       style={{
         height: "100%",
-        width: "85%",
+        width: "100%",
         display: "flex",
         flexDirection: "column",
         justifyContent: "space-evenly",
@@ -76,7 +75,7 @@ const WalletScreen: FC = () => {
 
       <div
         style={{
-          width: "100%",
+          width: "85%",
           display: "flex",
           flexDirection: "column",
           gap: 20,

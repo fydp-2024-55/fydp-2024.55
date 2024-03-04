@@ -58,6 +58,7 @@ const PermissionsScreen: FC = () => {
 
   useEffect(() => {
     load();
+    // eslint-disable-next-line
   }, []);
 
   if (permissions === undefined) {
@@ -76,10 +77,11 @@ const PermissionsScreen: FC = () => {
     <div
       style={{
         height: "100%",
-        width: "90%",
+        width: "100%",
         display: "flex",
         flexDirection: "column",
-        overflowY: "scroll",
+        alignItems: "center",
+        overflow: "auto",
       }}
     >
       {Object.keys(permissions)
@@ -88,10 +90,11 @@ const PermissionsScreen: FC = () => {
           <div
             key={key}
             style={{
+              width: "85%",
               display: "flex",
               justifyContent: "space-between",
               alignItems: "center",
-              margin: 20,
+              margin: "20px 0px",
             }}
           >
             <Typography variant="body1">{getLabel(key)}</Typography>
