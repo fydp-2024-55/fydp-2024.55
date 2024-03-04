@@ -9,7 +9,7 @@ load_dotenv()
 client = OpenAI()
 
 
-def get_category(website: str, enabled_categories: List[str]):
+def get_interest_category(website: str, enabled_categories: List[str]):
     domain = urlparse(website).netloc
     response = requests.get(website)
     soup = BeautifulSoup(response.text, "html.parser")
@@ -57,7 +57,7 @@ def get_category(website: str, enabled_categories: List[str]):
 
     QUERY = (
         "You are a website classifier. You are categorizing websites into the categories of:"
-        "Shopping, Social Media, travel, entertainment, sports, animal, music, cuisine or beauty websites."
+        f"{', '.join(enabled_categories)}."
         "You will be given content from the HEAD request of the page as well as some of the content on the page"
         "and you will be determining what category it is. You will be provided some website content now."
         f"Answer me in either: {', '.join(enabled_categories)}"

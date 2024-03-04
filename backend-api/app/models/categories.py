@@ -3,7 +3,7 @@ import sqlalchemy as sa
 from ..database import Base
 
 
-class ProducerRestictedCategories(Base):
+class ProducerRestrictedCategories(Base):
     __tablename__ = "Producer_Restricted_Categories"
 
     id = sa.Column(sa.Integer, primary_key=True, nullable=False)
