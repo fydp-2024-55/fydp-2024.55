@@ -93,3 +93,8 @@ class ProducerSearchResults(BaseModel):
 class VisitedSite(BaseModel):
     url: str  # The url of the visited site
     duration: int  # How long the site was visited for (in sec)
+
+
+class Interest(BaseModel):
+    category: str
+    duration: int

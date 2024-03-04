@@ -21,6 +21,7 @@ from ..schemas.producers import (
     FilterOptions,
     ProducerSearchResults,
     VisitedSite,
+    Interest,
     GENDERS,
     ETHNICITIES,
     MARITAL_STATUSES,
@@ -92,43 +93,6 @@ async def read_producer_search_results(
 
     counts = await ops.get_producers_by_filter(db, filter)
     return ProducerSearchResults(**counts)
-
-
-@router.get(
-    "/filter-options",
-    status_code=status.HTTP_200_OK,
-    response_model=FilterOptions,
-)
-async def get_producer_filter_options(
-    db: AsyncSession = Depends(get_async_session),
-):
-    countries = await ops.get_producer_countries(db)
-    return FilterOptions(
-        genders=GENDERS,
-        ethnicities=ETHNICITIES,
-        marital_statuses=MARITAL_STATUSES,
-        parental_statuses=PARENTAL_STATUSES,
-        countries=countries,
-    )
-
-
-@router.get(
-    "/eth-address/{eth_address}",
-    status_code=status.HTTP_200_OK,
-    response_model=ProducerRead,
-)
-async def read_producer_by_eth_address(
-    eth_address: str,
-    db: AsyncSession = Depends(get_async_session),
-):
-    producer = await ops.get_producer_by_eth_address(db, eth_address)
-    if not producer:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="Producer not found",
-        )
-
-    return ProducerRead(**producer.__dict__)
 
 
 @router.post("/me", status_code=status.HTTP_201_CREATED, response_model=ProducerRead)
@@ -266,3 +230,63 @@ async def update_permissions(
     producer = await ops.get_producer(db, user)
     await ops.update_permissions(db, producer, permissions)
     return await read_permissions(db, user)
+
+
+@router.get(
+    "/filter-options",
+    status_code=status.HTTP_200_OK,
+    response_model=FilterOptions,
+)
+async def get_producer_filter_options(
+    db: AsyncSession = Depends(get_async_session),
+):
+    countries = await ops.get_producer_countries(db)
+    return FilterOptions(
+        genders=GENDERS,
+        ethnicities=ETHNICITIES,
+        marital_statuses=MARITAL_STATUSES,
+        parental_statuses=PARENTAL_STATUSES,
+        countries=countries,
+    )
+
+
+@router.get(
+    "/eth-address/{eth_address}",
+    status_code=status.HTTP_200_OK,
+    response_model=ProducerRead,
+)
+async def read_producer_by_eth_address(
+    eth_address: str,
+    db: AsyncSession = Depends(get_async_session),
+):
+    producer = await ops.get_producer_by_eth_address(db, eth_address)
+    if not producer:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Producer not found",
+        )
+
+    return ProducerRead(**producer.__dict__)
+
+
+@router.get(
+    "/eth-address/{eth_address}/interests",
+    status_code=status.HTTP_200_OK,
+    response_model=list[Interest],
+)
+async def read_producer_interests_by_eth_address(
+    eth_address: str,
+    db: AsyncSession = Depends(get_async_session),
+):
+    producer = await ops.get_producer_by_eth_address(db, eth_address)
+    if not producer:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Producer not found",
+        )
+
+    interests = await ops.get_interests(db, producer)
+    return [
+        Interest(category=str(category.title).lower(), duration=duration)
+        for category, duration in interests
+    ]

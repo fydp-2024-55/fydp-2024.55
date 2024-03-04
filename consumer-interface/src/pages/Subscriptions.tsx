@@ -128,7 +128,15 @@ const Subscriptions: FC = () => {
           const producer = await backendService.getProducerByEthAddress(
             subscription.ethAddress
           );
-          updatedSubscriptions.push({ email: user.email, ...producer }); // TODO: Add interests
+          const interests =
+            await backendService.getProducerInterestsByEthAddress(
+              subscription.ethAddress
+            );
+          updatedSubscriptions.push({
+            email: user.email,
+            interests: interests,
+            ...producer,
+          });
         }
         setSubscriptionResults(updatedSubscriptions);
       } catch (error) {

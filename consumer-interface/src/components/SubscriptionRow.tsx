@@ -74,7 +74,7 @@ const SubscriptionRow: FC<{ subscription: SubscriptionResult }> = ({
                           {interest.category}
                         </TableCell>
                         <TableCell align="center">
-                          {interest.timeSpent}
+                          {interest.duration}
                         </TableCell>
                       </TableRow>
                     ))}

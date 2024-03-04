@@ -15,7 +15,6 @@ export interface BearerToken {
 }
 
 export interface User {
-  id?: string;
   email?: string;
   ethAddress?: string;
 }
@@ -86,4 +85,9 @@ export interface SubscriptionItem {
   creationDate: string;
   expirationDate: string;
   active: boolean;
+}
+
+export interface Interest {
+  category: string;
+  duration: number; // in seconds
 }

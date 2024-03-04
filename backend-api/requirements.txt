@@ -7,4 +7,3 @@ vyper
 web3
 openai
 bs4
-urlparse

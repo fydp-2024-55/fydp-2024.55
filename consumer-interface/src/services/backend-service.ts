@@ -13,6 +13,7 @@ import {
   ProducerResults,
   SubscriptionCreate,
   SubscriptionItem,
+  Interest,
 } from "../types";
 
 const apiClient = applyCaseMiddleware(
@@ -157,6 +158,13 @@ const backendService = {
   getProducerByEthAddress: async (ethAddress: string) => {
     const response = await apiClient.get<Producer>(
       `/producers/eth-address/${ethAddress}`
+    );
+    return response.data;
+  },
+
+  getProducerInterestsByEthAddress: async (ethAddress: string) => {
+    const response = await apiClient.get<Interest[]>(
+      `/producers/eth-address/${ethAddress}/interests`
     );
     return response.data;
   },

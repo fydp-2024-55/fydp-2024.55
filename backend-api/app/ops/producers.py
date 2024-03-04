@@ -33,9 +33,7 @@ async def get_producer(db: AsyncSession, user: User):
 
 
 async def get_producer_by_eth_address(db: AsyncSession, eth_address: str):
-    statement = sa.select(Producer).join(
-        User, Producer.user_id == User.id and User.eth_address == eth_address
-    )
+    statement = sa.select(Producer).join(User).filter(User.eth_address == eth_address)
     result = await db.execute(statement)
     return result.scalar()
 
