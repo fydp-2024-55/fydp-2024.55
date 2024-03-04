@@ -1,4 +1,4 @@
-import React, { useContext, useState, useEffect } from "react";
+import { FC, useState, useEffect } from "react";
 import {
   Box,
   Table,
@@ -11,174 +11,45 @@ import {
   Button,
 } from "@mui/material";
 
-import { GlobalContext } from "../App";
-import SubscriptionRow from "../components/SubscriptionRow";
-import { Subscription } from "../types";
-import PageTemplate from "../components/PageTemplate";
+import backendService from "../services/backend-service";
+import { SubscriptionResult } from "../types";
 import { exportDataToCSV, exportDataToJSON } from "../utils/export";
+import SubscriptionRow from "../components/SubscriptionRow";
+import PageTemplate from "../components/PageTemplate";
 
-const mockSubscriptions: Subscription[] = [
-  {
-    name: "John Doe",
-    email: "johndoe@example.com",
-    gender: "Male",
-    ethnicity: "White/Caucasian",
-    dateOfBirth: "September 3 2001",
-    country: "United States",
-    income: 100000,
-    maritalStatus: "Single",
-    parentalStatus: "Parent",
-    history: [
-      {
-        url: "google.ca",
-        title: "Google",
-        visitTime: "December 23, 2023 10:00",
-        timeSpent: "1",
-      },
-      {
-        url: "facebook.ca",
-        title: "Facebook",
-        visitTime: "December 25, 2023 10:00",
-        timeSpent: "1",
-      },
-    ],
-  },
-  {
-    name: "John Doe",
-    email: "johndoe@example.com",
-    gender: "Male",
-    ethnicity: "White/Caucasian",
-    dateOfBirth: "September 3 2001",
-    country: "United States",
-    income: 100000,
-    maritalStatus: "Single",
-    parentalStatus: "Parent",
-    history: [
-      {
-        url: "google.ca",
-        title: "Google",
-        visitTime: "December 23, 2023 10:00",
-        timeSpent: "1",
-      },
-      {
-        url: "facebook.ca",
-        title: "Facebook",
-        visitTime: "December 25, 2023 10:00",
-        timeSpent: "1",
-      },
-    ],
-  },
-  {
-    name: "John Doe",
-    email: "johndoe@example.com",
-    gender: "Male",
-    ethnicity: "White/Caucasian",
-    dateOfBirth: "September 3 2001",
-    country: "United States",
-    income: 100000,
-    maritalStatus: "Single",
-    parentalStatus: "Parent",
-    history: [
-      {
-        url: "google.ca",
-        title: "Google",
-        visitTime: "December 23, 2023 10:00",
-        timeSpent: "1",
-      },
-      {
-        url: "facebook.ca",
-        title: "Facebook",
-        visitTime: "December 25, 2023 10:00",
-        timeSpent: "1",
-      },
-    ],
-  },
-  {
-    name: "John Doe",
-    email: "johndoe@example.com",
-    gender: "Male",
-    ethnicity: "White/Caucasian",
-    dateOfBirth: "September 3 2001",
-    country: "United States",
-    income: 100000,
-    maritalStatus: "Single",
-    parentalStatus: "Parent",
-    history: [
-      {
-        url: "google.ca",
-        title: "Google",
-        visitTime: "December 23, 2023 10:00",
-        timeSpent: "1",
-      },
-      {
-        url: "facebook.ca",
-        title: "Facebook",
-        visitTime: "December 25, 2023 10:00",
-        timeSpent: "1",
-      },
-    ],
-  },
-  {
-    name: "John Doe",
-    email: "johndoe@example.com",
-    gender: "Male",
-    ethnicity: "White/Caucasian",
-    dateOfBirth: "September 3 2001",
-    country: "United States",
-    income: 100000,
-    maritalStatus: "Single",
-    parentalStatus: "Parent",
-    history: [
-      {
-        url: "google.ca",
-        title: "Google",
-        visitTime: "December 23, 2023 10:00",
-        timeSpent: "1",
-      },
-      {
-        url: "facebook.ca",
-        title: "Facebook",
-        visitTime: "December 25, 2023 10:00",
-        timeSpent: "1",
-      },
-    ],
-  },
-  {
-    name: "John Doe",
-    email: "johndoe@example.com",
-    gender: "Male",
-    ethnicity: "White/Caucasian",
-    dateOfBirth: "September 3 2001",
-    country: "United States",
-    income: 100000,
-    maritalStatus: "Single",
-    parentalStatus: "Parent",
-    history: [
-      {
-        url: "google.ca",
-        title: "Google",
-        visitTime: "December 23, 2023 10:00",
-        timeSpent: "1",
-      },
-      {
-        url: "facebook.ca",
-        title: "Facebook",
-        visitTime: "December 25, 2023 10:00",
-        timeSpent: "1",
-      },
-    ],
-  },
-];
-
-const Subscriptions: React.FC = () => {
-  const { account } = useContext(GlobalContext);
-
-  const [subscriptions, setSubscriptions] =
-    useState<Subscription[]>(mockSubscriptions);
+const Subscriptions: FC = () => {
+  const [subscriptionResults, setSubscriptionResults] = useState<
+    SubscriptionResult[]
+  >([]);
 
   useEffect(() => {
-    // Get the user's subscriptions
-    setSubscriptions(mockSubscriptions);
+    const fetchSubscriptions = async () => {
+      try {
+        const subscriptions = (await backendService.getSubscriptions()) || [];
+        const updatedSubscriptions = [];
+        for (const subscription of subscriptions) {
+          const user = await backendService.getUserByEthAddress(
+            subscription.ethAddress
+          );
+          const producer = await backendService.getProducerByEthAddress(
+            subscription.ethAddress
+          );
+          const interests =
+            await backendService.getProducerInterestsByEthAddress(
+              subscription.ethAddress
+            );
+          updatedSubscriptions.push({
+            email: user.email,
+            interests: interests,
+            ...producer,
+          });
+        }
+        setSubscriptionResults(updatedSubscriptions);
+      } catch (error) {
+        console.error(error);
+      }
+    };
+    fetchSubscriptions();
   }, []);
 
   return (
@@ -188,27 +59,27 @@ const Subscriptions: React.FC = () => {
           <Button
             variant="contained"
             sx={{ m: 1 }}
-            onClick={() => exportDataToCSV(subscriptions)}
+            onClick={() => exportDataToCSV(subscriptionResults)}
           >
             Export to CSV
           </Button>
           <Button
             variant="contained"
             sx={{ m: 1 }}
-            onClick={() => exportDataToJSON(subscriptions)}
+            onClick={() => exportDataToJSON(subscriptionResults)}
           >
             Export to JSON
           </Button>
         </Box>
         <TableContainer
           component={Paper}
+          elevation={3}
           sx={{ my: 2, height: "60vh", maxWidth: "70vw" }}
         >
           <Table>
             <TableHead>
               <TableRow>
                 <TableCell />
-                <TableCell>Name</TableCell>
                 <TableCell>Email</TableCell>
                 <TableCell>Gender</TableCell>
                 <TableCell>Ethnicity</TableCell>
@@ -221,12 +92,28 @@ const Subscriptions: React.FC = () => {
               </TableRow>
             </TableHead>
             <TableBody>
-              {subscriptions.map((subscription) => (
-                <SubscriptionRow
-                  key={subscription.email}
-                  subscription={subscription}
-                />
-              ))}
+              {subscriptionResults.length === 0 ? (
+                <TableRow>
+                  <TableCell
+                    colSpan={10}
+                    align="center"
+                    sx={{
+                      borderBottom: "none",
+                      fontWeight: "bold",
+                      fontSize: "1.2em",
+                    }}
+                  >
+                    No subscriptions
+                  </TableCell>
+                </TableRow>
+              ) : (
+                subscriptionResults.map((subscription) => (
+                  <SubscriptionRow
+                    key={subscription.email}
+                    subscription={subscription}
+                  />
+                ))
+              )}
             </TableBody>
           </Table>
         </TableContainer>

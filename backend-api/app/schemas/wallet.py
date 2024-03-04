@@ -6,7 +6,7 @@ class WalletBase(BaseModel):
 
 
 class WalletRead(WalletBase):
-    balance: int
+    balance: float
 
 
 class WalletUpdate(WalletBase):

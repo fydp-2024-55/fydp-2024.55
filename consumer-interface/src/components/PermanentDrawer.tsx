@@ -1,18 +1,18 @@
-import React from "react";
+import { FC } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import {
   Box,
   Drawer,
   CssBaseline,
-  Toolbar,
   List,
-  Typography,
   Divider,
   ListItem,
   ListItemButton,
   ListItemIcon,
   ListItemText,
 } from "@mui/material";
+
+import ByteBucksLogo from "../images/bytebucks-logo.png";
 
 const drawerWidth = 200;
 
@@ -24,12 +24,11 @@ export interface DrawerItem {
 }
 
 export interface PermanentDrawerProps {
-  title: string;
   topDrawerItems: DrawerItem[];
   bottomDrawerItems: DrawerItem[];
 }
 
-const DrawerItemComponent: React.FC<DrawerItem> = ({
+const DrawerItemComponent: FC<DrawerItem> = ({
   text,
   element,
   href,
@@ -59,12 +58,11 @@ const DrawerItemComponent: React.FC<DrawerItem> = ({
 };
 
 const PermanentDrawer: React.FC<PermanentDrawerProps> = ({
-  title,
   topDrawerItems,
   bottomDrawerItems,
 }) => {
   return (
-    <Box sx={{ display: "flex" }}>
+    <Box>
       <CssBaseline />
       <Drawer
         sx={{
@@ -84,20 +82,16 @@ const PermanentDrawer: React.FC<PermanentDrawerProps> = ({
             flexDirection: "column",
             justifyContent: "space-between",
             height: "100vh",
+            backgroundColor: "#f5f5f5",
           }}
         >
           <Box>
-            <Toolbar sx={{ display: "flex", justifyContent: "center", m: 1 }}>
-              <Link
-                to="/"
-                style={{ color: "inherit", textDecoration: "inherit" }}
-              >
-                <Typography variant="h5" align="center">
-                  {title}
-                </Typography>
-              </Link>
-            </Toolbar>
-            <Divider />
+            <Link
+              to="/"
+              style={{ color: "inherit", textDecoration: "inherit" }}
+            >
+              <img src={ByteBucksLogo} alt="ByteBucks" width="100%" />
+            </Link>
             <List>
               {topDrawerItems.map((item) => (
                 <DrawerItemComponent key={item.text} {...item} />

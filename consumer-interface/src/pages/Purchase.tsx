@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from "react";
+import { FC, useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   Box,
   TableContainer,
@@ -15,20 +16,10 @@ import {
   InputAdornment,
 } from "@mui/material";
 
-import { Gender, Ethnicity, MaritalStatus, ParentalStatus } from "../types";
+import backendService from "../services/backend-service";
+import { ProducerFilter, ProducerResults } from "../types";
+import { camelCaseToHumanReadable } from "../utils/strings";
 import PageTemplate from "../components/PageTemplate";
-
-interface Criteria {
-  minAge: string;
-  maxAge: string;
-  genders: string[];
-  ethnicities: string[];
-  countries: string[];
-  minIncome: string;
-  maxIncome: string;
-  maritalStatuses: string[];
-  parentalStatuses: string[];
-}
 
 export interface Row {
   name: string;
@@ -40,147 +31,107 @@ export interface Row {
   key?: string;
 }
 
-interface Result {
-  ethAddresses: string[];
-  gender: { [key: string]: number };
-  ethnicities: { [key: string]: number };
-  countries: { [key: string]: number };
-  maritalStatuses: { [key: string]: number };
-  parentalStatuses: { [key: string]: number };
-}
-
-const CRITERIA: Row[] = [
-  { name: "Age", type: "range", minKey: "minAge", maxKey: "maxAge" },
-  {
-    name: "Gender",
-    type: "select",
-    options: [Gender.M, Gender.F],
-    key: "genders",
-  },
-  {
-    name: "Ethnicity",
-    type: "select",
-    options: [
-      Ethnicity.N,
-      Ethnicity.A,
-      Ethnicity.B,
-      Ethnicity.H,
-      Ethnicity.W,
-      Ethnicity.O,
-    ],
-    key: "ethnicities",
-  },
-  {
-    name: "Country",
-    type: "select",
-    options: ["Canada", "United States of America", "Mexico"],
-    key: "countries",
-  },
-  {
-    name: "Income",
-    type: "range",
-    inputPrefix: "$",
-    minKey: "minIncome",
-    maxKey: "maxIncome",
-  },
-  {
-    name: "Marital Status",
-    type: "select",
-    options: [
-      MaritalStatus.M,
-      MaritalStatus.S,
-      MaritalStatus.D,
-      MaritalStatus.W,
-    ],
-    key: "maritalStatuses",
-  },
-  {
-    name: "Parental Status",
-    type: "select",
-    options: [ParentalStatus.Y, ParentalStatus.N],
-    key: "parentalStatuses",
-  },
-];
-
-const mockResults: Result = {
-  ethAddresses: ["0x123", "0x456", "0x789", "0xabc", "0xdef", "0xghi"],
-  gender: {
-    M: 1,
-    F: 2,
-  },
-  ethnicities: {
-    N: 1,
-    A: 1,
-    B: 1,
-    H: 1,
-    W: 1,
-    O: 1,
-  },
-  countries: {
-    Canada: 1,
-    "United States of America": 1,
-    Mexico: 1,
-  },
-  maritalStatuses: {
-    M: 1,
-    S: 1,
-    D: 1,
-    W: 1,
-  },
-  parentalStatuses: {
-    Y: 1,
-    N: 3,
-  },
-};
-
-const Purchase: React.FC = () => {
-  const [criteria, setCriteria] = useState<Criteria>({
-    minAge: "",
-    maxAge: "",
+const Purchase: FC = () => {
+  const [criteria, setCriteria] = useState<Row[]>();
+  const [filters, setFilters] = useState<ProducerFilter>({
     genders: [],
     ethnicities: [],
     countries: [],
-    minIncome: "",
-    maxIncome: "",
     maritalStatuses: [],
     parentalStatuses: [],
   });
-  const [results, setResults] = useState<Result | undefined>();
+  const [producerResults, setProducerResults] = useState<ProducerResults>();
 
-  const handleCheck = (
-    event: React.ChangeEvent<HTMLInputElement>,
-    key: string,
-    optionIdx: number,
-    criteriaIdx: number
-  ) => {
-    let arr = (criteria as any)[key] || [];
-    if (event.target.checked) {
-      arr.push(CRITERIA[criteriaIdx].options![optionIdx]);
-    } else {
-      let index = arr.indexOf(CRITERIA[criteriaIdx].options![optionIdx]);
-      if (index > -1) {
-        arr.splice(index, 1);
-      }
-    }
-    setCriteria({
-      ...criteria,
-      [key!]: arr,
+  const navigate = useNavigate();
+
+  const handleCheck = (checked: boolean, key: string, value: string) => {
+    if (!filters) return;
+    const updatedValues = checked
+      ? [...((filters as any)[key] || []), value] // Add the value if checked
+      : ((filters as any)[key] || []).filter((v: string) => v !== value); // Remove the value if unchecked
+    setFilters({
+      ...filters,
+      [key]: updatedValues,
     });
   };
 
-  const handleSearch = (event: React.FormEvent) => {
-    event.preventDefault();
-    // Fetch matching results from the database
-    setResults(mockResults);
+  const handleSearch = async () => {
+    if (!filters) return;
+    try {
+      const result = await backendService.getProducers(filters);
+      setProducerResults(result);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const handlePurchase = async () => {
+    if (!producerResults || !producerResults.ethAddresses) return;
+    try {
+      let tomorrow = new Date();
+      tomorrow.setDate(tomorrow.getDate() + 1);
+      await backendService.createSubscriptions({
+        ethAddresses: producerResults.ethAddresses,
+        expirationDate: tomorrow.toISOString().substring(0, 10), // TODO: Set expiration date
+      });
+      navigate("/");
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const fetchFilterCriteria = async () => {
+    const filterOptions = await backendService.getProducerFilterOptions();
+    const criteria: Row[] = [
+      { name: "Age", type: "range", minKey: "minAge", maxKey: "maxAge" },
+      {
+        name: "Gender",
+        type: "select",
+        options: filterOptions?.genders,
+        key: "genders",
+      },
+      {
+        name: "Ethnicity",
+        type: "select",
+        options: filterOptions?.ethnicities,
+        key: "ethnicities",
+      },
+      {
+        name: "Country",
+        type: "select",
+        options: filterOptions?.countries,
+        key: "countries",
+      },
+      {
+        name: "Income",
+        type: "range",
+        inputPrefix: "$",
+        minKey: "minIncome",
+        maxKey: "maxIncome",
+      },
+      {
+        name: "Marital Status",
+        type: "select",
+        options: filterOptions?.maritalStatuses,
+        key: "maritalStatuses",
+      },
+      {
+        name: "Parental Status",
+        type: "select",
+        options: filterOptions?.parentalStatuses,
+        key: "parentalStatuses",
+      },
+    ];
+    setCriteria(criteria);
   };
 
   useEffect(() => {
-    console.log(criteria);
-  }, [criteria]);
+    fetchFilterCriteria();
+  }, []);
 
   return (
     <PageTemplate>
-      {results ? (
+      {producerResults ? (
         <Box
           sx={{
             display: "flex",
@@ -190,19 +141,10 @@ const Purchase: React.FC = () => {
         >
           <TableContainer
             component={Paper}
-            sx={{ my: 2, height: "60vh", maxWidth: "70vw" }}
+            elevation={3}
+            sx={{ my: 2, height: "60vh", maxWidth: "80vw" }}
           >
             <Table>
-              <colgroup>
-                <col style={{ width: "800px" }} />
-                <col style={{ width: "800px" }} />
-                <col style={{ width: "800px" }} />
-                <col style={{ width: "800px" }} />
-                <col style={{ width: "800px" }} />
-                <col style={{ width: "800px" }} />
-                <col style={{ width: "800px" }} />
-                <col style={{ width: "800px" }} />
-              </colgroup>
               <TableHead>
                 <TableRow>
                   <TableCell>Total Results</TableCell>
@@ -217,189 +159,55 @@ const Purchase: React.FC = () => {
               </TableHead>
               <TableBody>
                 <TableRow>
-                  <TableCell>{results.ethAddresses.length}</TableCell>
-                  <TableCell>
-                    <Box fontWeight="fontWeightMedium" display="inline">
-                      {Gender.M}:
-                    </Box>{" "}
-                    {results.gender.M}
-                    <br />
-                    <br />
-                    <Box fontWeight="fontWeightMedium" display="inline">
-                      {Gender.F}:
-                    </Box>{" "}
-                    {results.gender.F}
+                  <TableCell
+                    sx={{
+                      borderBottom: "none",
+                    }}
+                  >
+                    {producerResults.ethAddresses.length}
                   </TableCell>
-                  <TableCell>
-                    <Box fontWeight="fontWeightMedium" display="inline">
-                      {Ethnicity.N}:
-                    </Box>{" "}
-                    {results.ethnicities.N}
-                    <br />
-                    <br />
-                    <Box fontWeight="fontWeightMedium" display="inline">
-                      {Ethnicity.A}:
-                    </Box>{" "}
-                    {results.ethnicities.A}
-                    <br />
-                    <br />
-                    <Box fontWeight="fontWeightMedium" display="inline">
-                      {Ethnicity.B}:
-                    </Box>{" "}
-                    {results.ethnicities.B}
-                    <br />
-                    <br />
-                    <Box fontWeight="fontWeightMedium" display="inline">
-                      {Ethnicity.H}:
-                    </Box>{" "}
-                    {results.ethnicities.H}
-                    <br />
-                    <br />
-                    <Box fontWeight="fontWeightMedium" display="inline">
-                      {Ethnicity.W}:
-                    </Box>{" "}
-                    {results.ethnicities.W}
-                    <br />
-                    <br />
-                    <Box fontWeight="fontWeightMedium" display="inline">
-                      {Ethnicity.O}:
-                    </Box>{" "}
-                    {results.ethnicities.O}
-                  </TableCell>
-                  <TableCell>
-                    <Box fontWeight="fontWeightMedium" display="inline">
-                      10-20:{" "}
-                    </Box>{" "}
-                    <br />
-                    <br />
-                    <Box fontWeight="fontWeightMedium" display="inline">
-                      20-30:{" "}
-                    </Box>{" "}
-                    <br />
-                    <br />
-                    <Box fontWeight="fontWeightMedium" display="inline">
-                      30-40:{" "}
-                    </Box>{" "}
-                    <br />
-                    <br />
-                    <Box fontWeight="fontWeightMedium" display="inline">
-                      40-50:{" "}
-                    </Box>{" "}
-                    <br />
-                    <br />
-                    <Box fontWeight="fontWeightMedium" display="inline">
-                      50-60:{" "}
-                    </Box>{" "}
-                    <br />
-                    <br />
-                    <Box fontWeight="fontWeightMedium" display="inline">
-                      60-70:{" "}
-                    </Box>{" "}
-                    <br />
-                    <br />
-                    <Box fontWeight="fontWeightMedium" display="inline">
-                      70-80:{" "}
-                    </Box>{" "}
-                    <br />
-                    <br />
-                    <Box fontWeight="fontWeightMedium" display="inline">
-                      80-90:{" "}
-                    </Box>{" "}
-                  </TableCell>
-                  <TableCell>
-                    <Box fontWeight="fontWeightMedium" display="inline">
-                      Canada:
-                    </Box>{" "}
-                    {results.countries.Canada}
-                    <br />
-                    <br />
-                    <Box fontWeight="fontWeightMedium" display="inline">
-                      United States of America:{" "}
-                    </Box>{" "}
-                    {results.countries["United States of America"]}
-                    <br />
-                    <br />
-                    <Box fontWeight="fontWeightMedium" display="inline">
-                      Mexico:
-                    </Box>{" "}
-                    {results.countries.Mexico}
-                  </TableCell>
-                  <TableCell>
-                    <Box fontWeight="fontWeightMedium" display="inline">
-                      $0-50,000:{" "}
-                    </Box>{" "}
-                    <br />
-                    <br />
-                    <Box fontWeight="fontWeightMedium" display="inline">
-                      $50,000-100,000:{" "}
-                    </Box>{" "}
-                    <br />
-                    <br />
-                    <Box fontWeight="fontWeightMedium" display="inline">
-                      $100,000-150,000:{" "}
-                    </Box>{" "}
-                    <br />
-                    <br />
-                    <Box fontWeight="fontWeightMedium" display="inline">
-                      $150,000-200,000:{" "}
-                    </Box>{" "}
-                    <br />
-                    <br />
-                    <Box fontWeight="fontWeightMedium" display="inline">
-                      $200,000-250,000:{" "}
-                    </Box>{" "}
-                    <br />
-                    <br />
-                    <Box fontWeight="fontWeightMedium" display="inline">
-                      $250,000-300,000:{" "}
-                    </Box>{" "}
-                    <br />
-                    <br />
-                    <Box fontWeight="fontWeightMedium" display="inline">
-                      $300,000-350,000:{" "}
-                    </Box>{" "}
-                  </TableCell>
-                  <TableCell>
-                    <Box fontWeight="fontWeightMedium" display="inline">
-                      {MaritalStatus.M}:
-                    </Box>{" "}
-                    {results.maritalStatuses.M}
-                    <br />
-                    <br />
-                    <Box fontWeight="fontWeightMedium" display="inline">
-                      {MaritalStatus.S}:
-                    </Box>{" "}
-                    {results.maritalStatuses.S}
-                    <br />
-                    <br />
-                    <Box fontWeight="fontWeightMedium" display="inline">
-                      {MaritalStatus.D}:
-                    </Box>{" "}
-                    {results.maritalStatuses.D}
-                    <br />
-                    <br />
-                    <Box fontWeight="fontWeightMedium" display="inline">
-                      {MaritalStatus.W}:
-                    </Box>{" "}
-                    {results.maritalStatuses.W}
-                  </TableCell>
-                  <TableCell>
-                    <Box fontWeight="fontWeightMedium" display="inline">
-                      {ParentalStatus.Y}:
-                    </Box>{" "}
-                    {results.parentalStatuses.Y}
-                    <br />
-                    <br />
-                    <Box fontWeight="fontWeightMedium" display="inline">
-                      {ParentalStatus.N}:
-                    </Box>{" "}
-                    {results.parentalStatuses.N}
-                  </TableCell>
+                  {[
+                    "genders",
+                    "ethnicities",
+                    "ages",
+                    "countries",
+                    "incomes",
+                    "maritalStatuses",
+                    "parentalStatuses",
+                  ].map((key) => (
+                    <TableCell
+                      key={key}
+                      sx={{
+                        borderBottom: "none",
+                      }}
+                    >
+                      {(producerResults as any)[key] &&
+                        Object.entries((producerResults as any)[key]).map(
+                          ([subKey, value]) => (
+                            <div key={subKey}>
+                              <Box
+                                fontWeight="fontWeightMedium"
+                                display="inline"
+                              >
+                                {camelCaseToHumanReadable(subKey)}:
+                              </Box>{" "}
+                              {value as string}
+                              <br />
+                              <br />
+                            </div>
+                          )
+                        )}
+                    </TableCell>
+                  ))}
                 </TableRow>
               </TableBody>
             </Table>
           </TableContainer>
-          <Button variant="contained" sx={{ width: 200 }}>
+          <Button
+            variant="contained"
+            sx={{ width: 200 }}
+            onClick={handlePurchase}
+          >
             Purchase
           </Button>
         </Box>
@@ -411,92 +219,96 @@ const Purchase: React.FC = () => {
             alignItems: "center",
           }}
         >
-          <TableContainer component={Paper} sx={{ maxWidth: "60vw", m: 4 }}>
+          <TableContainer
+            component={Paper}
+            elevation={3}
+            sx={{ maxWidth: "60vw", m: 4 }}
+          >
             <Table aria-label="criteria-table">
               <TableBody>
-                {CRITERIA.map((row, criteriaIdx) => (
-                  <TableRow key={row.name}>
-                    <TableCell component="th" scope="row">
-                      <Box fontWeight="fontWeightMedium" display="inline">
-                        {row.name}
-                      </Box>
-                    </TableCell>
-                    <TableCell align="right">
-                      {row.type === "range" && row.minKey && row.maxKey ? (
-                        <Box>
-                          <TextField
-                            id="min-text-field"
-                            label="Minimum"
-                            variant="outlined"
-                            InputProps={
-                              row.inputPrefix
-                                ? {
-                                    startAdornment: (
-                                      <InputAdornment position="start">
-                                        {row.inputPrefix}
-                                      </InputAdornment>
-                                    ),
-                                  }
-                                : undefined
-                            }
-                            onChange={(e) =>
-                              setCriteria({
-                                ...criteria,
-                                [row.minKey!]: e.target.value,
-                              })
-                            }
-                          />
-                          <TextField
-                            id="max-text-field"
-                            label="Maximum"
-                            variant="outlined"
-                            InputProps={
-                              row.inputPrefix
-                                ? {
-                                    startAdornment: (
-                                      <InputAdornment position="start">
-                                        {row.inputPrefix}
-                                      </InputAdornment>
-                                    ),
-                                  }
-                                : undefined
-                            }
-                            onChange={(e) =>
-                              setCriteria({
-                                ...criteria,
-                                [row.maxKey!]: e.target.value,
-                              })
-                            }
-                          />
+                {criteria &&
+                  criteria.map((row, criteriaIdx) => (
+                    <TableRow key={row.name}>
+                      <TableCell component="th" scope="row">
+                        <Box fontWeight="fontWeightMedium" display="inline">
+                          {row.name}
                         </Box>
-                      ) : row.type === "select" && row.options && row.key ? (
-                        <Box>
-                          {row.options.map((option, optionIdx) => (
-                            <FormControlLabel
-                              key={option}
-                              control={
-                                <Checkbox
-                                  checked={(criteria as any)[row.key!].includes(
-                                    CRITERIA[criteriaIdx].options![optionIdx]
-                                  )}
-                                  onChange={(event) =>
-                                    handleCheck(
-                                      event,
-                                      row.key!,
-                                      optionIdx,
-                                      criteriaIdx
-                                    )
-                                  }
-                                />
+                      </TableCell>
+                      <TableCell align="right">
+                        {row.type === "range" && row.minKey && row.maxKey ? (
+                          <Box>
+                            <TextField
+                              id="min-text-field"
+                              label="Minimum"
+                              variant="outlined"
+                              InputProps={
+                                row.inputPrefix
+                                  ? {
+                                      startAdornment: (
+                                        <InputAdornment position="start">
+                                          {row.inputPrefix}
+                                        </InputAdornment>
+                                      ),
+                                    }
+                                  : undefined
                               }
-                              label={option}
+                              onChange={(e) =>
+                                setFilters({
+                                  ...filters,
+                                  [row.minKey!]: e.target.value,
+                                })
+                              }
                             />
-                          ))}
-                        </Box>
-                      ) : null}
-                    </TableCell>
-                  </TableRow>
-                ))}
+                            <TextField
+                              id="max-text-field"
+                              label="Maximum"
+                              variant="outlined"
+                              InputProps={
+                                row.inputPrefix
+                                  ? {
+                                      startAdornment: (
+                                        <InputAdornment position="start">
+                                          {row.inputPrefix}
+                                        </InputAdornment>
+                                      ),
+                                    }
+                                  : undefined
+                              }
+                              onChange={(e) =>
+                                setFilters({
+                                  ...filters,
+                                  [row.maxKey!]: e.target.value,
+                                })
+                              }
+                            />
+                          </Box>
+                        ) : row.type === "select" && row.options && row.key ? (
+                          <Box>
+                            {row.options.map((option) => (
+                              <FormControlLabel
+                                key={option}
+                                control={
+                                  <Checkbox
+                                    checked={(
+                                      (filters as any)[row.key!] || []
+                                    ).includes(option)}
+                                    onChange={(event) =>
+                                      handleCheck(
+                                        event.target.checked,
+                                        row.key!,
+                                        option
+                                      )
+                                    }
+                                  />
+                                }
+                                label={option}
+                              />
+                            ))}
+                          </Box>
+                        ) : null}
+                      </TableCell>
+                    </TableRow>
+                  ))}
               </TableBody>
             </Table>
           </TableContainer>

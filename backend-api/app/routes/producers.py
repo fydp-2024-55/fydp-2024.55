@@ -19,7 +19,9 @@ from ..schemas.producers import (
     ProducerUpdate,
     ProducerFilter,
     FilterOptions,
+    ProducerSearchResults,
     VisitedSite,
+    Interest,
     GENDERS,
     ETHNICITIES,
     MARITAL_STATUSES,
@@ -33,45 +35,49 @@ router = APIRouter()
 @router.get(
     "/",
     status_code=status.HTTP_200_OK,
-    response_model=list[ProducerRead],
+    response_model=ProducerSearchResults,
 )
-async def read_producers_available(
+async def read_producer_search_results(
+    genders: list[str] = Query(None),
+    ethnicities: list[str] = Query(None),
+    countries: list[str] = Query(None),
+    marital_statuses: list[str] = Query(None),
+    parental_statuses: list[str] = Query(None),
     min_age: int | None = None,
     max_age: int | None = None,
     min_income: int | None = None,
     max_income: int | None = None,
-    genders: list[str] = Query([]),
-    ethnicities: list[str] = Query([]),
-    countries: list[str] = Query([]),
-    marital_statuses: list[str] = Query([]),
-    parental_statuses: list[str] = Query([]),
     db: AsyncSession = Depends(get_async_session),
 ):
     # Validate the filter options
-    for gender in genders:
-        if gender not in GENDERS:
-            raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST,
-                detail="Invalid gender provided",
-            )
-    for ethnicity in ethnicities:
-        if ethnicity not in ETHNICITIES:
-            raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST,
-                detail="Invalid ethnicity provided",
-            )
-    for marital_status in marital_statuses:
-        if marital_status not in MARITAL_STATUSES:
-            raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST,
-                detail="Invalid marital status provided",
-            )
-    for parental_status in parental_statuses:
-        if parental_status not in PARENTAL_STATUSES:
-            raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST,
-                detail="Invalid parental status provided",
-            )
+    if genders:
+        for gender in genders:
+            if gender not in GENDERS:
+                raise HTTPException(
+                    status_code=status.HTTP_400_BAD_REQUEST,
+                    detail="Invalid gender provided",
+                )
+    if ethnicities:
+        for ethnicity in ethnicities:
+            if ethnicity not in ETHNICITIES:
+                raise HTTPException(
+                    status_code=status.HTTP_400_BAD_REQUEST,
+                    detail="Invalid ethnicity provided",
+                )
+    if marital_statuses:
+        for marital_status in marital_statuses:
+            if marital_status not in MARITAL_STATUSES:
+                raise HTTPException(
+                    status_code=status.HTTP_400_BAD_REQUEST,
+                    detail="Invalid marital status provided",
+                )
+    if parental_statuses:
+        for parental_status in parental_statuses:
+            if parental_status not in PARENTAL_STATUSES:
+                raise HTTPException(
+                    status_code=status.HTTP_400_BAD_REQUEST,
+                    detail="Invalid parental status provided",
+                )
 
     filter = ProducerFilter(
         genders=genders,
@@ -84,25 +90,9 @@ async def read_producers_available(
         min_income=min_income,
         max_income=max_income,
     )
-    return await ops.get_producers_by_filter(db, filter)
 
-
-@router.get(
-    "/filter-options",
-    status_code=status.HTTP_200_OK,
-    response_model=FilterOptions,
-)
-async def get_producer_filter_options(
-    db: AsyncSession = Depends(get_async_session),
-):
-    countries = await ops.get_producer_countries(db)
-    return FilterOptions(
-        genders=GENDERS,
-        ethnicities=ETHNICITIES,
-        marital_statuses=MARITAL_STATUSES,
-        parental_statuses=PARENTAL_STATUSES,
-        countries=countries,
-    )
+    counts = await ops.get_producers_by_filter(db, filter)
+    return ProducerSearchResults(**counts)
 
 
 @router.post("/me", status_code=status.HTTP_201_CREATED, response_model=ProducerRead)
@@ -240,3 +230,63 @@ async def update_permissions(
     producer = await ops.get_producer(db, user)
     await ops.update_permissions(db, producer, permissions)
     return await read_permissions(db, user)
+
+
+@router.get(
+    "/filter-options",
+    status_code=status.HTTP_200_OK,
+    response_model=FilterOptions,
+)
+async def get_producer_filter_options(
+    db: AsyncSession = Depends(get_async_session),
+):
+    countries = await ops.get_producer_countries(db)
+    return FilterOptions(
+        genders=GENDERS,
+        ethnicities=ETHNICITIES,
+        marital_statuses=MARITAL_STATUSES,
+        parental_statuses=PARENTAL_STATUSES,
+        countries=countries,
+    )
+
+
+@router.get(
+    "/eth-address/{eth_address}",
+    status_code=status.HTTP_200_OK,
+    response_model=ProducerRead,
+)
+async def read_producer_by_eth_address(
+    eth_address: str,
+    db: AsyncSession = Depends(get_async_session),
+):
+    producer = await ops.get_producer_by_eth_address(db, eth_address)
+    if not producer:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Producer not found",
+        )
+
+    return ProducerRead(**producer.__dict__)
+
+
+@router.get(
+    "/eth-address/{eth_address}/interests",
+    status_code=status.HTTP_200_OK,
+    response_model=list[Interest],
+)
+async def read_producer_interests_by_eth_address(
+    eth_address: str,
+    db: AsyncSession = Depends(get_async_session),
+):
+    producer = await ops.get_producer_by_eth_address(db, eth_address)
+    if not producer:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Producer not found",
+        )
+
+    interests = await ops.get_interests(db, producer)
+    return [
+        Interest(category=str(category.title).capitalize(), duration=duration)
+        for category, duration in interests
+    ]

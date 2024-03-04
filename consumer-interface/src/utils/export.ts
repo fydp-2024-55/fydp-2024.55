@@ -1,6 +1,6 @@
-import { Subscription } from "../types";
+import { SubscriptionResult } from "../types";
 
-export const exportDataToCSV = (data: Subscription[]) => {
+export const exportDataToCSV = (data: SubscriptionResult[]) => {
   // Exclude `history` key from the exported data
   const titleKeys = Object.keys(data[0]).slice(0, -1);
 
@@ -32,7 +32,7 @@ export const exportDataToCSV = (data: Subscription[]) => {
   document.body.removeChild(element);
 };
 
-export const exportDataToJSON = (data: Subscription[]) => {
+export const exportDataToJSON = (data: SubscriptionResult[]) => {
   const jsonContent =
     "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(data));
 
