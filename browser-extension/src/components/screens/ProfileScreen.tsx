@@ -41,8 +41,6 @@ const ProfileScreen: FC = () => {
     }
   };
 
-  // TODO: Use filter options
-
   const undo = async () => {
     await load();
   };
