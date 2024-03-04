@@ -143,24 +143,6 @@ const ProfileScreen: FC = () => {
       {renderOptions("Marital Status", "maritalStatus", "maritalStatuses")}
       {renderOptions("Parental Status", "parentalStatus", "parentalStatuses")}
 
-      {/* {Object.keys(profile)
-        .filter((key) => !["gender"].includes(key)) // TODO: Use appropriate input form
-        .map((key) => (
-          <TextField
-            key={key}
-            label={key}
-            style={{ width: "85%", margin: "20px 0px" }}
-            variant="outlined"
-            value={profile[key as keyof Producer]}
-            onChange={(event) =>
-              setProfile({
-                ...profile,
-                [key as keyof Producer]: event.target.value,
-              })
-            }
-          />
-        ))} */}
-
       <div
         style={{
           width: "100%",
