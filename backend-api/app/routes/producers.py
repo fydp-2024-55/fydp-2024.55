@@ -138,6 +138,11 @@ async def read_producer(
     user: User = Depends(get_current_active_user),
 ):
     producer = await ops.get_producer(db, user)
+    if not producer:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Producer not found",
+        )
     return ProducerRead(**producer.__dict__)
 
 
@@ -184,6 +189,12 @@ async def read_interests(
     user: User = Depends(get_current_active_user),
 ):
     producer = await ops.get_producer(db, user)
+    if not producer:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Producer not found",
+        )
+
     interests = await ops.get_interests(db, producer)
     return {str(category.title).lower(): duration for category, duration in interests}
 
@@ -199,6 +210,12 @@ async def upload_interests(
     user: User = Depends(get_current_active_user),
 ):
     producer = await ops.get_producer(db, user)
+    if not producer:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Producer not found",
+        )
+
     await ops.process_visited_sites(db, producer, visited_sites)
     return await read_interests(db, user)
 
@@ -213,6 +230,12 @@ async def read_permissions(
     user: User = Depends(get_current_active_user),
 ):
     producer = await ops.get_producer(db, user)
+    if not producer:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Producer not found",
+        )
+
     permissions = await ops.get_permissions(db, producer)
     return {str(category.title).lower(): enabled for category, enabled in permissions}
 
@@ -228,6 +251,12 @@ async def update_permissions(
     user: User = Depends(get_current_active_user),
 ):
     producer = await ops.get_producer(db, user)
+    if not producer:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Producer not found",
+        )
+
     await ops.update_permissions(db, producer, permissions)
     return await read_permissions(db, user)
 

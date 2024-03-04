@@ -241,8 +241,7 @@ async def process_visited_sites(
     db: AsyncSession, producer: Producer, visited_sites: List[VisitedSite]
 ):
     old_interests = {
-        category.title: (category, duration)
-        for category, duration in await get_interests(db, producer)
+        category.title for category, _ in await get_interests(db, producer)
     }
     permissions = {
         category.title: (category, enabled)
@@ -265,10 +264,11 @@ async def process_visited_sites(
 
         if interest not in old_interests:
             created_interests.append((category, duration))
+            old_interests.add(interest)
         else:
             updated_interests.append((category, duration))
 
     if created_interests:
         await add_interests(db, producer, created_interests)
-    else:
+    if updated_interests:
         await update_interests(db, producer, updated_interests)

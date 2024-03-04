@@ -72,19 +72,8 @@ def get_interest_category(website: str, enabled_categories: List[str]):
     )
 
     resp = completion.choices[0].message.content
-    CATEGORIES = [
-        "SHOPPING",
-        "TRAVEL",
-        "ENTERTAINMENT",
-        "SOCIAL",
-        "SPORTS",
-        "ANIMALS",
-        "MUSIC",
-        "CUISINE",
-        "BEAUTY",
-    ]
 
-    if not any(resp.startswith(prefix) for prefix in CATEGORIES):
+    if not any(resp.startswith(prefix) for prefix in enabled_categories):
         return None
 
     return str(completion.choices[0].message.content)

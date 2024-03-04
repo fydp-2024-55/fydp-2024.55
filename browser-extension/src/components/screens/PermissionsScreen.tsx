@@ -9,31 +9,33 @@ import { Permissions } from "../../types";
 import backendService from "../../services/backend-service";
 import AppContext from "../contexts/AppContext";
 
-const getLabel = (key: string) => {
-  if (key == "social") {
-    key = "social media";
-  }
-
-  return `Collect ${key} search history`;
-};
-
 const PermissionsScreen: FC = () => {
-  const { setAuthState } = useContext(AppContext)!;
+  const { setAuthState, setScreen } = useContext(AppContext)!;
 
-  const [permissions, setPermissions] = useState<Permissions>();
-  const [editedPermissions, setEditedPermissions] = useState<Permissions>();
+  const [permissions, setPermissions] = useState<Permissions | null>();
 
-  const loadPermissions = async () => {
-    const fetchedPermissions = await backendService.getPermissions();
-    setPermissions(fetchedPermissions);
-    setEditedPermissions(fetchedPermissions);
+  const load = async () => {
+    try {
+      const fetchedPermissions = await backendService.getPermissions();
+      setPermissions(fetchedPermissions);
+    } catch (error) {
+      if (backendService.isNotFoundError(error)) {
+        setPermissions(null);
+      } else {
+        backendService.handleError(error, setAuthState);
+      }
+    }
   };
 
-  const updatePermissions = async () => {
+  const undo = async () => {
+    await load();
+  };
+
+  const save = async () => {
     try {
-      if (editedPermissions) {
+      if (permissions) {
         const fetchedPermissions = await backendService.updatePermissions(
-          editedPermissions
+          permissions
         );
         setPermissions(fetchedPermissions);
         alert("Saved");
@@ -43,50 +45,72 @@ const PermissionsScreen: FC = () => {
     }
   };
 
+  const redirect = async () => {
+    setScreen("profile");
+  };
+
+  const getLabel = (key: string) => {
+    if (key === "social") {
+      key = "social media";
+    }
+    return `Collect ${key} search history`;
+  };
+
   useEffect(() => {
-    loadPermissions();
+    load();
+    // eslint-disable-next-line
   }, []);
 
-  useEffect(() => {}, [editedPermissions]);
-
-  if (editedPermissions === undefined) {
+  if (permissions === undefined) {
     return <CircularProgress />;
+  }
+
+  if (permissions === null) {
+    return (
+      <Button variant="contained" onClick={() => redirect()} color="primary">
+        Create a profile
+      </Button>
+    );
   }
 
   return (
     <div
       style={{
         height: "100%",
-        width: "90%",
+        width: "100%",
         display: "flex",
         flexDirection: "column",
-        overflowY: "scroll",
+        alignItems: "center",
+        overflow: "auto",
       }}
     >
-      {Object.keys(editedPermissions).map((key) => (
-        <div
-          key={key}
-          style={{
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-            margin: 20,
-          }}
-        >
-          <Typography variant="body1">{getLabel(key)}</Typography>
+      {Object.keys(permissions)
+        .sort()
+        .map((key: string) => (
+          <div
+            key={key}
+            style={{
+              width: "85%",
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+              margin: "20px 0px",
+            }}
+          >
+            <Typography variant="body1">{getLabel(key)}</Typography>
 
-          <Switch
-            defaultChecked={editedPermissions[key]}
-            onChange={() =>
-              setEditedPermissions({
-                ...editedPermissions,
-                [key]: !editedPermissions[key],
-              })
-            }
-            color="primary"
-          />
-        </div>
-      ))}
+            <Switch
+              checked={permissions[key]}
+              onChange={() =>
+                setPermissions({
+                  ...permissions,
+                  [key]: !permissions[key],
+                })
+              }
+              color="primary"
+            />
+          </div>
+        ))}
 
       <div
         style={{
@@ -97,18 +121,10 @@ const PermissionsScreen: FC = () => {
           gap: 20,
         }}
       >
-        <Button
-          variant="contained"
-          onClick={() => setEditedPermissions(permissions)}
-          color="default"
-        >
+        <Button variant="contained" onClick={() => undo()} color="default">
           Undo
         </Button>
-        <Button
-          variant="contained"
-          onClick={() => updatePermissions()}
-          color="primary"
-        >
+        <Button variant="contained" onClick={() => save()} color="primary">
           Save
         </Button>
       </div>

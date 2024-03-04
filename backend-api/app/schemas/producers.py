@@ -18,7 +18,7 @@ class ProducerCreate(ProducerBase):
 
 
 class ProducerRead(ProducerBase):
-    id: int
+    pass
 
 
 class ProducerUpdate(ProducerBase):

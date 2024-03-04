@@ -16,7 +16,7 @@ const AppRouter: FC = () => {
         <>
           <div
             style={{
-              height: 80,
+              height: 60,
               background: "white",
               display: "flex",
               justifyContent: "center",
@@ -27,7 +27,7 @@ const AppRouter: FC = () => {
           </div>
           <div
             style={{
-              height: 340,
+              height: 380,
               display: "flex",
               justifyContent: "center",
               alignItems: "center",
@@ -35,7 +35,7 @@ const AppRouter: FC = () => {
           >
             <AuthenticatedRouter />
           </div>
-          <div style={{ height: 80 }}>
+          <div style={{ height: 60 }}>
             <BottomBar />
           </div>
         </>

@@ -8,24 +8,46 @@ const ProfileScreen: FC = () => {
   const { setAuthState } = useContext(AppContext)!;
 
   const [profile, setProfile] = useState<Producer>();
-  const [editedProfile, setEditedProfile] = useState<Producer>();
+  const [shouldCreate, setShouldCreate] = useState(false);
 
-  const loadProfile = async () => {
+  const load = async () => {
     try {
-      const producer: Producer = await backendService.getProducer();
+      const producer = await backendService.getProducer();
       setProfile(producer);
-      setEditedProfile(producer);
     } catch (error) {
-      backendService.handleError(error, setAuthState);
+      if (backendService.isNotFoundError(error)) {
+        setProfile({
+          gender: null,
+          ethnicity: null,
+          dateOfBirth: null,
+          country: null,
+          income: null,
+          maritalStatus: null,
+          parentalStatus: null,
+        });
+        setShouldCreate(true);
+      } else {
+        backendService.handleError(error, setAuthState);
+      }
     }
   };
 
-  const updateProducer = async () => {
+  // TODO: Use filter options
+
+  const undo = async () => {
+    await load();
+  };
+
+  const save = async () => {
     try {
-      if (editedProfile) {
-        const fetchedProfile = await backendService.updateProducer(
-          editedProfile
-        );
+      if (profile) {
+        let fetchedProfile: Producer;
+        if (shouldCreate) {
+          fetchedProfile = await backendService.createProducer(profile);
+          setShouldCreate(false);
+        } else {
+          fetchedProfile = await backendService.updateProducer(profile);
+        }
         setProfile(fetchedProfile);
         alert("Saved");
       }
@@ -34,44 +56,43 @@ const ProfileScreen: FC = () => {
     }
   };
 
-  const onEdit = <T extends keyof Producer>(field: T, value: Producer[T]) => {
-    let temp: Producer | undefined = editedProfile;
-    if (temp) {
-      temp[field] = value;
-      setEditedProfile(temp);
-    }
-  };
-
   useEffect(() => {
-    loadProfile();
+    load();
+    // eslint-disable-next-line
   }, []);
 
-  useEffect(() => {}, [profile]);
-
-  if (editedProfile === undefined || profile === undefined) {
+  if (!profile) {
     return <CircularProgress />;
   }
+
+  const isValid = Object.keys(profile).every(
+    (key) => profile[key as keyof Producer] !== null
+  );
 
   return (
     <div
       style={{
         height: "100%",
-        width: "90%",
+        width: "100%",
         display: "flex",
         flexDirection: "column",
-        overflow: "scroll",
+        alignItems: "center",
+        overflow: "auto",
       }}
     >
-      {Object.keys(editedProfile) // TODO: Use appropriate input form
+      {Object.keys(profile) // TODO: Use appropriate input form
         .map((key) => (
           <TextField
             key={key}
-            style={{ margin: 20 }}
             label={key}
-            defaultValue={editedProfile[key as keyof Producer]}
+            style={{ width: "85%", margin: "20px 0px" }}
             variant="outlined"
+            value={profile[key as keyof Producer]}
             onChange={(event) =>
-              onEdit(key as keyof Producer, event?.target.value)
+              setProfile({
+                ...profile,
+                [key as keyof Producer]: event.target.value,
+              })
             }
           />
         ))}
@@ -87,15 +108,17 @@ const ProfileScreen: FC = () => {
       >
         <Button
           variant="contained"
-          onClick={() => setEditedProfile(profile)}
+          onClick={() => undo()}
           color="default"
+          disabled={!isValid}
         >
           Undo
         </Button>
         <Button
           variant="contained"
-          onClick={() => updateProducer()}
+          onClick={() => save()}
           color="primary"
+          disabled={!isValid}
         >
           Save
         </Button>

@@ -14,35 +14,47 @@ const WalletScreen: FC = () => {
   const { setAuthState } = useContext(AppContext)!;
 
   const [wallet, setWallet] = useState<Wallet>();
-  const [editedEthAddress, setEditedEthAddress] = useState<string>("");
-  const [editedPrivateKey, setEditedPrivateKey] = useState<string>("");
+  const [privateKey, setPrivateKey] = useState("*".repeat(64));
 
-  const loadWallet = async () => {
+  const load = async () => {
     try {
       const wallet = await backendService.getWallet();
       setWallet(wallet);
-      setEditedEthAddress(wallet.ethAddress);
     } catch (error) {
       backendService.handleError(error, setAuthState);
     }
   };
 
-  const updateEthAddress = async () => {
-    // TODO
+  const undo = async () => {
+    await load();
+  };
+
+  const save = async () => {
+    try {
+      if (wallet) {
+        const fetchedWallet = await backendService.updateWallet(
+          wallet.ethAddress,
+          privateKey
+        );
+        setWallet(fetchedWallet);
+        alert("Saved");
+      }
+    } catch (error) {
+      backendService.handleError(error, setAuthState);
+    }
   };
 
   useEffect(() => {
-    loadWallet();
-    const interval = setInterval(() => {
-      loadWallet();
-    }, 10 * 60 * 1000); // 10 minutes
+    load();
+    const interval = setInterval(load, 10 * 60 * 1000); // 10 minutes
 
     return () => {
       clearInterval(interval);
     };
+    // eslint-disable-next-line
   }, []);
 
-  if (editedEthAddress === undefined || wallet === undefined) {
+  if (!wallet) {
     return <CircularProgress />;
   }
 
@@ -50,7 +62,7 @@ const WalletScreen: FC = () => {
     <div
       style={{
         height: "100%",
-        width: "85%",
+        width: "100%",
         display: "flex",
         flexDirection: "column",
         justifyContent: "space-evenly",
@@ -63,7 +75,7 @@ const WalletScreen: FC = () => {
 
       <div
         style={{
-          width: "100%",
+          width: "85%",
           display: "flex",
           flexDirection: "column",
           gap: 20,
@@ -71,18 +83,20 @@ const WalletScreen: FC = () => {
       >
         <TextField
           label="Ethereum Address"
-          defaultValue={editedEthAddress}
           variant="outlined"
-          onChange={(event) => setEditedEthAddress(event.target.value)}
+          value={wallet.ethAddress}
+          onChange={(event) =>
+            setWallet({ ...wallet, ethAddress: event.target.value })
+          }
           fullWidth
         />
 
         <TextField
           label="Private Key"
-          defaultValue={editedEthAddress}
           variant="outlined"
           type="password"
-          onChange={(event) => setEditedPrivateKey(event.target.value)}
+          value={privateKey}
+          onChange={(event) => setPrivateKey(event.target.value)}
           fullWidth
         />
       </div>
@@ -95,21 +109,10 @@ const WalletScreen: FC = () => {
           gap: 20,
         }}
       >
-        <Button
-          variant="contained"
-          onClick={() => {
-            setEditedEthAddress(wallet.ethAddress);
-            setEditedPrivateKey("");
-          }}
-          color="default"
-        >
+        <Button variant="contained" onClick={() => undo()} color="default">
           Undo
         </Button>
-        <Button
-          variant="contained"
-          onClick={() => updateEthAddress()}
-          color="primary"
-        >
+        <Button variant="contained" onClick={() => save()} color="primary">
           Save
         </Button>
       </div>
