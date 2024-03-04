@@ -1,11 +1,13 @@
 import { FC, useContext, useState } from "react";
 import {
   Box,
+  Grid,
   Typography,
   TextField,
   Button,
   InputAdornment,
   IconButton,
+  Paper,
 } from "@mui/material";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
 
@@ -17,6 +19,7 @@ const Profile: FC = () => {
   const { account } = useContext(AppContext);
 
   const [editMode, setEditMode] = useState<boolean>(false);
+  const [newEmail, setNewEmail] = useState<string>("");
   const [newPassword, setNewPassword] = useState<string>("");
   const [showPassword, setShowPassword] = useState<boolean>(false);
 
@@ -31,83 +34,134 @@ const Profile: FC = () => {
 
   return (
     <PageTemplate>
-      <Box sx={{ boxShadow: 2, p: 4, minWidth: "40vw", marginTop: -6 }}>
-        <Box
-          component="form"
-          sx={{
-            display: "flex",
-            flexDirection: "column",
-          }}
-        >
-          <Typography sx={{ m: 1 }}>
-            <Box fontWeight="fontWeightMedium" display="inline">
-              Email:
-            </Box>{" "}
-            {account?.email}
-          </Typography>
-          {editMode ? (
-            <>
-              <TextField
-                id="password-input"
-                label="New Password"
-                variant="outlined"
-                type={showPassword ? "text" : "password"}
-                onChange={(event) => {
-                  setNewPassword(event.target.value);
-                }}
-                InputProps={{
-                  endAdornment: (
-                    <InputAdornment position="end">
-                      <IconButton
-                        aria-label="toggle password visibility"
-                        onClick={() => setShowPassword(!showPassword)}
-                      >
-                        {showPassword ? <Visibility /> : <VisibilityOff />}
-                      </IconButton>
-                    </InputAdornment>
-                  ),
-                }}
-                sx={{ m: 1, width: "30vw" }}
-              />
-              <Box display="flex" justifyContent="center">
-                <Button
-                  variant="contained"
-                  sx={{ m: 3, width: 150 }}
-                  onClick={handleSubmit}
-                >
-                  Submit
-                </Button>
-                <Button
-                  variant="contained"
-                  color="error"
-                  sx={{ m: 3, width: 150 }}
-                  onClick={() => setEditMode(false)}
-                >
-                  Cancel
-                </Button>
-              </Box>
-            </>
-          ) : (
-            <>
-              <Typography sx={{ m: 1 }}>
-                <Box fontWeight="fontWeightMedium" display="inline">
-                  Password:
-                </Box>{" "}
-                ●●●●●●●●●●●●●
+      <Grid container justifyContent="center" alignItems="center" spacing={2}>
+        <Grid item xs={12} sm={8} md={6}>
+          <Paper
+            elevation={3}
+            sx={{
+              padding: 4,
+              height: "50vh",
+              display: "flex",
+              flexDirection: "column",
+              justifyContent: "center",
+            }}
+          >
+            <Box
+              display="flex"
+              flexDirection="column"
+              alignItems="center"
+              justifyContent="center"
+            >
+              <Typography variant="h4" gutterBottom sx={{ mb: 4 }}>
+                Profile
               </Typography>
-              <Button
-                variant="contained"
-                sx={{ m: 3, width: 200, alignSelf: "center" }}
-                onClick={() => {
-                  setEditMode(true);
-                }}
+              <Box
+                width="80%"
+                height="80%"
+                display="flex"
+                flexDirection="column"
+                justifyContent="space-between"
+                mb={3}
               >
-                Edit
-              </Button>
-            </>
-          )}
-        </Box>
-      </Box>
+                <Box
+                  display="flex"
+                  justifyContent="space-between"
+                  alignItems="center"
+                  sx={{ mb: 3 }}
+                >
+                  <Typography variant="h6" gutterBottom>
+                    Email
+                  </Typography>
+                  {editMode ? (
+                    <TextField
+                      id="email-input"
+                      label="New Email"
+                      variant="outlined"
+                      type="text"
+                      value={newEmail}
+                      onChange={(event) => {
+                        setNewEmail(event.target.value);
+                      }}
+                      sx={{ ml: 1, width: "250px" }}
+                    />
+                  ) : (
+                    <Typography variant="body1">{account?.email}</Typography>
+                  )}
+                </Box>
+                <Box
+                  display="flex"
+                  justifyContent="space-between"
+                  alignItems="center"
+                >
+                  <Typography variant="h6" gutterBottom>
+                    Password
+                  </Typography>
+                  {editMode ? (
+                    <TextField
+                      id="password-input"
+                      label="New Password"
+                      variant="outlined"
+                      type={showPassword ? "text" : "password"}
+                      value={newPassword}
+                      onChange={(event) => {
+                        setNewPassword(event.target.value);
+                      }}
+                      InputProps={{
+                        endAdornment: (
+                          <InputAdornment position="end">
+                            <IconButton
+                              aria-label="toggle password visibility"
+                              onClick={() => setShowPassword(!showPassword)}
+                            >
+                              {showPassword ? (
+                                <Visibility />
+                              ) : (
+                                <VisibilityOff />
+                              )}
+                            </IconButton>
+                          </InputAdornment>
+                        ),
+                      }}
+                      sx={{ ml: 1, width: "250px" }}
+                    />
+                  ) : (
+                    <Typography variant="body1" gutterBottom>
+                      ●●●●●●●●●●●●●
+                    </Typography>
+                  )}
+                </Box>
+              </Box>
+              {editMode ? (
+                <Box mt={4} display="flex" justifyContent="center">
+                  <Button
+                    variant="contained"
+                    type="submit"
+                    sx={{ mr: 1 }}
+                    onClick={handleSubmit}
+                  >
+                    Submit
+                  </Button>
+                  <Button
+                    variant="outlined"
+                    sx={{ ml: 1 }}
+                    onClick={() => setEditMode(false)}
+                  >
+                    Cancel
+                  </Button>
+                </Box>
+              ) : (
+                <Button
+                  variant="contained"
+                  onClick={() => setEditMode(true)}
+                  sx={{ mt: 4 }}
+                >
+                  Edit
+                </Button>
+              )}
+            </Box>
+          </Paper>
+        </Grid>
+      </Grid>
     </PageTemplate>
   );
 };

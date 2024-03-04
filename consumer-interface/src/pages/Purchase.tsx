@@ -207,7 +207,11 @@ const Purchase: FC = () => {
             alignItems: "center",
           }}
         >
-          <TableContainer component={Paper} sx={{ maxWidth: "60vw", m: 4 }}>
+          <TableContainer
+            component={Paper}
+            elevation={3}
+            sx={{ maxWidth: "60vw", m: 4 }}
+          >
             <Table aria-label="criteria-table">
               <TableBody>
                 {criteria &&

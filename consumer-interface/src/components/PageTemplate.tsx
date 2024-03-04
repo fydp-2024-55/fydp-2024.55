@@ -9,7 +9,7 @@ const PageTemplate: FC<{ children: ReactNode }> = ({ children }) => {
       direction="column"
       alignItems="center"
       justifyContent="center"
-      sx={{ minHeight: "100vh", p: 5 }}
+      sx={{ minHeight: "100vh", p: 5, backgroundColor: "azure" }}
     >
       {children}
     </Grid>

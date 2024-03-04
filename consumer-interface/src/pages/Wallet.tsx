@@ -1,15 +1,9 @@
 import { FC, useContext, useEffect, useState } from "react";
-import {
-  Box,
-  Paper,
-  Typography,
-  Divider,
-  CircularProgress,
-  Grid,
-} from "@mui/material";
+import { Box, Paper, Typography, CircularProgress, Grid } from "@mui/material";
 
 import AppContext from "../contexts/AppContext";
 import backendService from "../services/backend-service";
+import EthereumLogo from "../images/ethereum-logo.png";
 import PageTemplate from "../components/PageTemplate";
 
 const Wallet: FC = () => {
@@ -38,24 +32,33 @@ const Wallet: FC = () => {
 
   return (
     <PageTemplate>
-      <Grid container justifyContent="center">
+      <Grid container justifyContent="center" alignItems="center" spacing={2}>
         <Grid item xs={12} sm={8} md={6}>
-          <Paper elevation={3} sx={{ padding: 4 }}>
-            <Typography variant="h6" gutterBottom>
-              Wallet
-            </Typography>
-            <Divider />
-            <Box mt={2}>
-              <Typography variant="body1" mb={1}>
-                <strong>Address:</strong> {account?.ethAddress || "Loading..."}
+          <Paper
+            elevation={3}
+            sx={{
+              padding: 4,
+              height: "50vh",
+              display: "flex",
+              flexDirection: "column",
+              justifyContent: "center",
+            }}
+          >
+            <Box display="flex" alignItems="center" flexDirection="column">
+              <img
+                src={EthereumLogo}
+                alt="Ethereum Logo"
+                style={{ width: 100, marginBottom: 20 }}
+              />
+              <Typography variant="h5" gutterBottom sx={{ mb: 2 }}>
+                {balance !== null ? (
+                  `Balance: ${Math.round(balance)} ETH`
+                ) : (
+                  <CircularProgress size={32} />
+                )}
               </Typography>
               <Typography variant="body1">
-                <strong>Balance:</strong>{" "}
-                {balance !== null ? (
-                  `${balance} ETH`
-                ) : (
-                  <CircularProgress size={16} />
-                )}
+                <strong>Address:</strong> {account?.ethAddress || "Loading..."}
               </Typography>
             </Box>
           </Paper>

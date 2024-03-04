@@ -287,6 +287,6 @@ async def read_producer_interests_by_eth_address(
 
     interests = await ops.get_interests(db, producer)
     return [
-        Interest(category=str(category.title).lower(), duration=duration)
+        Interest(category=str(category.title).capitalize(), duration=duration)
         for category, duration in interests
     ]

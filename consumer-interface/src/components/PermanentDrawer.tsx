@@ -4,15 +4,15 @@ import {
   Box,
   Drawer,
   CssBaseline,
-  Toolbar,
   List,
-  Typography,
   Divider,
   ListItem,
   ListItemButton,
   ListItemIcon,
   ListItemText,
 } from "@mui/material";
+
+import ByteBucksLogo from "../images/bytebucks-logo.png";
 
 const drawerWidth = 200;
 
@@ -24,7 +24,6 @@ export interface DrawerItem {
 }
 
 export interface PermanentDrawerProps {
-  title: string;
   topDrawerItems: DrawerItem[];
   bottomDrawerItems: DrawerItem[];
 }
@@ -59,12 +58,11 @@ const DrawerItemComponent: FC<DrawerItem> = ({
 };
 
 const PermanentDrawer: React.FC<PermanentDrawerProps> = ({
-  title,
   topDrawerItems,
   bottomDrawerItems,
 }) => {
   return (
-    <Box sx={{ display: "flex" }}>
+    <Box>
       <CssBaseline />
       <Drawer
         sx={{
@@ -87,17 +85,12 @@ const PermanentDrawer: React.FC<PermanentDrawerProps> = ({
           }}
         >
           <Box>
-            <Toolbar sx={{ display: "flex", justifyContent: "center", m: 1 }}>
-              <Link
-                to="/"
-                style={{ color: "inherit", textDecoration: "inherit" }}
-              >
-                <Typography variant="h5" align="center">
-                  {title}
-                </Typography>
-              </Link>
-            </Toolbar>
-            <Divider />
+            <Link
+              to="/"
+              style={{ color: "inherit", textDecoration: "inherit" }}
+            >
+              <img src={ByteBucksLogo} alt="ByteBucks" width="100%" />
+            </Link>
             <List>
               {topDrawerItems.map((item) => (
                 <DrawerItemComponent key={item.text} {...item} />
