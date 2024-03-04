@@ -23,7 +23,6 @@ chrome.tabs.onCreated.addListener((tab) => {
   }
 });
 
-
 // Track closed tabs
 chrome.tabs.onRemoved.addListener(async (tabId) => {
   if (openTabs[tabId]) {
@@ -35,7 +34,7 @@ chrome.tabs.onRemoved.addListener(async (tabId) => {
     if (token) {
       tabs.forEach(async (tab) => {
         const response = await fetch(
-          "http://localhost:8000/producer/me/interests",
+          "http://localhost:8000/producers/me/interests",
           {
             method: "POST",
             headers: {
@@ -45,19 +44,18 @@ chrome.tabs.onRemoved.addListener(async (tabId) => {
             body: JSON.stringify([
               {
                 url: tab.url,
-                visited_time: tab.openedAt.toString(),
-                duration: tab.time_spent.toString(),
+                duration: Math.round((Date.now() - tab.openedAt) / 1000),
               },
             ]),
           }
         );
 
-        
-      if (!response.ok) {
-        throw new Error(
-          `Network response was not ok, status: ${response.status}`
-        );
-      }})
+        if (!response.ok) {
+          throw new Error(
+            `Network response was not ok, status: ${response.status}`
+          );
+        }
+      });
     }
     delete openTabs[tabId];
   }
@@ -70,19 +68,18 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo) => {
     changeInfo.url !== "about:blank" &&
     !changeInfo.url.startsWith("chrome://")
   ) {
-    obj = { url: changeInfo.url, openedAt: Date.now() }
+    obj = { url: changeInfo.url, openedAt: Date.now() };
     // if tab is new, initialize with array
-    if(!openTabs.hasOwnProperty(tabId)) {
-      openTabs[tabId] = [obj]
-    }
-    else {
+    if (!openTabs.hasOwnProperty(tabId)) {
+      openTabs[tabId] = [obj];
+    } else {
       // access last object and we get the closing time
-      const idx = openTabs[tabId].length - 1
-      const prev = openTabs[tabId][idx]
-      const time_spent = Date.now() - openTabs[tabId][idx].openedAt
-      prev.time_spent = time_spent
-      // insert into previous 
-      openTabs[tabId][idx] = prev
+      const idx = openTabs[tabId].length - 1;
+      const prev = openTabs[tabId][idx];
+      const time_spent = Date.now() - openTabs[tabId][idx].openedAt;
+      prev.time_spent = time_spent;
+      // insert into previous
+      openTabs[tabId][idx] = prev;
       // add new object
       openTabs[tabId].push(obj);
     }

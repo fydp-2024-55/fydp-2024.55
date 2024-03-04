@@ -3,6 +3,7 @@ from fastapi import APIRouter, Body, Request, status, HTTPException, Query
 from fastapi.params import Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 
+
 from ..blockchain.mint_burn import burn_token, mint_token
 from ..dependencies import (
     get_async_session,
@@ -183,16 +184,33 @@ async def delete_producer(
     await user_manager.delete(user)
 
 
+@router.get(
+    "/me/interests",
+    status_code=status.HTTP_200_OK,
+    response_model=Dict[str, int],
+)
+async def read_interests(
+    db: AsyncSession = Depends(get_async_session),
+    user: User = Depends(get_current_active_user),
+):
+    producer = await ops.get_producer(db, user)
+    interests = await ops.get_interests(db, producer)
+    return {str(category.title).lower(): duration for category, duration in interests}
+
+
 @router.post(
     "/me/interests",
     status_code=status.HTTP_201_CREATED,
-    response_model=List[VisitedSite],
+    response_model=Dict[str, int],
 )
 async def upload_interests(
     visited_sites: List[VisitedSite],
+    db: AsyncSession = Depends(get_async_session),
+    user: User = Depends(get_current_active_user),
 ):
-    # TODO: Implement interest categorization logic
-    return visited_sites
+    producer = await ops.get_producer(db, user)
+    await ops.process_visited_sites(db, producer, visited_sites)
+    return await read_interests(db, user)
 
 
 @router.get(
@@ -204,8 +222,9 @@ async def read_permissions(
     db: AsyncSession = Depends(get_async_session),
     user: User = Depends(get_current_active_user),
 ):
-    permissions = await ops.get_permissions(db, user)
-    return {category.title.lower(): enabled for category, enabled in permissions}
+    producer = await ops.get_producer(db, user)
+    permissions = await ops.get_permissions(db, producer)
+    return {str(category.title).lower(): enabled for category, enabled in permissions}
 
 
 @router.patch(
@@ -218,5 +237,6 @@ async def update_permissions(
     db: AsyncSession = Depends(get_async_session),
     user: User = Depends(get_current_active_user),
 ):
-    await ops.update_permissions(db, user, permissions)
+    producer = await ops.get_producer(db, user)
+    await ops.update_permissions(db, producer, permissions)
     return await read_permissions(db, user)

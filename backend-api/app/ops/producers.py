@@ -1,8 +1,18 @@
-from typing import Dict
+from typing import Dict, List
 import sqlalchemy as sa
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from ..models.categories import Category, ProducerRestictedCategories
+from ..ops.interests import add_interests, get_interests, update_interests
+
+from ..ops.categories import (
+    add_restricted_categories,
+    get_categories,
+    get_restricted_categories,
+    remove_restricted_categories,
+)
+
+
+from ..extension.categorize import get_interest_category
 
 from ..models.producers import Producer
 from ..models.users import User
@@ -11,6 +21,7 @@ from ..schemas.producers import (
     ProducerRead,
     ProducerUpdate,
     ProducerFilter,
+    VisitedSite,
 )
 
 
@@ -101,45 +112,71 @@ async def get_producers_by_filter(db: AsyncSession, filter: ProducerFilter):
     return [ProducerRead(**producer.__dict__) for producer in producers.scalars().all()]
 
 
-async def get_permissions(db: AsyncSession, user: User):
-    statement = (
-        sa.select(Category, Producer)
-        .join(
-            ProducerRestictedCategories,
-            Category.id == ProducerRestictedCategories.category_id,
-            isouter=True,
-        )
-        .join(
-            Producer,
-            Producer.id == ProducerRestictedCategories.producer_id
-            and Producer.user_id == user.id,
-            isouter=True,
-        )
-    )
-    results = await db.execute(statement)
-    return [(category, producer is not None) for category, producer in results.tuples()]
+async def get_permissions(db: AsyncSession, producer: Producer):
+    categories = set(await get_categories(db))
+    restricted_categories = set(await get_restricted_categories(db, producer))
+
+    return [
+        (category, category not in restricted_categories) for category in categories
+    ]
 
 
 async def update_permissions(
-    db: AsyncSession, user: User, permissions: Dict[str, bool]
+    db: AsyncSession, producer: Producer, permissions: Dict[str, bool]
 ):
-    producer = await get_producer(db, user)
-    old_permissions = await get_permissions(db, user)
+    old_permissions = await get_permissions(db, producer)
+
+    restricted_categories = []
+    unrestricted_categories = []
 
     for category, enabled in old_permissions:
-        title = category.title.lower()
-        if title not in permissions or enabled == permissions[title]:
+        title = str(category.title).lower()
+        if title not in permissions:
             continue
 
-        if permissions[title]:
-            statement = sa.insert(ProducerRestictedCategories).values(
-                producer_id=producer.id, category_id=category.id
-            )
-        else:
-            statement = sa.delete(ProducerRestictedCategories).where(
-                ProducerRestictedCategories.producer_id == producer.id
-                and ProducerRestictedCategories.category_id == category.id
-            )
+        if enabled and not permissions[title]:
+            restricted_categories.append(category)
+        elif not enabled and permissions[title]:
+            unrestricted_categories.append(category)
 
-        await db.execute(statement)
-        await db.commit()
+    if restricted_categories:
+        await add_restricted_categories(db, producer, restricted_categories)
+    if unrestricted_categories:
+        await remove_restricted_categories(db, producer, unrestricted_categories)
+
+
+async def process_visited_sites(
+    db: AsyncSession, producer: Producer, visited_sites: List[VisitedSite]
+):
+    old_interests = {
+        category.title: (category, duration)
+        for category, duration in await get_interests(db, producer)
+    }
+    permissions = {
+        category.title: (category, enabled)
+        for category, enabled in await get_permissions(db, producer)
+    }
+    enabled_categories = {key for key, (_, enabled) in permissions.items() if enabled}
+
+    created_interests = []
+    updated_interests = []
+
+    for site in visited_sites:
+        interest, duration = (
+            get_interest_category(site.url, enabled_categories),
+            site.duration,
+        )
+        if interest is None:
+            continue
+
+        category, _ = permissions[interest]
+
+        if interest not in old_interests:
+            created_interests.append((category, duration))
+        else:
+            updated_interests.append((category, duration))
+
+    if created_interests:
+        await add_interests(db, producer, created_interests)
+    else:
+        await update_interests(db, producer, updated_interests)

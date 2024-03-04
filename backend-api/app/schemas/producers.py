@@ -1,4 +1,4 @@
-from datetime import date, datetime
+from datetime import date
 from pydantic import BaseModel
 
 
@@ -57,5 +57,4 @@ class ProducerFilter(FilterOptions):
 
 class VisitedSite(BaseModel):
     url: str  # The url of the visited site
-    visited_time: datetime  # The time the site was visited
-    duration: int  # How long the site was visited for (in seconds)
+    duration: int  # How long the site was visited for (in sec)
