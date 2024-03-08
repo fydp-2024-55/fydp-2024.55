@@ -8,6 +8,7 @@ import { FC, useContext, useEffect, useState } from "react";
 import backendService from "../../services/backend-service";
 import { Producer, ProducerOptions } from "../../types";
 import AppContext from "../contexts/AppContext";
+import { ToastContainer, toast } from 'react-toastify';
 
 const ProfileScreen: FC = () => {
   const { setAuthState } = useContext(AppContext)!;
@@ -16,6 +17,24 @@ const ProfileScreen: FC = () => {
   const [shouldCreate, setShouldCreate] = useState(false);
   const [options, setOptions] = useState<ProducerOptions>();
 
+  const notify = () => {
+    toast("Saved!", {
+      autoClose: 1000,
+      hideProgressBar: true,
+      closeButton: false,
+      style: {
+              zIndex: 999, 
+              background: '#39e75f', 
+              color: 'white', 
+              bottom: '-25%',
+              left: '42%',
+              padding: '20px',
+              position: "absolute",
+              border: '2px solid white',
+              borderRadius: '20px'
+            }
+    });
+  };
   const load = async () => {
     try {
       const options = await backendService.getProfileOptions();
@@ -56,7 +75,7 @@ const ProfileScreen: FC = () => {
           fetchedProfile = await backendService.updateProducer(profile);
         }
         setProfile(fetchedProfile);
-        alert("Saved");
+        notify()
       }
     } catch (error) {
       backendService.handleError(error, setAuthState);
@@ -107,6 +126,7 @@ const ProfileScreen: FC = () => {
         flexDirection: "column",
         alignItems: "center",
         overflow: "auto",
+        position: 'relative'
       }}
     >
       {renderOptions("Gender", "gender", "genders")}
@@ -167,6 +187,7 @@ const ProfileScreen: FC = () => {
           Save
         </Button>
       </div>
+      <ToastContainer />
     </div>
   );
 };
