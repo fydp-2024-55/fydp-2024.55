@@ -21,7 +21,10 @@ const WalletScreen: FC = () => {
       const wallet = await backendService.getWallet();
       setWallet(wallet);
     } catch (error) {
-      backendService.handleError(error, setAuthState);
+      if (backendService.isUnauthorizedError(error)) {
+        await backendService.logOut();
+        setAuthState("unauthenticated");
+      }
     }
   };
 
@@ -40,7 +43,12 @@ const WalletScreen: FC = () => {
         setToastMessage("Saved");
       }
     } catch (error) {
-      backendService.handleError(error, setAuthState);
+      if (backendService.isUnauthorizedError(error)) {
+        await backendService.logOut();
+        setAuthState("unauthenticated");
+      } else {
+        setToastMessage("Failed to save");
+      }
     }
   };
 

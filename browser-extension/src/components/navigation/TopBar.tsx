@@ -9,12 +9,8 @@ const LogoutButton: FC = () => {
   const { setAuthState, screen } = useContext(AppContext)!;
 
   const logOut = async () => {
-    try {
-      await backendService.logOut();
-      setAuthState("unauthenticated");
-    } catch (error) {
-      backendService.handleError(error, setAuthState);
-    }
+    await backendService.logOut();
+    setAuthState("unauthenticated");
   };
 
   return (

@@ -5,8 +5,8 @@ import {
   Typography,
 } from "@material-ui/core";
 import { FC, useContext, useEffect, useState } from "react";
-import { Permissions } from "../../types";
 import backendService from "../../services/backend-service";
+import { Permissions } from "../../types";
 import AppContext from "../contexts/AppContext";
 
 const PermissionsScreen: FC = () => {
@@ -19,10 +19,11 @@ const PermissionsScreen: FC = () => {
       const fetchedPermissions = await backendService.getPermissions();
       setPermissions(fetchedPermissions);
     } catch (error) {
-      if (backendService.isNotFoundError(error)) {
+      if (backendService.isUnauthorizedError(error)) {
+        await backendService.logOut();
+        setAuthState("unauthenticated");
+      } else if (backendService.isNotFoundError(error)) {
         setPermissions(null);
-      } else {
-        backendService.handleError(error, setAuthState);
       }
     }
   };
@@ -41,7 +42,12 @@ const PermissionsScreen: FC = () => {
         setToastMessage("Saved");
       }
     } catch (error) {
-      backendService.handleError(error, setAuthState);
+      if (backendService.isUnauthorizedError(error)) {
+        await backendService.logOut();
+        setAuthState("unauthenticated");
+      } else {
+        setToastMessage("Failed to save");
+      }
     }
   };
 

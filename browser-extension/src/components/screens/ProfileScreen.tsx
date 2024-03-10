@@ -24,7 +24,10 @@ const ProfileScreen: FC = () => {
       const producer = await backendService.getProducer();
       setProfile(producer);
     } catch (error) {
-      if (backendService.isNotFoundError(error)) {
+      if (backendService.isUnauthorizedError(error)) {
+        await backendService.logOut();
+        setAuthState("unauthenticated");
+      } else if (backendService.isNotFoundError(error)) {
         setProfile({
           gender: null,
           ethnicity: null,
@@ -35,8 +38,6 @@ const ProfileScreen: FC = () => {
           parentalStatus: null,
         });
         setShouldCreate(true);
-      } else {
-        backendService.handleError(error, setAuthState);
       }
     }
   };
@@ -59,7 +60,12 @@ const ProfileScreen: FC = () => {
         setToastMessage("Saved");
       }
     } catch (error) {
-      backendService.handleError(error, setAuthState);
+      if (backendService.isUnauthorizedError(error)) {
+        await backendService.logOut();
+        setAuthState("unauthenticated");
+      } else {
+        setToastMessage("Failed to save");
+      }
     }
   };
 

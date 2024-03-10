@@ -2,7 +2,6 @@ import axios from "axios";
 
 import applyCaseMiddleware from "axios-case-converter";
 import {
-  AuthState,
   AuthTokenKey,
   BearerToken,
   Permissions,
@@ -20,21 +19,8 @@ const apiClient = applyCaseMiddleware(
 );
 
 const backendService = {
-  handleError: (error: any, setAuthState: (authState: AuthState) => void) => {
-    if (axios.isAxiosError(error)) {
-      if (error.response?.status === 401) {
-        apiClient.defaults.headers.common["Authorization"] = null;
-        storageService.removeItem(AuthTokenKey);
-        setAuthState("unauthenticated");
-      } else {
-        alert(
-          `${error.name} [${error.code}]: ${error.message}
-          ${JSON.stringify(error.response?.data)}`
-        );
-      }
-    } else if (error instanceof Error) {
-      alert(`${error.name}: ${error.message}`);
-    }
+  isUnauthorizedError: (error: any) => {
+    return axios.isAxiosError(error) && error.response?.status === 401;
   },
 
   isNotFoundError: (error: any) => {
@@ -71,7 +57,9 @@ const backendService = {
   },
 
   logOut: async () => {
-    await apiClient.post(`/auth/jwt/logout`);
+    try {
+      await apiClient.post(`/auth/jwt/logout`);
+    } catch (error) {}
 
     apiClient.defaults.headers.common["Authorization"] = null;
     storageService.removeItem(AuthTokenKey);
