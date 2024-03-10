@@ -1,4 +1,5 @@
 import { Button, TextField, Typography } from "@material-ui/core";
+import { Alert } from "@mui/material";
 import { FC, useContext, useState } from "react";
 import Logo from "../../images/logo.png";
 import backendService from "../../services/backend-service";
@@ -9,13 +10,14 @@ const SignInScreen: FC = () => {
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
 
   const logIn = async () => {
     try {
       await backendService.logIn(email, password);
       setAuthState("authenticated");
     } catch (error) {
-      backendService.handleError(error, setAuthState);
+      setErrorMessage("Error: sign in failed");
     }
   };
 
@@ -38,6 +40,8 @@ const SignInScreen: FC = () => {
           gap: 20,
         }}
       >
+        {errorMessage !== "" && <Alert severity="error">{errorMessage}</Alert>}
+
         <TextField
           label="Email"
           type="email"
