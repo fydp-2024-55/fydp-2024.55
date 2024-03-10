@@ -10,7 +10,7 @@ import { Producer, ProducerOptions } from "../../types";
 import AppContext from "../contexts/AppContext";
 
 const ProfileScreen: FC = () => {
-  const { setAuthState } = useContext(AppContext)!;
+  const { setAuthState, setToastMessage } = useContext(AppContext)!;
 
   const [profile, setProfile] = useState<Producer>();
   const [shouldCreate, setShouldCreate] = useState(false);
@@ -56,7 +56,7 @@ const ProfileScreen: FC = () => {
           fetchedProfile = await backendService.updateProducer(profile);
         }
         setProfile(fetchedProfile);
-        alert("Saved");
+        setToastMessage("Saved");
       }
     } catch (error) {
       backendService.handleError(error, setAuthState);

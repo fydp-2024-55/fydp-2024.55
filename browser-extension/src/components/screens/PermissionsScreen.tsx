@@ -10,7 +10,7 @@ import backendService from "../../services/backend-service";
 import AppContext from "../contexts/AppContext";
 
 const PermissionsScreen: FC = () => {
-  const { setAuthState, setScreen } = useContext(AppContext)!;
+  const { setAuthState, setScreen, setToastMessage } = useContext(AppContext)!;
 
   const [permissions, setPermissions] = useState<Permissions | null>();
 
@@ -38,7 +38,7 @@ const PermissionsScreen: FC = () => {
           permissions
         );
         setPermissions(fetchedPermissions);
-        alert("Saved");
+        setToastMessage("Saved");
       }
     } catch (error) {
       backendService.handleError(error, setAuthState);

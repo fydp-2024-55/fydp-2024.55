@@ -8,6 +8,8 @@ interface AppContextType {
   setAuthState: (authState: AuthState) => void;
   screen: Screen;
   setScreen: (screen: Screen) => void;
+  toastMessage: string;
+  setToastMessage: (message: string) => void;
 }
 
 const AppContext = createContext<AppContextType | null>(null);
@@ -19,6 +21,7 @@ interface Props {
 export const AppContextProvider: FC<Props> = ({ children }) => {
   const [screen, setScreen] = useState<Screen>("sign-in");
   const [authState, setAuthState] = useState<AuthState>("unknown");
+  const [toastMessage, setToastMessage] = useState<string>("");
 
   useEffect(() => {
     const token = storageService.getItem(AuthTokenKey);
@@ -31,7 +34,16 @@ export const AppContextProvider: FC<Props> = ({ children }) => {
   }, []);
 
   return (
-    <AppContext.Provider value={{ authState, setAuthState, screen, setScreen }}>
+    <AppContext.Provider
+      value={{
+        authState,
+        setAuthState,
+        screen,
+        setScreen,
+        toastMessage,
+        setToastMessage,
+      }}
+    >
       {children}
     </AppContext.Provider>
   );
