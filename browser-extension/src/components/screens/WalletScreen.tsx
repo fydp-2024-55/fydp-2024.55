@@ -11,7 +11,7 @@ import { Wallet } from "../../types";
 import AppContext from "../contexts/AppContext";
 
 const WalletScreen: FC = () => {
-  const { setAuthState } = useContext(AppContext)!;
+  const { setAuthState, setToastMessage } = useContext(AppContext)!;
 
   const [wallet, setWallet] = useState<Wallet>();
   const [privateKey, setPrivateKey] = useState("*".repeat(64));
@@ -21,7 +21,10 @@ const WalletScreen: FC = () => {
       const wallet = await backendService.getWallet();
       setWallet(wallet);
     } catch (error) {
-      backendService.handleError(error, setAuthState);
+      if (backendService.isUnauthorizedError(error)) {
+        await backendService.logOut();
+        setAuthState("unauthenticated");
+      }
     }
   };
 
@@ -37,10 +40,15 @@ const WalletScreen: FC = () => {
           privateKey
         );
         setWallet(fetchedWallet);
-        alert("Saved");
+        setToastMessage("Saved");
       }
     } catch (error) {
-      backendService.handleError(error, setAuthState);
+      if (backendService.isUnauthorizedError(error)) {
+        await backendService.logOut();
+        setAuthState("unauthenticated");
+      } else {
+        setToastMessage("Failed to save");
+      }
     }
   };
 

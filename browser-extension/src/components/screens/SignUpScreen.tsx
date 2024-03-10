@@ -1,4 +1,5 @@
 import { Button, TextField, Typography } from "@material-ui/core";
+import { Alert } from "@mui/material";
 import { FC, useContext, useState } from "react";
 import Logo from "../../images/logo.png";
 import backendService from "../../services/backend-service";
@@ -10,10 +11,11 @@ const SignUpScreen: FC = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmedPassword] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
 
   const register = async () => {
     if (password !== confirmPassword) {
-      alert("Passwords do not match");
+      setErrorMessage("Passwords do not match");
       return;
     }
 
@@ -23,7 +25,7 @@ const SignUpScreen: FC = () => {
       await backendService.createWallet();
       setAuthState("authenticated");
     } catch (error) {
-      backendService.handleError(error, setAuthState);
+      setErrorMessage("Error: sign up failed");
     }
   };
 
@@ -46,6 +48,8 @@ const SignUpScreen: FC = () => {
           gap: 20,
         }}
       >
+        {errorMessage !== "" && <Alert severity="error">{errorMessage}</Alert>}
+
         <TextField
           label="Email"
           type="email"

@@ -2,10 +2,11 @@ import { FC, useContext } from "react";
 import AppContext from "../components/contexts/AppContext";
 import BottomBar from "../components/navigation/BottomBar";
 
+import { CircularProgress } from "@material-ui/core";
 import TopBar from "../components/navigation/TopBar";
+import Toast from "../components/shared/Toast";
 import { AuthenticatedRouter } from "./AuthenticatedRouter";
 import { UnauthenticatedRouter } from "./UnauthenticatedRouter";
-import { CircularProgress } from "@material-ui/core";
 
 const AppRouter: FC = () => {
   const { authState } = useContext(AppContext)!;
@@ -38,6 +39,7 @@ const AppRouter: FC = () => {
           <div style={{ height: 60 }}>
             <BottomBar />
           </div>
+          <Toast />
         </>
       );
 

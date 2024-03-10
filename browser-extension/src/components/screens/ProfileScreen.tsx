@@ -10,7 +10,7 @@ import { Producer, ProducerOptions } from "../../types";
 import AppContext from "../contexts/AppContext";
 
 const ProfileScreen: FC = () => {
-  const { setAuthState } = useContext(AppContext)!;
+  const { setAuthState, setToastMessage } = useContext(AppContext)!;
 
   const [profile, setProfile] = useState<Producer>();
   const [shouldCreate, setShouldCreate] = useState(false);
@@ -24,7 +24,10 @@ const ProfileScreen: FC = () => {
       const producer = await backendService.getProducer();
       setProfile(producer);
     } catch (error) {
-      if (backendService.isNotFoundError(error)) {
+      if (backendService.isUnauthorizedError(error)) {
+        await backendService.logOut();
+        setAuthState("unauthenticated");
+      } else if (backendService.isNotFoundError(error)) {
         setProfile({
           gender: null,
           ethnicity: null,
@@ -35,8 +38,6 @@ const ProfileScreen: FC = () => {
           parentalStatus: null,
         });
         setShouldCreate(true);
-      } else {
-        backendService.handleError(error, setAuthState);
       }
     }
   };
@@ -56,10 +57,15 @@ const ProfileScreen: FC = () => {
           fetchedProfile = await backendService.updateProducer(profile);
         }
         setProfile(fetchedProfile);
-        alert("Saved");
+        setToastMessage("Saved");
       }
     } catch (error) {
-      backendService.handleError(error, setAuthState);
+      if (backendService.isUnauthorizedError(error)) {
+        await backendService.logOut();
+        setAuthState("unauthenticated");
+      } else {
+        setToastMessage("Failed to save");
+      }
     }
   };
 

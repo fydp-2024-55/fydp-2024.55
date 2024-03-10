@@ -1,4 +1,4 @@
-import { Button, Card, Typography } from "@material-ui/core";
+import { Card, IconButton, Typography } from "@material-ui/core";
 import { Logout } from "@mui/icons-material";
 import { FC, useContext } from "react";
 import Logo from "../../images/logo.png";
@@ -9,12 +9,8 @@ const LogoutButton: FC = () => {
   const { setAuthState, screen } = useContext(AppContext)!;
 
   const logOut = async () => {
-    try {
-      await backendService.logOut();
-      setAuthState("unauthenticated");
-    } catch (error) {
-      backendService.handleError(error, setAuthState);
-    }
+    await backendService.logOut();
+    setAuthState("unauthenticated");
   };
 
   return (
@@ -34,9 +30,9 @@ const LogoutButton: FC = () => {
         {screen.substring(0, 1).toUpperCase() + screen.substring(1)}
       </Typography>
 
-      <Button onClick={logOut}>
+      <IconButton onClick={logOut}>
         <Logout style={{ height: 40, width: 40 }} />
-      </Button>
+      </IconButton>
     </Card>
   );
 };
