@@ -11,6 +11,8 @@ from ..utils.date import date_to_epoch
 # Connect to ETH network
 eth_client = ETHClient()
 
+print(eth_client.w3.eth.accounts)
+
 # Test accounts
 producer_1 = generate_account(eth_client)
 producer_2 = generate_account(eth_client)

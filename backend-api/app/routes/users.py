@@ -2,10 +2,13 @@ from fastapi import APIRouter, status, HTTPException, Request
 from fastapi.params import Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 
-# from ..blockchain.mint_burn import burn_token, mint_token
+from ..blockchain.mint_burn import burn_token, mint_token
 from ..blockchain.wallet import (
     generate_account,
     get_balance,
+    address_exists,
+    valid_private_key,
+    reset_account_balance,
 )
 from ..dependencies import (
     fastapi_users,
@@ -72,61 +75,54 @@ async def create_user_wallet(
     return await read_user_wallet(request, user)
 
 
-# @router.patch("/me/wallet", status_code=status.HTTP_200_OK, response_model=WalletRead)
-# async def update_user_wallet(
-#     wallet: WalletUpdate,
-#     request: Request,
-#     db: AsyncSession = Depends(get_async_session),
-#     user: User = Depends(get_current_active_user),
-# ):
-#     if wallet.eth_address == user.eth_address:
-#         raise HTTPException(
-#             status_code=status.HTTP_304_NOT_MODIFIED,
-#             detail="Ethereum address matches the current wallet address",
-#         )
+@router.patch("/me/wallet", status_code=status.HTTP_200_OK, response_model=WalletRead)
+async def update_user_wallet(
+    wallet: WalletUpdate,
+    request: Request,
+    db: AsyncSession = Depends(get_async_session),
+    user: User = Depends(get_current_active_user),
+):
+    if wallet.eth_address is None or wallet.private_key is None:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Private key is required to update wallet",
+        )
 
-#     if wallet.private_key is None:
-#         raise HTTPException(
-#             status_code=status.HTTP_400_BAD_REQUEST,
-#             detail="Private key is required to update wallet",
-#         )
+    if user.eth_address is not None and wallet.eth_address == user.eth_address:
+        raise HTTPException(
+            status_code=status.HTTP_304_NOT_MODIFIED,
+            detail="Ethereum address matches the current wallet address",
+        )
 
-#     try:
-#         address = get_address_from_private_key(
-#             request.app.state.eth_client, wallet.private_key
-#         )
-#     except Exception as err:
-#         raise HTTPException(
-#             status_code=status.HTTP_400_BAD_REQUEST,
-#             detail=err.args[0],
-#         )
+    if not address_exists(request.app.state.eth_client, wallet.eth_address):
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Ethereum address does not exist on the network",
+        )
 
-#     if address == user.eth_address:
-#         raise HTTPException(
-#             status_code=status.HTTP_304_NOT_MODIFIED,
-#             detail="Ethereum address matches the current wallet address",
-#         )
+    if not valid_private_key(wallet.private_key):
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Invalid private key",
+        )
 
-#     if wallet.eth_address and wallet.eth_address != address:
-#         raise HTTPException(
-#             status_code=status.HTTP_400_BAD_REQUEST,
-#             detail="Private key does not match the provided Ethereum address",
-#         )
+    # Set the account balance to 100 ETH
+    reset_account_balance(request.app.state.eth_client, wallet.eth_address)
 
-#     # If the user is a producer, burn their old token and mint a new token
-#     if await get_producer(db, user):
-#         try:
-#             burn_token(request.app.state.eth_client, user.eth_address)
-#             mint_token(request.app.state.eth_client, address)
-#         except Exception:
-#             raise HTTPException(
-#                 status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-#                 detail="Failed to re-mint the token",
-#             )
+    # If the user is a producer, burn their old token and mint a new token
+    if await get_producer(db, user):
+        try:
+            burn_token(request.app.state.eth_client, wallet.eth_address)
+            mint_token(request.app.state.eth_client, wallet.eth_address)
+        except Exception:
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail="Failed to re-mint the token",
+            )
 
-#     await ops.update_user_eth_address(db, address, user)
+    await ops.update_user_eth_address(db, wallet.eth_address, user)
 
-#     return await read_user_wallet(request, user)
+    return await read_user_wallet(request, user)
 
 
 @router.get(
