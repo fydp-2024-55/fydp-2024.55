@@ -1,15 +1,16 @@
 import { SubscriptionResult } from "../types";
 
 export const exportDataToCSV = (data: SubscriptionResult[]) => {
-  // Exclude `history` key from the exported data
-  const titleKeys = Object.keys(data[0]).slice(0, -1);
+  // Exclude `interests` key from the exported data
+  const titleKeys = Object.keys(data[0]).filter((key) => key !== "interests");
 
   const refinedData = [];
   refinedData.push(titleKeys);
 
   data.forEach((item) => {
-    // Exclude `history` from the exported data
-    refinedData.push(Object.values(item).slice(0, -1));
+    // Exclude `interests` from the exported data
+    const { interests, ...values } = item;
+    refinedData.push(Object.values(values));
   });
 
   let csvContent = "";
@@ -33,8 +34,12 @@ export const exportDataToCSV = (data: SubscriptionResult[]) => {
 };
 
 export const exportDataToJSON = (data: SubscriptionResult[]) => {
+  // Exclude `interests` from the exported data
+  const result = data.map(({ interests, ...rest }) => rest);
+
   const jsonContent =
-    "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(data));
+    "data:text/json;charset=utf-8," +
+    encodeURIComponent(JSON.stringify(result));
 
   const element = document.createElement("a");
   element.setAttribute("href", jsonContent);
