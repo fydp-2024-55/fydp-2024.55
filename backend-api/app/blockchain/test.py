@@ -115,6 +115,9 @@ except Exception:
 consumers = producer_consumers(eth_client, producer_1.address)
 assert len(consumers) == 0
 
+subscriptions = consumer_subscriptions(eth_client, consumer_1.address)
+assert len(subscriptions) == 0
+
 # new_wallet = generate_account(eth_client, 1)
 
 # account = get_address_from_private_key(eth_client, new_wallet.key.hex())

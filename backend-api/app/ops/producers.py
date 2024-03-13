@@ -112,7 +112,11 @@ async def get_producers_by_filter(db: AsyncSession, filter: ProducerFilter):
     # Calculate counts based on filtered producers
     counts = {
         "ethAddresses": [],
-        "genders": {Genders.Male.value: 0, Genders.Female.value: 0},
+        "genders": {
+            Genders.Male.value: 0,
+            Genders.Female.value: 0,
+            Genders.Other.value: 0,
+        },
         "ethnicities": {
             Ethnicities.American_Indian_or_Alaskan_Native.value: 0,
             Ethnicities.Asian_Pacific_Islander.value: 0,

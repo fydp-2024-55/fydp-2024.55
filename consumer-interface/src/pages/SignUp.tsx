@@ -46,10 +46,11 @@ const SignUp: FC = () => {
       <CssBaseline />
       <Box
         sx={{
-          marginTop: 8,
           display: "flex",
           flexDirection: "column",
           alignItems: "center",
+          justifyContent: "center",
+          height: "80vh",
         }}
       >
         <Avatar sx={{ m: 1, bgcolor: "secondary.main" }}>
