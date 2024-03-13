@@ -35,11 +35,11 @@ export const exportDataToCSV = (data: SubscriptionResult[]) => {
 
 export const exportDataToJSON = (data: SubscriptionResult[]) => {
   // Exclude `interests` from the exported data
-  const result = data.map(({ interests, ...rest }) => rest);
+  const finalData = data.map(({ interests, ...rest }) => rest);
 
   const jsonContent =
     "data:text/json;charset=utf-8," +
-    encodeURIComponent(JSON.stringify(result));
+    encodeURIComponent(JSON.stringify(finalData));
 
   const element = document.createElement("a");
   element.setAttribute("href", jsonContent);
