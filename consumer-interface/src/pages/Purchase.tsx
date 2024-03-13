@@ -142,7 +142,7 @@ const Purchase: FC = () => {
           <TableContainer
             component={Paper}
             elevation={3}
-            sx={{ my: 2, height: "60vh", maxWidth: "80vw" }}
+            sx={{ my: 4, height: "60vh", maxWidth: "80vw" }}
           >
             <Table>
               <TableHead>
@@ -203,13 +203,28 @@ const Purchase: FC = () => {
               </TableBody>
             </Table>
           </TableContainer>
-          <Button
-            variant="contained"
-            sx={{ width: 200 }}
-            onClick={handlePurchase}
+          <Box
+            sx={{
+              display: "flex",
+              justifyContent: "center",
+            }}
           >
-            Purchase
-          </Button>
+            <Button
+              variant="contained"
+              sx={{ width: 200, mr: 1 }}
+              onClick={handlePurchase}
+              disabled={!producerResults.ethAddresses.length}
+            >
+              Purchase
+            </Button>
+            <Button
+              variant="outlined"
+              sx={{ width: 200, ml: 1 }}
+              onClick={() => setProducerResults(undefined)}
+            >
+              Cancel
+            </Button>
+          </Box>
         </Box>
       ) : (
         <Box
@@ -222,12 +237,12 @@ const Purchase: FC = () => {
           <TableContainer
             component={Paper}
             elevation={3}
-            sx={{ maxWidth: "60vw", m: 4 }}
+            sx={{ maxWidth: "60vw", my: 4 }}
           >
             <Table aria-label="criteria-table">
               <TableBody>
                 {criteria &&
-                  criteria.map((row, criteriaIdx) => (
+                  criteria.map((row) => (
                     <TableRow key={row.name}>
                       <TableCell component="th" scope="row">
                         <Box fontWeight="fontWeightMedium" display="inline">
@@ -255,7 +270,7 @@ const Purchase: FC = () => {
                               onChange={(e) =>
                                 setFilters({
                                   ...filters,
-                                  [row.minKey!]: e.target.value,
+                                  [row.minKey!]: e.target.value || undefined,
                                 })
                               }
                             />
@@ -277,7 +292,7 @@ const Purchase: FC = () => {
                               onChange={(e) =>
                                 setFilters({
                                   ...filters,
-                                  [row.maxKey!]: e.target.value,
+                                  [row.maxKey!]: e.target.value || undefined,
                                 })
                               }
                             />

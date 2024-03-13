@@ -76,14 +76,30 @@ async def create_subscriptions(
         )
 
     try:
-        # Perform the token purchases through the smart contract
-        consumer_subscribe(
-            request.app.state.eth_client,
-            user.eth_address,
-            subscriptions.eth_addresses,
-            date_to_epoch(current_date),
-            date_to_epoch(subscriptions.expiration_date),
-        )
+        # Fetch existing subscriptions for the user
+        existing_subscriptions = {
+            subscription["eth_address"]
+            for subscription in consumer_subscriptions(
+                request.app.state.eth_client, user.eth_address
+            )
+        }
+
+        # Filter out eth_addresses already subscribed
+        eth_addresses_to_subscribe = [
+            eth_address
+            for eth_address in subscriptions.eth_addresses
+            if eth_address not in existing_subscriptions
+        ]
+
+        if eth_addresses_to_subscribe:
+            # Perform the token purchases through the smart contract
+            consumer_subscribe(
+                request.app.state.eth_client,
+                user.eth_address,
+                eth_addresses_to_subscribe,
+                date_to_epoch(current_date),
+                date_to_epoch(subscriptions.expiration_date),
+            )
     except Exception:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
@@ -106,10 +122,7 @@ async def read_subscriptions(
         subscriptions = consumer_subscriptions(
             request.app.state.eth_client, user.eth_address
         )
-        response = []
-        for subscription in subscriptions:
-            response.append(SubscriptionItem(**subscription))
-        return response
+        return [SubscriptionItem(**subscription) for subscription in subscriptions]
     except Exception:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,

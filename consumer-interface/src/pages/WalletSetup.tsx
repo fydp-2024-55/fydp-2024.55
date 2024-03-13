@@ -61,7 +61,7 @@ const WalletSetup: React.FC = () => {
 
   return (
     <PageTemplate>
-      <Container component="main" maxWidth="xs" sx={{ marginTop: -6 }}>
+      <Container component="main" maxWidth="xs" sx={{ marginTop: "-20vh" }}>
         <Paper elevation={3} sx={{ padding: 3 }}>
           <Box
             sx={{
