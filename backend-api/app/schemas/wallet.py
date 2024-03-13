@@ -2,7 +2,7 @@ from pydantic import BaseModel
 
 
 class WalletBase(BaseModel):
-    eth_address: str | None
+    eth_address: str
 
 
 class WalletRead(WalletBase):
