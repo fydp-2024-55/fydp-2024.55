@@ -110,10 +110,10 @@ async def update_user_wallet(
     reset_account_balance(request.app.state.eth_client, wallet.eth_address)
 
     # If the user is a producer, burn their old token and mint a new token
-    if await get_producer(db, user):
+    if await get_producer(db, user) and user.eth_address:
         try:
-            burn_token(request.app.state.eth_client, wallet.eth_address)
-            mint_token(request.app.state.eth_client, wallet.eth_address)
+            burn_token(request.app.state.eth_client, user.eth_address)
+            mint_token(request.app.state.eth_client, user.eth_address)
         except Exception:
             raise HTTPException(
                 status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
