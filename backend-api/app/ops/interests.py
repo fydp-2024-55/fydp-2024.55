@@ -8,12 +8,16 @@ from ..models.interests import ProducerInterests
 
 
 async def get_interests(db: AsyncSession, producer: Producer):
-    statement = sa.select(Category, ProducerInterests.duration).join(
-        ProducerInterests,
-        sa.and_(
-            ProducerInterests.category_id == Category.id,
-            ProducerInterests.producer_id == producer.id,
-        ),
+    statement = (
+        sa.select(Category, ProducerInterests.duration)
+        .join(
+            ProducerInterests,
+            sa.and_(
+                ProducerInterests.category_id == Category.id,
+                ProducerInterests.producer_id == producer.id,
+            ),
+        )
+        .order_by(sa.desc(ProducerInterests.duration))
     )
     result = await db.execute(statement)
     return result.tuples().all()
